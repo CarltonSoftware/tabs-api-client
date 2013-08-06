@@ -25,6 +25,11 @@ class SpecialOfferClassTest extends PHPUnit_Framework_TestCase
         );
         
         $this->assertEquals(
+            'tabs\api\property\SpecialOffer', 
+            get_class($specialOffer)
+        );
+        
+        $this->assertEquals(
             '2013-07-14', 
             date('Y-m-d', $specialOffer->getFromDate())
         );

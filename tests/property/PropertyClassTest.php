@@ -37,8 +37,14 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("1212-no", $this->property->getSlug());
         $this->assertEquals("Reedmere", $this->property->getName());
         $this->assertEquals(4, $this->property->getAccommodates());
+        $this->assertEquals(4, $this->property->getSleeps());
+        $this->assertTrue($this->property->hasPets());
+        $this->assertTrue(is_object($this->property->getBrand()));
+        $this->assertTrue(is_object($this->property->getBrand('NO')));
+        $this->assertFalse($this->property->isPromoted());
         $this->assertEquals(2, $this->property->getBedrooms());
         $this->assertEquals("Saturday", $this->property->getChangeOverDay());
+        $this->assertEquals(6, $this->property->getChangeDayNum());
         $this->assertEquals(4, $this->property->getRating());
 
         // Calendar url
@@ -86,6 +92,8 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
     {
         $coords = $this->property->getCoordinates();
         $this->assertEquals('tabs\api\core\Coordinates', get_class($coords));
+        $this->assertTrue(is_numeric($this->property->getLongitude()));
+        $this->assertTrue(is_numeric($this->property->getLatitude()));
     }
 
     /**
@@ -97,6 +105,8 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
     {
         $area = $this->property->getArea();
         $this->assertEquals('tabs\api\core\Area', get_class($area));
+        $this->assertTrue(is_string($this->property->getAreaName()));
+        $this->assertTrue(is_string($this->property->getAreaCode()));
     }
 
     /**
@@ -108,6 +118,8 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
     {
         $location = $this->property->getLocation();
         $this->assertEquals('tabs\api\core\Location', get_class($location));
+        $this->assertTrue(is_string($this->property->getLocationName()));
+        $this->assertTrue(is_string($this->property->getLocationCode()));
     }
 
     /**
@@ -119,28 +131,35 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
     {
         $brands = $this->property->getBrands();
         $this->assertEquals(1, count($brands));
+        $this->assertFalse($this->property->getBrand('XX'));
 
         // Test descriptions
         $this->assertTrue(
             is_string(
-                $this->property->getAvailabilityDescription(
-                    $this->property->getBrandCode()
-                )
+                $this->property->getAvailabilityDescription()
             )
         );
         $this->assertTrue(
             is_string(
-                $this->property->getShortDescription(
-                    $this->property->getBrandCode()
-                )
+                $this->property->getShortDescription()
             )
         );
         $this->assertTrue(
             is_string(
-                $this->property->getFullDescription(
-                    $this->property->getBrandCode()
-                )
+                $this->property->getFullDescription()
             )
+        );
+        $this->assertEquals(
+            '', 
+            $this->property->getAvailabilityDescription('XX')
+        );
+        $this->assertEquals(
+            '', 
+            $this->property->getFullDescription('XX')
+        );
+        $this->assertEquals(
+            '', 
+            $this->property->getShortDescription('XX')
         );
 
         // Test price ranges
@@ -148,7 +167,20 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
             is_numeric($this->property->getPriceRange(date('Y'))->high)
         );
         $this->assertTrue(
-            is_numeric($this->property->getPriceRange(date('Y'))->low)
+            is_numeric($this->property->getPriceRange()->low)
+        );
+        $this->assertEquals(
+            0, 
+            $this->property->getPriceRange('2020', 'XX')->low
+        );
+        $this->assertEquals(
+            'Call', 
+            $this->property->getPriceRangeString('2020', 'XX')
+        );
+        $this->assertEquals(
+            "<span class='low-price'>&pound;302</span>
+            to <span class='high-price'>&pound;529</span>", 
+            $this->property->getPriceRangeString()
         );
     }
 
@@ -172,12 +204,14 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
     {
         $images = $this->property->getImages();
         $this->assertTrue(is_array($images));
+        $this->assertFalse($this->property->getImage(200));
 
         // Test last image object
-        $image = array_pop($images);
+        $image = $this->property->getImage(0);
 
         // Test image object
         $this->assertEquals('tabs\api\property\Image', get_class($image));
+        $this->assertEquals('tabs\api\property\Image', get_class($this->property->getMainImage()));
         
         $this->assertEquals(
             'http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/image', 
