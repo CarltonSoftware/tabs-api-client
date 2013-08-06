@@ -234,9 +234,10 @@ class SearchHelper
                         array_push(
                             $pages, 
                             sprintf(
-                                '<a href="%s" class="page %s">%s</a>',
+                                '<a href="%s" class="page %s page%s">%s</a>',
                                 $href,
                                 strtolower($key),
+                                $this->getSearch()->getPage(),
                                 ucfirst($key)
                             )
                         );
