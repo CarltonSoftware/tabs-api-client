@@ -321,7 +321,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 }
             }
             if (property_exists($bookingData->confirmation, "wnumber")) {
-                $booking->setWNumber($bookingData->confirmation->wnumber);
+                $booking->setWnumber($bookingData->confirmation->wnumber);
             }
         }
 
