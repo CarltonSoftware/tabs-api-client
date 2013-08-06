@@ -24,7 +24,7 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $route = "http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/";
-        \tabs\api\client\ApiClient::factory($route, '', '');
+        \tabs\api\client\ApiClient::factory($route, 'mouse', 'cottage');
         $this->property = \tabs\api\property\Property::getProperty('1212', 'NO');
     }
     
@@ -179,7 +179,46 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         // Test image object
         $this->assertEquals('tabs\api\property\Image', get_class($image));
         
-        $this->assertEquals('1212ext.jpg', $image->getFilename());
+        $this->assertEquals(
+            'http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/image', 
+            $image->getImagePath()
+        );
+        
+        $this->assertEquals(
+            '1212ext.jpg?APIKEY=mouse&hash=4f64c897c40d1edebbf9dc294575a1baf8bd991f1c1aa81a96de538c2eb8fdaa', 
+            $image->getFilename()
+        );
+        
+        $this->assertEquals(
+            $image->getImagePath() . '/square/100x100/' . $image->getFilename(), 
+            $image->createImageSrc()
+        );
+        
+        $this->assertEquals(
+            sprintf(
+                '<img src="%s" alt="%s" title="%s" width="%d" height="%d">',
+                $image->createImageSrc(),
+                $image->getAlt(),
+                $image->getTitle(),
+                100,
+                100
+            ), 
+            $image->createImageTag()
+        );
+        
+        $this->assertEquals(
+            sprintf(
+                '<img src="%s" alt="%s" title="%s" width="%d" height="%d" />',
+                $image->createImageSrc(),
+                $image->getAlt(),
+                $image->getTitle(),
+                100,
+                100
+            ), 
+            $image->createImageTag('square', 100, 100, true)
+        );
+        
+        $this->assertTrue(is_array($image->toArray()));
     }
 
     /**

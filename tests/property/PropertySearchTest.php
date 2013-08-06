@@ -77,6 +77,11 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
+            $propSearch->getLabel(true),
+            'Properties'
+        );
+
+        $this->assertEquals(
             $propSearch->getSearchInfo(),
             '1 to 10 of 28'
         );
@@ -91,6 +96,38 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
         // Test the properties that are returned
         $this->assertTrue(
             is_array($propSearch->getProperties())
+        );
+    }
+
+
+
+    /**
+     * Test the property search end point
+     *
+     * @return void
+     */
+    public function testPropertySearch2()
+    {
+        $propSearch = \tabs\api\property\PropertySearch::factory('', 2);
+
+        $this->assertEquals(
+            $propSearch->getPage(),
+            2
+        );
+
+        $this->assertEquals(
+            $propSearch->getStart(),
+            11
+        );
+
+        $this->assertEquals(
+            $propSearch->getEnd(),
+            20
+        );
+
+        $this->assertEquals(
+            $propSearch->getQuery(2),
+            'page=2'
         );
     }
 
