@@ -177,6 +177,7 @@ class Utility
         $areasResponse = \tabs\api\client\ApiClient::getApi()->get(
             '/utility/area'
         );
+        
         if ($areasResponse->status == 200) {
             foreach ($areasResponse->response as $a) {
                 $area = new \tabs\api\core\Area($a->code, $a->name);
