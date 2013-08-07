@@ -78,6 +78,38 @@ class Brochure extends \tabs\api\core\Base
         return $brochure;
     }
 
+
+    /**
+     * Gets a list of brochures from the API
+     *
+     * @return \tabs\api\core\Brochure|array array
+     */
+    public static function getBrochures()
+    {
+        $conf = \tabs\api\client\ApiClient::getApi()->options(
+            '/brochure-request'
+        );
+
+        $_brochures = array();
+        if ($conf && $conf->status == 200) {
+            $brochures = $conf->response;
+            foreach ($brochures as $brochure) {
+                $_brochures[] = self::createBrochure(
+                    $brochure->ref, 
+                    $brochure->name, 
+                    $brochure->current
+                );
+            }
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $paymentObj, 
+                "Unable to get available brochures"
+            );
+        }
+
+        return $_brochures;
+    }
+
     // ------------------ Public Functions --------------------- //
 
     /**

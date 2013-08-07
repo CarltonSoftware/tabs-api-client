@@ -321,7 +321,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 }
             }
             if (property_exists($bookingData->confirmation, "wnumber")) {
-                $booking->setWNumber($bookingData->confirmation->wnumber);
+                $booking->setWnumber($bookingData->confirmation->wnumber);
             }
         }
 
@@ -662,7 +662,7 @@ class Booking extends \tabs\api\booking\Enquiry
      */
     public function removeAllExtras()
     {
-        $extras = $this->price->getAllExtras();
+        $extras = $this->getPricing()->getAllExtras();
         foreach ($extras as $extraCode => $extra) {
 
             // Remove the extra via an api request
@@ -960,8 +960,8 @@ class Booking extends \tabs\api\booking\Enquiry
         $VPSTxId = $this->assignArrayValue($array, 'VPSTxId', '');
         $Status = $this->assignArrayValue($array, 'Status', '');
         $StatusDetail = $this->assignArrayValue($array, 'StatusDetail', '');
-        $TxAuthNo = $this-_assignArrayValue($array, 'TxAuthNo', '0');
-        $AVSCV2 = $this-_assignArrayValue($array, 'AVSCV2', '');
+        $TxAuthNo = $this->assignArrayValue($array, 'TxAuthNo', '0');
+        $AVSCV2 = $this->assignArrayValue($array, 'AVSCV2', '');
         $AddressResult = $this->assignArrayValue($array, 'AddressResult', '');
         $PostCodeResult = $this->assignArrayValue($array, 'PostCodeResult', '');
         $CV2Result = $this->assignArrayValue($array, 'CV2Result', '');

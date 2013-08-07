@@ -168,6 +168,19 @@ class Customer Extends \tabs\api\core\Person
     {
         return $this->onEmailList;
     }
+    
+    /**
+     * Legacy function
+     * 
+     * @param string $brandcode Brandcode
+     *
+     * @return \tabs\api\core\Customer
+     */
+    public function setBrandcode($brandcode)
+    {
+        $this->brandCode = $brandcode;
+        return $this;
+    }
         
     /**
      * Perform a brochure reequest for the customer
@@ -184,7 +197,7 @@ class Customer Extends \tabs\api\core\Person
     {
         // Check brandcode is present
         if ($this->getBrandCode() == '') {
-            throw new ApiException(
+            throw new \tabs\api\client\ApiException(
                 null, 
                 "Invalid brochure request, customer brandcode not set"
             );
@@ -209,7 +222,10 @@ class Customer Extends \tabs\api\core\Person
         if ($conf && $conf->status == 204) {
             return true;
         } else {
-            throw new ApiException($conf, "Invalid brochure request");
+            throw new \tabs\api\client\ApiException(
+                $conf, 
+                'Invalid brochure request'
+            );
         }
     }
 
@@ -227,7 +243,7 @@ class Customer Extends \tabs\api\core\Person
     {
         // Check brandcode is present
         if ($this->getBrandCode() == '') {
-            throw new ApiException(
+            throw new \tabs\api\client\ApiException(
                 null, 
                 "Invalid brochure request, customer brandcode not set"
             );
@@ -256,7 +272,10 @@ class Customer Extends \tabs\api\core\Person
         if ($conf && $conf->status == 204) {
             return true;
         } else {
-            throw new ApiException($conf, "Invalid newsletter request");
+            throw new \tabs\api\client\ApiException(
+                $conf, 
+                'Invalid newsletter request'
+            );
         }
     }
     
