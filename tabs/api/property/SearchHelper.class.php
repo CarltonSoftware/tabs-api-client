@@ -234,9 +234,10 @@ class SearchHelper
                         array_push(
                             $pages, 
                             sprintf(
-                                '<a href="%s" class="page %s">%s</a>',
+                                '<a href="%s" class="page %s page%s">%s</a>',
                                 $href,
                                 strtolower($key),
+                                $this->getSearch()->getPage(),
                                 ucfirst($key)
                             )
                         );
@@ -339,29 +340,31 @@ class SearchHelper
                         $this->getPrevPageQuery()
                     )
                 );
+                
+                $pagination = $this->_arrayUnshiftAssoc(
+                    $pagination, 
+                    'first', 
+                    sprintf(
+                        '%s?%s',
+                        $this->getBaseUrl(),
+                        $this->getQuery(1)
+                    )
+                );
             }
-            
-            $pagination = $this->_arrayUnshiftAssoc(
-                $pagination, 
-                'first', 
-                sprintf(
+
+            if ($this->getSearch()->getPage() != $this->getSearch()->getMaxPages()) {
+                $pagination['next'] = sprintf(
                     '%s?%s',
                     $this->getBaseUrl(),
-                    $this->getQuery(1)
-                )
-            );
+                    $this->getNextPageQuery()
+                );
 
-            $pagination['next'] = sprintf(
-                '%s?%s',
-                $this->getBaseUrl(),
-                $this->getNextPageQuery()
-            );
-
-            $pagination['last'] = sprintf(
-                '%s?%s',
-                $this->getBaseUrl(),
-                $this->getQuery($this->getSearch()->getMaxPages())
-            );
+                $pagination['last'] = sprintf(
+                    '%s?%s',
+                    $this->getBaseUrl(),
+                    $this->getQuery($this->getSearch()->getMaxPages())
+                );
+            }
 
             // Set the show all flag
             // Set the pageSize to be the total amount
