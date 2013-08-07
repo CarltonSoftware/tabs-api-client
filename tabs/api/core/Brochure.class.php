@@ -25,10 +25,10 @@ namespace tabs\api\core;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.
- * 
+ *
  * @method string getRef()  Return brochure reference
  * @method string getName() Return brochure name
- * 
+ *
  * @method void setRef($ref)   Set the brochure reference
  * @method void setName($name) Set the brochure name
  */
@@ -54,20 +54,20 @@ class Brochure extends \tabs\api\core\Base
      * @var string
      */
     protected $current = false;
-    
+
     // ------------------ Static Functions --------------------- //
-    
+
     /**
      * Create an brochure object from scratch
-     * 
+     *
      * @param string $ref     Brochure reference
      * @param string $name    Brochure description String name of country
      * @param string $current Is the brochure the current one?
-     * 
+     *
      * @return \tabs\api\core\Brochure
      */
     public static function factory(
-        $ref, 
+        $ref,
         $name,
         $current = false
     ) {
@@ -94,15 +94,15 @@ class Brochure extends \tabs\api\core\Base
         if ($conf && $conf->status == 200) {
             $brochures = $conf->response;
             foreach ($brochures as $brochure) {
-                $_brochures[] = self::createBrochure(
-                    $brochure->ref, 
-                    $brochure->name, 
+                $_brochures[] = self::factory(
+                    $brochure->ref,
+                    $brochure->name,
                     $brochure->current
                 );
             }
         } else {
             throw new \tabs\api\client\ApiException(
-                $paymentObj, 
+                $paymentObj,
                 "Unable to get available brochures"
             );
         }
@@ -121,7 +121,7 @@ class Brochure extends \tabs\api\core\Base
     {
         return $this->current;
     }
-    
+
     /**
      * Exports brochure to an array
      *
