@@ -390,7 +390,10 @@ class ApiClient
         $resources = array();
         $results = array();
         foreach ($paths as $path) {
-            $this->$apiFunc($path['path'], $path['params']);
+            $this->$apiFunc(
+                $path['path'], 
+                $this->getHmacParams($path['params'])
+            );
             $this->_setCurlOpt();
             $resources[] = $this->resource;
             curl_multi_add_handle($mResource, $this->resource);
