@@ -94,7 +94,7 @@ class Brochure extends \tabs\api\core\Base
         if ($conf && $conf->status == 200) {
             $brochures = $conf->response;
             foreach ($brochures as $brochure) {
-                $_brochures[] = self::createBrochure(
+                $_brochures[] = self::factory(
                     $brochure->ref, 
                     $brochure->name, 
                     $brochure->current
