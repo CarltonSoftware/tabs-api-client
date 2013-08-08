@@ -138,28 +138,41 @@ class SearchHelper
     /**
      * Search for properties
      * 
-     * @param string $searchId Search id, tp persist search order
+     * @param string  $searchId Search id, tp persist search order
+     * @param boolean $findAll  Set to true if you want to find all properties
      * 
      * @return boolean True if search is Ok
      */
-    public function search($searchId = '')
+    public function search($searchId = '', $findAll = false)
     {
         // Extract filter, page, pageSize and orderBy variables
         extract(
             $this->_searchFilter()
         );
         
-        $this->setSearch(
-            \tabs\api\property\PropertySearch::factory(
-                $filter,
-                $page,
-                $pageSize,
-                $orderBy,
-                $searchId,
-                $this->getFields(),
-                $this->getSbFilter()
-            )
-        );
+        if ($findAll) {
+            $this->setSearch(
+                \tabs\api\property\PropertySearch::fetchAll(
+                    $filter,
+                    $orderBy,
+                    $searchId,
+                    $this->getFields(),
+                    $this->getSbFilter()
+                )
+            );
+        } else {
+            $this->setSearch(
+                \tabs\api\property\PropertySearch::factory(
+                    $filter,
+                    $page,
+                    $pageSize,
+                    $orderBy,
+                    $searchId,
+                    $this->getFields(),
+                    $this->getSbFilter()
+                )
+            );
+        }
         
         return $this->getSearch();
     }

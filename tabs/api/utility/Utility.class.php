@@ -270,6 +270,32 @@ class Utility
         }
         return $locations;
     }
+    
+    /**
+     * Return a simple array of locations
+     * 
+     * @return \tabs\api\core\Location|Array
+     */
+    public static function getAllLocations()
+    {
+        $locations = array();
+        $locs = \tabs\api\client\ApiClient::getApi()->get('/utility/location');
+        if ($locs->status == 200 && is_object($locs->response)) {
+            foreach (get_object_vars($locs->response) as $loc) {
+                $location = new \tabs\api\core\Location(
+                    $loc->code,
+                    $loc->name
+                );
+                $location->setDescription($loc->description);
+                $location->setBrandcode($loc->brandcode);
+                $location->getCoordinates()->setLat($loc->coordinates->latitude);
+                $location->getCoordinates()->setLong($loc->coordinates->longitude);
+                $location->setRadius($loc->coordinates->radius);
+                $locations[$location->getCode()] = $location;
+            }
+        }
+        return $locations;
+    }
 
     /**
      * Find an areacode from a slug
