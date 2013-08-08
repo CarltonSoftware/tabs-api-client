@@ -138,11 +138,21 @@ abstract class Base
                 if (property_exists($this, $property)) {
                     $this->setObjectProperty($this, $property, $args[0]);
                     return $this;
+                } else {
+                    throw new \tabs\api\client\ApiException(
+                        null,
+                        'Unknown method called:' . __CLASS__ . ':' . $name
+                    );
                 }
                 break;
             case 'get':
                 if (property_exists($this, $property)) {
                     return $this->$property;
+                } else {
+                    throw new \tabs\api\client\ApiException(
+                        null,
+                        'Unknown method called:' . __CLASS__ . ':' . $name
+                    );
                 }
                 break;
             }
