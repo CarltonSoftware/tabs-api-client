@@ -26,13 +26,14 @@ namespace tabs\api\property;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  * 
- * @method integer                           getPageSize()
- * @method integer                           getPage()
- * @method \tabs\api\property\Property|Array getProperties()
- * @method string                            getFilter()
- * @method string                            getSearchId()
+ * @method integer                             getPageSize()
+ * @method integer                             getPage()
+ * @method \tabs\api\property\Property | Array getProperties()
+ * @method string                              getFilter()
+ * @method string                              getSearchId()
  * 
  * @method void setPageSize(integer $pageSize)
+ * @method void setPage(integer $page)
  * @method void setFilter(string $filter)
  * @method void setSearchId(string $searchId)
  */
@@ -130,7 +131,7 @@ class PropertySearch extends \tabs\api\core\Base
      * @param string $sbFilter Short break filter code.  Leave blank to not
      * enable this feature.  See documentation for more details.
      * 
-     * @return \tabs\api\property\Property | Array
+     * @return \tabs\api\property\PropertySearch
      */
     public static function fetchAll(
         $filter = '', 
@@ -160,17 +161,26 @@ class PropertySearch extends \tabs\api\core\Base
             if ($pages < 1) {
                 $pages = 1;
             }
+
+            // Create a property search object
+            $propertySearch = self::_createPropertySearch($res);
+
+            // Set the page/pageSize variables
+            $propertySearch->setPage(1);
+            $propertySearch->setPageSize($res->totalResults);
+
+            // Loop through paths adding in each request
             $paths = array();
             for ($i = 1; $i <= $pages; $i++) {
                 array_push(
-                    $paths, 
+                    $paths,
                     array(
-                        'path' => '/property', 
+                        'path' => '/property',
                         'params' => self::_getParams(
-                            $filter, 
-                            $i, 
-                            50, 
-                            $res->orderBy, 
+                            $filter,
+                            $i,
+                            50,
+                            $res->orderBy,
                             $res->searchId,
                             $fields,
                             $sbFilter
@@ -178,10 +188,27 @@ class PropertySearch extends \tabs\api\core\Base
                     )
                 );
             }
+            
+            // Call the multiple execution handle
             $responses = \tabs\api\client\ApiClient::getApi()->mGet($paths);
-            var_dump($responses);
             
+            if (is_array($responses) && count($responses) > 0) {
+                foreach ($responses as $resp) {
+                    self::_addProperties(
+                        $propertySearch,
+                        $resp->response,
+                        1,
+                        $resp->response->totalResults
+                    );
+                }
+            } else {
+                throw new \tabs\api\client\ApiException(
+                    $responses,
+                    'Could not fetch properties'
+                );
+            }
             
+            return $propertySearch;
         }
     }
 
