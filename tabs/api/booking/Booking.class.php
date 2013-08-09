@@ -523,7 +523,7 @@ class Booking extends \tabs\api\booking\Enquiry
 
             // Throw exception if status or response not valid
             if ($conf && $conf->status != 204) {
-                throw new ApiException(
+                throw new \tabs\api\client\ApiException(
                     $conf,
                     'Error saving customer onto booking' . $conf->body
                 );
@@ -608,7 +608,10 @@ class Booking extends \tabs\api\booking\Enquiry
                 return ($this->getPricing()->addExtra($extra));
             }
         } else {
-            throw new ApiException($extraResponse, 'Invalid extra request');
+            throw new \tabs\api\client\ApiException(
+                $extraResponse, 
+                'Invalid extra request'
+            );
         }
         return false;
     }
@@ -731,7 +734,7 @@ class Booking extends \tabs\api\booking\Enquiry
 
             // Throw exception if status or response not valid
             if ($conf && $conf->status != 204) {
-                throw new ApiException(
+                throw new \tabs\api\client\ApiException(
                     $conf,
                     'Error saving party details onto booking'
                 );
@@ -739,7 +742,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 return true;
             }
         } else {
-            throw new ApiException(
+            throw new \tabs\api\client\ApiException(
                 null,
                 'Error saving party details onto booking, no booking id defined'
             );
@@ -794,7 +797,10 @@ class Booking extends \tabs\api\booking\Enquiry
 
             return true;
         } else {
-            throw new ApiException($conf, 'Invalid confirmation request');
+            throw new \tabs\api\client\ApiException(
+                $conf, 
+                'Invalid confirmation request'
+            );
         }
         
         return false;
@@ -836,7 +842,7 @@ class Booking extends \tabs\api\booking\Enquiry
 
             return true;
         } else {
-            throw new ApiException(
+            throw new \tabs\api\client\ApiException(
                 $conf,
                 'Invalid confirmation request ' . $conf->status
             );
@@ -906,9 +912,11 @@ class Booking extends \tabs\api\booking\Enquiry
 
             return true;
         } else {
-            throw new ApiException($conf, 'Invalid promotion code request');
+            throw new \tabs\api\client\ApiException(
+                $conf, 
+                'Invalid promotion code request'
+            );
         }
-        return false;
     }
 
     /**
@@ -935,9 +943,11 @@ class Booking extends \tabs\api\booking\Enquiry
 
             return true;
         } else {
-            throw new ApiException($conf, 'Unable to remove promotion');
+            throw new \tabs\api\client\ApiException(
+                $conf, 
+                'Unable to remove promotion'
+            );
         }
-        return false;
     }
     
     /**
