@@ -18,7 +18,7 @@
 require_once '../tabs/autoload.php';
     
 \tabs\api\client\ApiClient::factory(
-    'http://carltonsoftware.apiary.io/',
-    '', // Api Key
-    ''  // Api Secret
+    'http://cd.api.carltonsoftware.co.uk/',
+    'csdl', // Api Key
+    'c07ad46b602287ac'  // Api Secret
 );
