@@ -816,7 +816,7 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @throws ApiException
      */
-    public function addNewPayment(\tabs\api\booking\Payment $payment)
+    public function addNewPayment($payment)
     {
         // Call booking confirmation node
         $conf = \tabs\api\client\ApiClient::getApi()->post(
