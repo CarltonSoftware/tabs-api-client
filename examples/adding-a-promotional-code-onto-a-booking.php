@@ -31,7 +31,7 @@ try {
     );
     
     // Add a promotion
-    //$booking->addPromotion('BEACH13');
+    $booking->addPromotion('PROMO001');
     
     var_dump(\tabs\api\client\ApiClient::getApi()->getRoutes());
     
