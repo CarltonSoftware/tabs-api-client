@@ -382,7 +382,7 @@ class SearchHelper
             // Set the show all flag
             // Set the pageSize to be the total amount
             $oldSize = $this->getPageSize();
-            $this->getSearch()->setPageSize($this->getSearch()->getTotal());
+            $this->getSearch()->setPageSize(9999);
             $pagination['all'] = sprintf(
                 '%s?%s',
                 $this->getBaseUrl(),
