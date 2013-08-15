@@ -289,6 +289,7 @@ class BookingTest extends PHPUnit_Framework_TestCase
         // Test data
         $this->assertEquals("c70175835bda68846e", $booking->getBookingId());
         $this->assertEquals("mousecott", $booking->getPropertyRef());
+        $this->assertEquals("mousecott", $booking->getProperty()->getPropref());
         $this->assertEquals("SS", $booking->getBrandCode());
         $this->assertEquals("2012-07-01", date("Y-m-d", $booking->getFromDate()));
         $this->assertEquals("2012-07-08", date("Y-m-d", $booking->getToDate()));

@@ -149,6 +149,19 @@ class Enquiry extends \tabs\api\core\Base
     }
     
     /**
+     * Get the customer object
+     * 
+     * @return \tabs\api\property\Property
+     */
+    public function getProperty()
+    {
+        return \tabs\api\property\Property::getProperty(
+            $this->getPropertyRef(), 
+            $this->getBrandCode()
+        );
+    }
+    
+    /**
      * To array function
      * 
      * @return array
