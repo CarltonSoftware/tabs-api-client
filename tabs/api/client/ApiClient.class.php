@@ -108,7 +108,7 @@ class ApiClient
      * @param string $apiKey API Key
      * @param string $secret HMAC Secret Key
      *
-     * @return void
+     * @return \tabs\api\client\ApiClient
      */
     public static function factory(
         $apiUrl, 
