@@ -201,7 +201,7 @@ class Enquiry extends \tabs\api\core\Base
                 }
                 $func = 'set' . ucfirst($property);
                 if (property_exists($this->pricing, $property)) {
-                    return call_user_func(array($this->pricing, $func), $args[0]);
+                    return call_user_func_array(array($this->pricing, $func), $args);
                 }
                 break;
             case 'get':
@@ -213,8 +213,8 @@ class Enquiry extends \tabs\api\core\Base
                     return call_user_func(array($this->pricing, $func));
                 }
                 if (method_exists($this->pricing, $func)) {
-                    if (count($args) == 1) {
-                        return call_user_func(array($this->pricing, $func), $args[0]);
+                    if (count($args) > 0) {
+                        return call_user_func_array(array($this->pricing, $func), $args);
                     } else {
                         return call_user_func(array($this->pricing, $func));
                     }
