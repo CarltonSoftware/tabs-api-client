@@ -20,14 +20,14 @@ require_once 'creating-a-new-connection.php';
 try {
     // Create an booking from the api
     $booking = \tabs\api\booking\Booking::create(
-        'N1773',             // Property ref
-        'ND',                    // Property brandcode
-        strtotime('13-09-2013'), // Arrival date
-        strtotime('20-09-2013'), // Departure date
-        1,                       // Number of adults
-        0,                       // Number of children
-        0,                       // Number of infants
-        0                        // Number of pets
+        'mousecott', 
+        'SS', 
+        strtotime('01-07-2012'), 
+        strtotime('08-07-2012'), 
+        2, 
+        3,
+        0,
+        2
     );
     
     // Return formatted booking data
