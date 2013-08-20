@@ -83,7 +83,4 @@ class Attribute extends \tabs\api\core\Base
     {
         return $this->getName() . ' - ' . $this->getValue();
     }
-    
-    // ------------------ Private Functions --------------------- //
-    
 }

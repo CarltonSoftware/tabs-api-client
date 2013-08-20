@@ -108,7 +108,7 @@ class ApiClient
      * @param string $apiKey API Key
      * @param string $secret HMAC Secret Key
      *
-     * @return void
+     * @return \tabs\api\client\ApiClient
      */
     public static function factory(
         $apiUrl, 
@@ -250,6 +250,19 @@ class ApiClient
     {
         return $this->routes;
     }
+    
+    /**
+     * Multiple get requests
+     * 
+     * @param array $paths Array of url paths and parameters to be requested in
+     *                     in path/param key value pairs
+     * 
+     * @return array
+     */
+    public function mGet($paths)
+    {
+        return $this->_doMultiRequest('_get', $paths);
+    }
 
     /**
      * Get API call
@@ -354,6 +367,66 @@ class ApiClient
 
     // ------------------ Private Functions ---------------------//
 
+    
+    /**
+     * Function used to call the api functions, _get, _post, _put & _delete
+     * multiple times!
+     *
+     * @param string $apiFunc The request type (get/put/delete/post/head)
+     * @param array  $paths   Array of paths to be executed
+     *
+     * @return boolean or result
+     */
+    private function _doMultiRequest($apiFunc, $paths)
+    {
+        if (count($paths) > 20) {
+            throw new \tabs\api\client\ApiException(
+                null, 
+                'Number of multi connections must not exceed 20'
+            );
+        }
+        
+        $mResource = curl_multi_init();
+        $resources = array();
+        $results = array();
+        foreach ($paths as $path) {
+            $this->$apiFunc(
+                $path['path'], 
+                $this->getHmacParams($path['params'])
+            );
+            $this->_setCurlOpt();
+            $resources[] = $this->resource;
+            curl_multi_add_handle($mResource, $this->resource);
+            curl_close($this->resource);
+        }
+ 
+        // execute the handles
+        $running = null;
+        do {
+            curl_multi_exec($mResource, $running);
+        } while ($running > 0);
+        
+        foreach ($resources as $res) {
+            extract(
+                $this->_getResponseData(
+                    curl_multi_getcontent($res), 
+                    $res
+                )
+            );
+            $results[] = $this->_outputResponse(
+                $headers,
+                $body,
+                $info,
+                $statusCode,
+                $location
+            );
+            curl_multi_remove_handle($mResource, $res);
+        }
+        
+        curl_multi_close($mResource);
+        return $results;
+    }
+    
     /**
      * Function used to call the api functions, _get, _post, _put & _delete
      *
@@ -378,16 +451,9 @@ class ApiClient
             // Return $header, $body, $location etc from new request
             extract($this->_getResponseData($response));
 
-            // Get headers and put them into a key => value array
-            $headers = array();
-            $headerLines = array_filter(explode("\r\n", $header));
-            foreach ($headerLines as $line) {
-                $parts = explode(':', $line, 2);
-                if (sizeof($parts) == 2) {
-                    $headers[trim($parts[0])] = trim($parts[1]);
-                }
-            }
-
+            // Close current request
+            curl_close($this->resource);
+            
             // Attempt to output response.
             // All variables apart from $headers are returned from the
             // extract call on the _getResponseData function
@@ -404,14 +470,14 @@ class ApiClient
     }
 
     /**
-     * Completes the curl request, also adds the content type header
+     * Sets the options for the curl request, also adds the content type header
      *
      * @param boolean $follow Set to true if the client should follow its
      *                        location header
      *
-     * @return string
+     * @return void
      */
-    private function _curlExec($follow = false)
+    private function _setCurlOpt($follow = false)
     {
         // Include headers in response string
         curl_setopt($this->resource, CURLOPT_HEADER, 1);
@@ -429,48 +495,85 @@ class ApiClient
             CURLOPT_USERAGENT, 
             'TABS ApiClient (http://github.com/CarltonSoftware/tocc-api-client)'
         );
+    }
 
-        // Commit the curl request and return the response
-        $response = curl_exec($this->resource);
+    /**
+     * Completes the curl request, also adds the content type header
+     *
+     * @param boolean $follow Set to true if the client should follow its
+     *                        location header
+     *
+     * @return string
+     */
+    private function _curlExec($follow = false)
+    {
+        // Set the curl options
+        $this->_setCurlOpt($follow);
         
-        return $response;
+        // Commit the curl request and return the response
+        return curl_exec($this->resource);
     }
 
     /**
      * Return a array of data about the previous response
      *
-     * @param string $response HTTP Response body
+     * @param string   $response HTTP Response body
+     * @param resource $resource CURL Handle
      *
      * @return array
      */
-    private function _getResponseData($response)
+    private function _getResponseData($response, $resource = null)
     {
-        // HTTP status code
-        $statusCode = curl_getinfo($this->resource, CURLINFO_HTTP_CODE);
-
-        // Get the header size
-        $headerSize = curl_getinfo($this->resource, CURLINFO_HEADER_SIZE);
-
+        if (!$resource) {
+            $resource = $this->resource;
+        }
+        // Extract HTTP status code and header size
+        extract($this->_getHeaderAndStatus($resource));
+        
         // Headers String
         $header = substr($response, 0, $headerSize);
 
         // Response Body
         $body = substr($response, $headerSize);
 
-        // Response info
-        $info = curl_getinfo($this->resource);
-
         // Get Location if redirect required
         preg_match('/Location:(.*?)\n/i', $header, $matches);
         $location = trim(array_pop($matches));
+
+        // Get headers and put them into a key => value array
+        $headers = array();
+        $headerLines = array_filter(explode("\r\n", $header));
+        foreach ($headerLines as $line) {
+            $parts = explode(':', $line, 2);
+            if (sizeof($parts) == 2) {
+                $headers[trim($parts[0])] = trim($parts[1]);
+            }
+        }
 
         return array(
             "statusCode" => $statusCode,
             "headerSize" => $headerSize,
             "header"     => $header,
+            "headers"     => $headers,
             "body"       => $body,
             "info"       => $info,
             "location"   => $location
+        );
+    }
+    
+    /**
+     * Return the header and status in an array from a specified resource
+     * 
+     * @param resource $resource Curl handle
+     * 
+     * @return array
+     */
+    private function _getHeaderAndStatus($resource)
+    {
+        return array(
+            'statusCode' => curl_getinfo($resource, CURLINFO_HTTP_CODE),
+            'headerSize' => curl_getinfo($resource, CURLINFO_HEADER_SIZE),
+            'info'       => curl_getinfo($resource)
         );
     }
 
@@ -497,9 +600,6 @@ class ApiClient
         if ($body === null) {
             $body = '';
         }
-
-        // Close current request
-        curl_close($this->resource);
 
         return (object) array(
             "status" => $statusCode,

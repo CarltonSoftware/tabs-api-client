@@ -56,6 +56,32 @@ try {
     // Render
     displaySearch($searchHelper);
     
+    
+    
+    
+    
+    
+    // You can also request all properties.  Note, this example below
+    // will not include pagination variables as the page, pageSize and orderBy 
+    // variables are not passed into the setInitialParams function.
+    $searchHelper->setInitialParams(array('pets' => 'true'));
+    
+    // You can also limit the amount of fields returned by the api if 
+    // spped is a factor (when perhaps indexing large amounts of cottage data).
+    // Note, the mock server will not return a filtered list, all of its data
+    // is static.
+    $searchHelper->setFields(array('id', 'name', 'propertyRef'));
+    
+    // Perform a search.  To request all properties, set the second parameter
+    // on the search helper to be true.
+    $searchHelper->search(
+        '',  // Search id
+        true
+    );
+    
+    // Render
+    displaySearch($searchHelper);
+    
     var_dump(\tabs\api\client\ApiClient::getApi()->getRoutes());
     
 } catch(Exception $e) {
