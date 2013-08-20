@@ -90,12 +90,15 @@ class PricingTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals($price->getTotalPrice(), 168.45);
         $this->assertEquals($price->getOutstandingBalance(), 168.45);
+        $this->assertEquals($price->getAmountPayable(), 268.45);
         $this->assertTrue($price->isAvailable());
         $this->assertEquals(count($price->getAllExtras()), 2);
         $this->assertEquals($price->getExtrasTotal(), 45);
         $this->assertEquals($price->getBookingFee(), 25);
         $this->assertTrue($price->hasSecurityDeposit());
         $this->assertEquals($price->getSecurityDeposit(), 100);
+        $this->assertEquals($price->getFromDateString(), '01 July 2012');
+        $this->assertEquals($price->getToDateString(), '08 July 2012');
         
         // Check One Extra - BKFE
         $bkfe = $price->getExtraDetail("BKFE");
@@ -104,5 +107,18 @@ class PricingTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(25.00, $bkfe->getPrice());
         $this->assertEquals("compulsory", $bkfe->getType());
         $this->assertEquals("Booking Fee", $bkfe->getDescription());
+        
+        // Check Pet Extra
+        $pet = $price->getPetExtra();
+        $this->assertEquals(20.00, $pet->getTotalPrice());
+        
+        // Check extra removal
+        $this->assertFalse($price->removeExtra('XXX'));
+        
+        // Check incorrect booking fee code
+        $this->assertEquals($price->getBookingFee('XXXX'), 0);
+        
+        // Check array
+        $this->assertTrue(is_array($price->toArray()));
     }
 }

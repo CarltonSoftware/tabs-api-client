@@ -211,9 +211,14 @@ class Image extends \tabs\api\core\Base
         $width = 100,
         $height = 100
     ) {
-        return $this->getImagePath()
-            . "/{$type}/{$width}x{$height}/"
-            . $this->getFilename();
+        return sprintf(
+            '%s/%s/%sx%s/%s', 
+            $this->getImagePath(),
+            $type,
+            $width,
+            $height,
+            $this->getFilename()
+        );
     }
 
     /**

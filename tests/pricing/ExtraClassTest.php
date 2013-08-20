@@ -55,6 +55,13 @@ class ExtraClassTest extends PHPUnit_Framework_TestCase
                 json_decode($this->extra->toJson())
             )
         );
+        
+        $this->assertFalse(
+            \tabs\api\pricing\Extra::factory(
+                'BKFE', 
+                new stdClass()
+            )
+        );
     }
     
     /**

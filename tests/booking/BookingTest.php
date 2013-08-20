@@ -106,6 +106,13 @@ class BookingTest extends PHPUnit_Framework_TestCase
         $joe = \tabs\api\booking\PartyDetail::createAdult("Joe", "Bloggs", "19-35", "Mr");
         $ann = \tabs\api\booking\PartyDetail::createAdult("Ann", "Bloggs", "19-35", "Mrs");
         $hayley = \tabs\api\booking\PartyDetail::createChild("Hayley", "Bloggs", "9");
+        
+        // Create an infant - this is is just to test the method, not add it to
+        // the booking
+        $infant = \tabs\api\booking\PartyDetail::createInfant("Bob", "Bloggs", "1");
+        $this->assertEquals('infant', $infant->getType());
+        $this->assertTrue(is_array($infant->toArray()));
+        $this->assertTrue(is_array($infant->toArray(false)));
 
         // Add to Booking
         $this->booking->setPartyMember($joe);

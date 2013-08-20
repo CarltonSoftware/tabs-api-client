@@ -174,6 +174,10 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
             $this->property->getPriceRange('2020', 'XX')->low
         );
         $this->assertEquals(
+            0, 
+            $this->property->getPriceRange('2020', 'XX')->high
+        );
+        $this->assertEquals(
             'Call', 
             $this->property->getPriceRangeString('2020', 'XX')
         );
@@ -225,6 +229,11 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             $image->getImagePath() . '/square/100x100/' . $image->getFilename(), 
             $image->createImageSrc()
+        );
+        
+        $this->assertEquals(
+            $image->getImagePath() . '/tocc/50x50/' . $image->getFilename(), 
+            $image->createImageSrc('tocc', 50, 50)
         );
         
         $this->assertEquals(
