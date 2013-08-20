@@ -1,6 +1,8 @@
 tabs-api-client
 ===============
 
+[![Build Status](http://api-dev.nocc.co.uk:8080/buildStatus/icon?job=tabs-api-client)](http://api-dev.nocc.co.uk:8080/job/tabs-api-client/)
+
 Namespaced version of the tocc api client
 
 
