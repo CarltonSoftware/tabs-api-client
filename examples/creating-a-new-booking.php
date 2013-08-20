@@ -20,14 +20,14 @@ require_once 'creating-a-new-connection.php';
 try {
     // Create an booking from the api
     $booking = \tabs\api\booking\Booking::create(
-        'mousecott',             // Property ref
-        'SS',                    // Property brandcode
-        strtotime('01-07-2012'), // Arrival date
-        strtotime('08-07-2012'), // Departure date
-        2,                       // Number of adults
-        1,                       // Number of children
-        0,                       // Number of infants
-        2                        // Number of pets
+        'mousecott', 
+        'SS', 
+        strtotime('01-07-2012'), 
+        strtotime('08-07-2012'), 
+        2, 
+        3,
+        0,
+        2
     );
     
     // Return formatted booking data
@@ -38,6 +38,7 @@ try {
             <li>Till: %s</li>
             <li>Basic Price: &pound;%s</li>
             <li>Extras: &pound;%s</li>
+            %s
             <li>Total Price: &pound;%s</li>
             <li>To Pay: &pound;%s</li>
         </ul>',
@@ -45,7 +46,8 @@ try {
         $booking->getToDateString(),
         $booking->getBasicPrice(),
         $booking->getExtrasTotal(),
-        $booking->getTotalPrice(),
+        ($booking->getSecurityDeposit() > 0) ? sprintf('<li>Security Deposit: &pound;%s</li>', number_format($booking->getSecurityDeposit(), 2)) : '',
+        $booking->getFullPrice(),
         $booking->getPayableAmount()
     );
     

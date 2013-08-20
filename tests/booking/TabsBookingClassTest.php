@@ -44,6 +44,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
     {
         $booking = $this->tabsBooking;
         $this->assertEquals("mousecott", $booking->getPropertyRef());
+        $this->assertEquals("mousecott", $booking->getProperty()->getPropref());
         $this->assertEquals("SS", $booking->getBrandCode());
         $this->assertEquals(299463, $booking->getBookingRef());
         $this->assertEquals("2013-07-27", date("Y-m-d", $booking->getFromDate()));
@@ -51,6 +52,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("D", $booking->getStatus());
         $this->assertEquals("COTJ033", $booking->getCusref());
         $this->assertEquals("Cottenden", $booking->getSurname());
+        $this->assertEquals("Cottenden", $booking->getCustomer()->getSurname());
         
         // Party Details
         $this->assertEquals(

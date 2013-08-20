@@ -149,6 +149,19 @@ class Enquiry extends \tabs\api\core\Base
     }
     
     /**
+     * Get the customer object
+     * 
+     * @return \tabs\api\property\Property
+     */
+    public function getProperty()
+    {
+        return \tabs\api\property\Property::getProperty(
+            $this->getPropertyRef(), 
+            $this->getBrandCode()
+        );
+    }
+    
+    /**
      * To array function
      * 
      * @return array
@@ -186,6 +199,10 @@ class Enquiry extends \tabs\api\core\Base
                     $this->setObjectProperty($this, $property, $args[0]);
                     return $this;
                 }
+                $func = 'set' . ucfirst($property);
+                if (property_exists($this->pricing, $property)) {
+                    return call_user_func_array(array($this->pricing, $func), $args);
+                }
                 break;
             case 'get':
                 if (property_exists($this, $property)) {
@@ -196,8 +213,8 @@ class Enquiry extends \tabs\api\core\Base
                     return call_user_func(array($this->pricing, $func));
                 }
                 if (method_exists($this->pricing, $func)) {
-                    if (count($args) == 1) {
-                        return call_user_func(array($this->pricing, $func), $args[0]);
+                    if (count($args) > 0) {
+                        return call_user_func_array(array($this->pricing, $func), $args);
                     } else {
                         return call_user_func(array($this->pricing, $func));
                     }
