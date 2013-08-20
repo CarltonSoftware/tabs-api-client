@@ -57,7 +57,7 @@ class ApiException extends \RuntimeException
         $response,
         $message, 
         $code = 0, 
-        Exception $previous = null
+        \Exception $previous = null
     ) {
         // Set overide params
         $this->setMessageFromResponse($response, $message);
@@ -73,7 +73,7 @@ class ApiException extends \RuntimeException
     /**
      * Custom string representation of object
      * 
-     * @return \Exception
+     * @return string
      */
     public function __toString()
     {
@@ -86,7 +86,7 @@ class ApiException extends \RuntimeException
      * @param object $response Object from the json response
      * @param string $message  Default client error message
      * 
-     * @return type 
+     * @return void
      */
     public function setMessageFromResponse($response, $message)
     {
@@ -105,7 +105,7 @@ class ApiException extends \RuntimeException
      * @param object  $response Object from the json response
      * @param integer $code     Default client error code
      * 
-     * @return type 
+     * @return void
      */
     public function setCodeFromResponse($response, $code)
     {
