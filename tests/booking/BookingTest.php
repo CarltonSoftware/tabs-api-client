@@ -275,6 +275,19 @@ class BookingTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->booking->removePromotion('PROMO001'));
     }
+    
+    /**
+     * Test the removal of a pricing property
+     * 
+     * @return void
+     */    
+    public function testRemoveSd()
+    {
+        $booking = clone $this->booking;
+        $this->assertEquals(100, $booking->getSecurityDeposit());
+        $booking->setSecurityDeposit(0);
+        $this->assertEquals(0, $booking->getSecurityDeposit());
+    }
 
 
     /**
