@@ -30,8 +30,6 @@ try {
         0                        // Number of pets
     );
     
-    $booking->setSecurityDeposit(0);
-    
     // Return formatted booking data
     echo sprintf(
         '<p>Booking ok</p>
