@@ -169,7 +169,7 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $propSearch->getPageSize(),
-            9999
+            8
         );
 
         $this->assertEquals(

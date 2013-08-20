@@ -387,4 +387,27 @@ class TabsBooking extends \tabs\api\core\Base
 
         return false;
     }
+    
+    /**
+     * Get the customer object
+     * 
+     * @return \tabs\api\core\Customer
+     */
+    public function getCustomer()
+    {
+        return \tabs\api\core\Customer::create($this->getCusref());
+    }
+    
+    /**
+     * Get the customer object
+     * 
+     * @return \tabs\api\property\Property
+     */
+    public function getProperty()
+    {
+        return \tabs\api\property\Property::getProperty(
+            $this->getPropertyRef(), 
+            $this->getBrandCode()
+        );
+    }
 }

@@ -334,7 +334,7 @@ class Owner Extends \tabs\api\core\Person
      * 
      * @param string $propRef Property reference
      * 
-     * @return \Property|false
+     * @return \tabs\api\property\Property|false
      */
     public function getPropertyByPropRef($propRef)
     {

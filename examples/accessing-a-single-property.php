@@ -34,6 +34,12 @@ try {
         $property->getAccommodates()
     );
     
+    // You can also call the objects methods to access information
+    echo sprintf(
+        '<p>Bedrooms: %s</p>',
+        $property->getBedrooms()
+    );
+    
     // Get a date range price object array
     $drps = $property->getDateRangePrices('2013');
     if (count($drps) > 0) {
@@ -56,6 +62,15 @@ try {
                 </tbody>
             </table>',
             $trs
+        );
+    }
+    
+    // Get a list of attributes
+    foreach ($property->getAttributes() as $attribute) {
+        echo sprintf(
+            '<p>%s - (%s)</p>',
+            $attribute,
+            $attribute->getType()
         );
     }
     

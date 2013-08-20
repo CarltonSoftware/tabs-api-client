@@ -275,6 +275,19 @@ class BookingTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->booking->removePromotion('PROMO001'));
     }
+    
+    /**
+     * Test the removal of a pricing property
+     * 
+     * @return void
+     */    
+    public function testRemoveSd()
+    {
+        $booking = clone $this->booking;
+        $this->assertEquals(100, $booking->getSecurityDeposit());
+        $booking->setSecurityDeposit(0);
+        $this->assertEquals(0, $booking->getSecurityDeposit());
+    }
 
 
     /**
@@ -289,6 +302,7 @@ class BookingTest extends PHPUnit_Framework_TestCase
         // Test data
         $this->assertEquals("c70175835bda68846e", $booking->getBookingId());
         $this->assertEquals("mousecott", $booking->getPropertyRef());
+        $this->assertEquals("mousecott", $booking->getProperty()->getPropref());
         $this->assertEquals("SS", $booking->getBrandCode());
         $this->assertEquals("2012-07-01", date("Y-m-d", $booking->getFromDate()));
         $this->assertEquals("2012-07-08", date("Y-m-d", $booking->getToDate()));

@@ -145,7 +145,7 @@ class PropertySearch extends \tabs\api\core\Base
             self::_getParams(
                 $filter, 
                 1, 
-                50, 
+                1, 
                 $orderBy, 
                 $searchId,
                 $fields,
@@ -156,7 +156,7 @@ class PropertySearch extends \tabs\api\core\Base
         if ($propertyData && $propertyData->status == 200) {
             $res = $propertyData->response;
             $pages = ceil(
-                $res->totalResults / $res->pageSize
+                $res->totalResults / 50
             );
             if ($pages < 1) {
                 $pages = 1;
@@ -239,6 +239,17 @@ class PropertySearch extends \tabs\api\core\Base
         $fields = array(),
         $sbFilter = ''
     ) {
+        // Check for 'all' keyword and use the new fetchAll method
+        if ($pageSize == 9999) {
+            return self::fetchAll(
+                $filter, 
+                $orderBy, 
+                $searchId, 
+                $fields, 
+                $sbFilter
+            );
+        }
+        
         // Check that the pageSize isnt too big
         if ($pageSize <= self::$_maxPageSize) {
             $propertyData = self::_getPropertyData(
