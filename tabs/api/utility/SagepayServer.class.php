@@ -503,4 +503,17 @@ class SagepayServer
     {
         return $this->protocolVersion;
     }
+
+    /**
+     * Set the protocol version
+     *
+     * @param $version
+     * @return $this
+     */
+    public function setProtocolVersion($version)
+    {
+        $this->protocolVersion = $version;
+
+        return $this;
+    }
 }
