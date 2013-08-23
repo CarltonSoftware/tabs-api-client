@@ -259,7 +259,7 @@ class TabsBooking extends \tabs\api\core\Base
      * 
      * @param object $node JSON response object
      * 
-     * @return \TabsBooking
+     * @return TabsBooking
      */
     public static function createFromNode($node)
     {
