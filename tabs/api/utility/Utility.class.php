@@ -478,8 +478,8 @@ class Utility extends \tabs\api\core\Base
                 }
 
                 // Add attributes to resource
-                if ($key == 'searchTerms') {
-                    foreach ($val as $searchType => $searchTerms) {
+                if ($key == 'constants' && property_exists($val, 'searchTerms')) {
+                    foreach ($val->searchTerms as $searchType => $searchTerms) {
                         foreach ($searchTerms as $term) {
                             $strm = new \tabs\api\utility\SearchTerm();
                             parent::setObjectProperties($strm, $term);
