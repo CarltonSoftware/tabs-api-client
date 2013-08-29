@@ -87,6 +87,20 @@ class ResourceClassTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+     * Test search terms
+     * 
+     * @return void
+     */
+    public function testSearchTerms()
+    {
+        $route = "http://carltonsoftware.apiary.io/";
+        \tabs\api\client\ApiClient::factory($route);
+        
+        $apiRoute = \tabs\api\utility\Utility::getApiInformation();
+        $this->assertEquals(19, count($apiRoute->getSearchFilters()));
+    }
+    
+    /**
      * Test the resource brand object
      * 
      * @return void

@@ -27,7 +27,7 @@ namespace tabs\api\utility;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  */
-class Utility
+class Utility extends \tabs\api\core\Base
 {
     /**
      * Fetched area/location array
@@ -441,6 +441,16 @@ class Utility
             && $resources->response != ''
         ) {
             $resource = new \tabs\api\utility\Resource();
+            parent::setObjectProperties(
+                $resource, 
+                $resources->response,
+                array(
+                    'brands',
+                    'attributes',
+                    'searchTerms'
+                )
+            );
+            
             foreach ($resources->response as $key => $val) {
                 // Add brands to resource
                 if ($key == 'brands' && is_object($val)) {
@@ -454,11 +464,6 @@ class Utility
                             $resource->addBrand($brand);
                         }
                     }
-                } else {
-                    $func = 'set' . ucfirst($key);
-                    if (property_exists($resource, $key)) {
-                        $resource->$func($val);
-                    }
                 }
 
                 // Add attributes to resource
@@ -471,11 +476,23 @@ class Utility
                         }
                     }
                 }
+
+                // Add attributes to resource
+                if ($key == 'searchTerms') {
+                    foreach ($val as $searchType => $searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            $strm = new \tabs\api\utility\SearchTerm();
+                            parent::setObjectProperties($strm, $term);
+                            $strm->setSearchType($searchType);
+                            $resource->addSearchTerm($strm);
+                        }
+                    }
+                }
             }
             return $resource;
         } else {
             throw new \tabs\api\client\ApiException(
-                $resource, 
+                $resources, 
                 'Error fetching api root'
             );
         }
@@ -508,12 +525,7 @@ class Utility
     private static function _createSourceObject($source)
     {
         $sourceObj = new \tabs\api\core\Source();
-        foreach ($source as $key => $val) {
-            $func = "set" . ucfirst($key);
-            if (property_exists($sourceObj, $key)) {
-                $sourceObj->$func($val);
-            }
-        }
+        self::setObjectProperties($sourceObj, $source);
         return $sourceObj;
     }
     
@@ -529,12 +541,7 @@ class Utility
     {
         if (is_object($node)) {
             $brand = new \tabs\api\utility\ResourceBrand($brandCode);
-            foreach (get_object_vars($node) as $brKey => $brVal) {
-                $func = 'set' . ucfirst($brKey);
-                if (property_exists($brand, $brKey)) {
-                    $brand->$func($brVal);
-                }
-            }
+            self::setObjectProperties($brand, $node);
             return $brand;
         }
         return false;
@@ -551,12 +558,7 @@ class Utility
     {
         if (is_object($node)) {
             $attr = new \tabs\api\utility\ResourceAttribute();
-            foreach (get_object_vars($node) as $key => $val) {
-                $func = 'set' . ucfirst($key);
-                if (property_exists($attr, $key)) {
-                    $attr->$func($val);
-                }
-            }
+            self::setObjectProperties($attr, $node);
             return $attr;
         }
         return false;
