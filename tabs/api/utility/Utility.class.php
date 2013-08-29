@@ -64,11 +64,6 @@ class Utility extends \tabs\api\core\Base
                 );
                 array_push($countries, $country);
             }
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $countriesResponse, 
-                'Error fetching countries'
-            );
         }
 
         return $countries;
@@ -130,7 +125,7 @@ class Utility extends \tabs\api\core\Base
      * 
      * @deprecated
      */
-    public static function postcodeLookUp($postcode)
+    /**public static function postcodeLookUp($postcode)
     {
         // Remove spaces
         $postcode = str_replace(' ', '', trim($postcode));
@@ -157,7 +152,7 @@ class Utility extends \tabs\api\core\Base
         }
 
         return $addresses;
-    }
+    }*/
 
 
     /**
@@ -209,11 +204,6 @@ class Utility extends \tabs\api\core\Base
 
                 array_push($areas, $area);
             }
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $areasResponse, 
-                'Error fetching Areas'
-            );
         }
 
         // Randomise results
@@ -352,14 +342,8 @@ class Utility extends \tabs\api\core\Base
                     self::_createSourceObject($source)
                 );
             }
-            
-            return $sourceCodes;
-        } else {
-            throw new ApiException(
-                $sourceResponse, 
-                'Error fetching Source Codes'
-            );
         }
+        return $sourceCodes;
     }
     
     /**
@@ -436,11 +420,11 @@ class Utility extends \tabs\api\core\Base
     public static function getApiInformation()
     {
         $resources = \tabs\api\client\ApiClient::getApi()->get('/');
+        $resource = new \tabs\api\utility\Resource();
         if ($resources
             && $resources->status == 200
             && $resources->response != ''
         ) {
-            $resource = new \tabs\api\utility\Resource();
             parent::setObjectProperties(
                 $resource, 
                 $resources->response,
@@ -489,13 +473,8 @@ class Utility extends \tabs\api\core\Base
                     }
                 }
             }
-            return $resource;
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $resources, 
-                'Error fetching api root'
-            );
         }
+        return $resource;
     }
     
     /**
@@ -539,12 +518,9 @@ class Utility extends \tabs\api\core\Base
      */
     private static function _createResourceBrand($brandCode, $node)
     {
-        if (is_object($node)) {
-            $brand = new \tabs\api\utility\ResourceBrand($brandCode);
-            self::setObjectProperties($brand, $node);
-            return $brand;
-        }
-        return false;
+        $brand = new \tabs\api\utility\ResourceBrand($brandCode);
+        self::setObjectProperties($brand, $node);
+        return $brand;
     }
     
     /**
@@ -556,11 +532,8 @@ class Utility extends \tabs\api\core\Base
      */
     private static function _createResourceAttribute($node)
     {
-        if (is_object($node)) {
-            $attr = new \tabs\api\utility\ResourceAttribute();
-            self::setObjectProperties($attr, $node);
-            return $attr;
-        }
-        return false;
+        $attr = new \tabs\api\utility\ResourceAttribute();
+        self::setObjectProperties($attr, $node);
+        return $attr;
     }
 }
