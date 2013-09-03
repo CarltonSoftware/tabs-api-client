@@ -108,6 +108,18 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_string($this->property->getAreaName()));
         $this->assertTrue(is_string($this->property->getAreaCode()));
     }
+    
+    /**
+     * Test price range function when no pricing exists
+     * 
+     * @return void 
+     */
+    public function testNoPriceRange()
+    {
+        $brand = new \tabs\api\property\PropertyBrand('XX');
+        $this->assertEquals(0, $brand->getPriceRange()->high);
+        $this->assertEquals(0, $brand->getPriceRange()->low);
+    }
 
     /**
      * Test the property location
@@ -327,6 +339,10 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Mr J Bloggs', $comments[0]->getName());
         $this->assertTrue(is_string($comments[0]->getComment()));
         $this->assertEquals('The property was fantastic!', $comments[0]->getComment());
+        $this->assertEquals(
+            'Mr J Bloggs - The property was fantastic!', 
+            (string) $comments[0]
+        );
     }
 
     /**
