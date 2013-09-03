@@ -741,8 +741,8 @@ class Property extends \tabs\api\core\Base
     ) {
         $priceRange = $this->getPriceRange($year, $brandcode);
         if ($priceRange->low > 0 && $priceRange->high > 0) {
-            return "<span class='low-price'>&pound;{$priceRange->low}</span>
-            to <span class='high-price'>&pound;{$priceRange->high}</span>";
+            return "<span class='low-price'>&pound;{$priceRange->low}</span> 
+             to <span class='high-price'>&pound;{$priceRange->high}</span>";
         } else {
             return $noPrice;
         }

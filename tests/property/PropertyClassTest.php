@@ -174,13 +174,16 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
             $this->property->getPriceRange('2020', 'XX')->low
         );
         $this->assertEquals(
+            0, 
+            $this->property->getPriceRange('2020', 'XX')->high
+        );
+        $this->assertEquals(
             'Call', 
             $this->property->getPriceRangeString('2020', 'XX')
         );
         $this->assertEquals(
-            "<span class='low-price'>&pound;302</span>
-            to <span class='high-price'>&pound;529</span>", 
-            $this->property->getPriceRangeString()
+            "<span class='low-price'>&pound;302</span> to <span class='high-price'>&pound;529</span>", 
+            $this->_removeWhiteSpace($this->property->getPriceRangeString())
         );
     }
 
@@ -226,6 +229,11 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             $image->getImagePath() . '/square/100x100/' . $image->getFilename(), 
             $image->createImageSrc()
+        );
+        
+        $this->assertEquals(
+            $image->getImagePath() . '/tocc/50x50/' . $image->getFilename(), 
+            $image->createImageSrc('tocc', 50, 50)
         );
         
         $this->assertEquals(
@@ -319,5 +327,17 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Mr J Bloggs', $comments[0]->getName());
         $this->assertTrue(is_string($comments[0]->getComment()));
         $this->assertEquals('The property was fantastic!', $comments[0]->getComment());
+    }
+
+    /**
+     * Remove any new lines and whitepsace
+     *
+     * @param string $string String to remove whitespace from
+     *
+     * @return string
+     */
+    private function _removeWhiteSpace($string)
+    {
+        return preg_replace('/^\s+|\n|\r|\r\n\s+$/m', '', $string);
     }
 }

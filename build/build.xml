@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="tocc-drupal`" default="build">
+
+	<!--<taskdef name="phpmd" classname="org.phpmd.ant.PHPMDTask" />-->
+
+    <target name='build'
+        description=''
+        depends='clean,prepare,phpcs,phpunit-ci'/>
+
+	<target name="clean" description="Cleanup build artifacts">
+		<delete dir="${basedir}/coverage" />
+		<delete dir="${basedir}/api" />
+		<delete dir="${basedir}/code-browser" />
+		<delete dir="${basedir}/logs" />
+        <delete dir="${basedir}/pdepend" />
+        <delete dir="${basedir}/md" />
+	</target>
+
+	<target name="prepare" depends="clean" description="Prepare for build">
+		<mkdir dir="${basedir}/coverage" />
+		<mkdir dir="${basedir}/api" />
+		<mkdir dir="${basedir}/code-browser" />
+		<mkdir dir="${basedir}/logs" />
+        <mkdir dir="${basedir}/pdepend" />
+        <mkdir dir="${basedir}/md" />
+	</target>
+
+    <target name="phpcs"
+        description="Find coding standard violations using PHP_CodeSniffer">
+        <exec executable="phpcs">
+            <arg value='--standard=PEAR' />
+            <arg value="--report=checkstyle" />
+            <arg value="--report-file=${basedir}/logs/checkstyle.xml" />
+            <arg value='--ignore=tests'/>
+            <arg path="${basedir}/.." />
+        </exec>
+    </target>
+
+    <target name="phpunit-ci" description="Run unit tests with PHPUnit">
+        <exec executable="phpunit" failonerror="true">
+            <arg line="-c ${basedir}/phpunit.xml" />
+        </exec>
+    </target>
+
+
+</project>
