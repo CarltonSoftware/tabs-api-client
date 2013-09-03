@@ -317,6 +317,7 @@ class BookingTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $booking->getChildren());
         $this->assertEquals(0, $booking->getInfants());
         $this->assertEquals(3, $booking->getPartySize());
+        $this->assertEquals(7, $booking->getNumberOfNights());
         $this->assertEquals(2, $booking->getPets());
         $this->assertEquals(true, $booking->isAvailable());
         $this->assertEquals('', $booking->getWNumber());
