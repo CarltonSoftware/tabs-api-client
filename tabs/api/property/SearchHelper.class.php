@@ -242,7 +242,7 @@ class SearchHelper
                 $pages = array();
                 
                 foreach ($hrefs as $key => $href) {
-                    if (!array_key_exists($key, $inActiveLinks)) {
+                    if (!in_array($key, $inActiveLinks)) {
                         switch (strtolower($key)) {
                         case 'first':
                         case 'previous':
