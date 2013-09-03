@@ -86,7 +86,7 @@ class PropertyBrand extends \tabs\api\core\Base
     /**
      * Search Price object
      * 
-     * @var \Pricing 
+     * @var \tabs\api\pricing\Pricing 
      */
     protected $searchPrice = null;
     
