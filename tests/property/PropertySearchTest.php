@@ -86,6 +86,22 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
             '1 to 10 of 28'
         );
 
+        $this->assertTrue(
+            in_array(1, $propSearch->getPagination())
+        );
+
+        $this->assertTrue(
+            in_array(2, $propSearch->getPagination())
+        );
+
+        $this->assertTrue(
+            in_array(3, $propSearch->getPagination())
+        );
+
+        $this->assertFalse(
+            in_array(4, $propSearch->getPagination())
+        );
+
         // Change label to Cottage
         $propSearch->setLabel('Cottage', '', 's');
         $this->assertEquals(
@@ -170,6 +186,14 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             $propSearch->getPageSize(),
             8
+        );
+
+        $this->assertTrue(
+            in_array(1, $propSearch->getPagination())
+        );
+
+        $this->assertFalse(
+            in_array(4, $propSearch->getPagination())
         );
 
         $this->assertEquals(

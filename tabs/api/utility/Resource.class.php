@@ -35,6 +35,7 @@ namespace tabs\api\utility;
  * @method array   getBrands()                  Return each brand included 
  * in the api
  * @method array   getAttributes()              Return api attributes
+ * @method array   getSearchTerms()             Return api search terms
  * 
  * @method void setApiVersion($version)             Set api version (deprecated)
  * @method void setApiRoot($baseUrl)                Set api base url
@@ -88,6 +89,13 @@ class Resource extends \tabs\api\core\Base
      * @var array
      */
     protected $attributes = array();
+    
+    /**
+     * Search Terms array indexed by search term
+     * 
+     * @var array
+     */
+    protected $searchTerms = array();
 
 
     // ------------------ Public Functions --------------------- //
@@ -117,5 +125,29 @@ class Resource extends \tabs\api\core\Base
         \tabs\api\utility\ResourceAttribute $attribute
     ) {
         $this->attributes[$attribute->getCode()] = $attribute;
+    }
+    
+    /**
+     * Add a search term to the resource
+     * 
+     * @param \tabs\api\utility\SearchTerm $searchTerm 
+     * API Search Term Object
+     * 
+     * @return void
+     */
+    public function addSearchTerm(
+        \tabs\api\utility\SearchTerm $searchTerm
+    ) {
+        $this->searchTerms[$searchTerm->getCode()] = $searchTerm;
+    }
+    
+    /**
+     * Return all of the valid search filters
+     * 
+     * @return array
+     */
+    public function getSearchFilters()
+    {
+        return array_keys($this->getSearchTerms());
     }
 }
