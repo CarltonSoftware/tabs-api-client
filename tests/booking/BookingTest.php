@@ -57,6 +57,19 @@ class BookingTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $otherBooking->getAmountPaid());
         $this->assertFalse($otherBooking->hasPetExtra());
     }
+    
+    /**
+     * Test the removal of a pricing property
+     * 
+     * @return void
+     */    
+    public function testRemoveAllExtras()
+    {
+        $booking = clone $this->booking;
+        $this->assertEquals(45, $booking->getExtrasTotal());
+        $booking->removeAllExtras();
+        $this->assertEquals(0, $booking->getExtrasTotal());
+    }
 
     /**
      * Test creating a new booking
