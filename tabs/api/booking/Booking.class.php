@@ -667,11 +667,12 @@ class Booking extends \tabs\api\booking\Enquiry
     {
         $extras = $this->getPricing()->getAllExtras();
         foreach ($extras as $extraCode => $extra) {
-
-            // Remove the extra via an api request
-            $extra = \tabs\api\client\ApiClient::getApi()->delete(
-                "/booking/{$this->getBookingId()}/extra/{$extraCode}"
-            );
+            if ($this->getPricing()->removeExtra($extraCode)) {
+                // Remove the extra via an api request
+                $extra = \tabs\api\client\ApiClient::getApi()->delete(
+                    "/booking/{$this->getBookingId()}/extra/{$extraCode}"
+                );
+            }
         }
 
         // Update the current object
