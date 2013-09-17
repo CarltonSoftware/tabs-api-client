@@ -330,8 +330,8 @@ class SagepayServer
         $data['BillingPhone'] = $customer->getDaytimePhone();
         
         if ($data['BillingCountry'] == 'US') {
-            $data['BillingState'] = $customer->getAddress()->getCounty(); 
-            $data['DeliveryState'] = $customer->getAddress()->getCounty(); 
+            $data['BillingState'] = 'NY'; 
+            $data['DeliveryState'] = 'NY'; 
         }
         
         //Delivery Details
