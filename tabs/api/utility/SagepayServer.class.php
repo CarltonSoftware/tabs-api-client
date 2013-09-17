@@ -329,6 +329,11 @@ class SagepayServer
         $data['BillingCountry'] = $customer->getAddress()->getCountry();
         $data['BillingPhone'] = $customer->getDaytimePhone();
         
+        if ($data['BillingCountry'] == 'US') {
+            $data['BillingState'] = $customer->getAddress()->getCounty(); 
+            $data['DeliveryState'] = $customer->getAddress()->getCounty(); 
+        }
+        
         //Delivery Details
         $data['DeliverySurname'] = $customer->getSurname();
         if (strlen($customer->getFirstName()) > 0) {
