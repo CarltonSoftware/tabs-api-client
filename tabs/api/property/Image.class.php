@@ -195,6 +195,26 @@ class Image extends \tabs\api\core\Base
     {
         $this->apiPath = rtrim(trim($apiPath), "/");
     }
+    
+    /**
+     * Return the title of the image
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->_removeNewLines($this->title);
+    }
+    
+    /**
+     * Return the alt text of the image
+     *
+     * @return string
+     */
+    public function getAlt()
+    {
+        return $this->_removeNewLines($this->alt);
+    }
 
     /**
      * Create a web path to an image
@@ -264,5 +284,17 @@ class Image extends \tabs\api\core\Base
             "width" => $this->getWidth(),
             "height" => $this->getHeight()
         );
+    }
+
+    /**
+     * Remove any new lines
+     *
+     * @param string $string String to remove new lines from
+     *
+     * @return string
+     */
+    private function _removeNewLines($string)
+    {
+        return trim(preg_replace('/\s+/', ' ', $string));
     }
 }
