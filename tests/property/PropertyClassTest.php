@@ -273,6 +273,25 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         );
         
         $this->assertTrue(is_array($image->toArray()));
+        
+        // Test the remove new lines function
+        $newImg = new tabs\api\property\Image('newimage.jpg');
+        $newImg->setTitle('This is a test title 
+with a couple of line 
+
+breaks');
+        $newImg->setAlt('This is a test title 
+with a couple of line 
+
+breaks');
+        $this->assertEquals(
+            'This is a test title with a couple of line breaks', 
+            $newImg->getTitle()
+        );
+        $this->assertEquals(
+            'This is a test title with a couple of line breaks', 
+            $newImg->getAlt()
+        );
     }
 
     /**
