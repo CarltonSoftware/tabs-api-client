@@ -399,7 +399,7 @@ class TabsBooking extends \tabs\api\core\Base
     }
     
     /**
-     * Get the customer object
+     * Get the property object
      * 
      * @return \tabs\api\property\Property
      */

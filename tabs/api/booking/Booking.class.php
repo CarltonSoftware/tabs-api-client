@@ -952,6 +952,19 @@ class Booking extends \tabs\api\booking\Enquiry
     }
     
     /**
+     * Get the property object
+     * 
+     * @return \tabs\api\property\Property
+     */
+    public function getProperty()
+    {
+        return \tabs\api\property\Property::getProperty(
+            $this->getPropertyRef(), 
+            $this->getBrandCode()
+        );
+    }
+    
+    /**
      * Function used to process a $_POST response from sagepay and add a 
      * credit card charge in if required.
      * 
