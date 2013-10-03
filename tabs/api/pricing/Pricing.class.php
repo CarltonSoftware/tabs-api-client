@@ -429,6 +429,18 @@ class Pricing extends \tabs\api\core\Base
     }
     
     /**
+     * Return the duration of the booking in days
+     * 
+     * @return integer
+     */
+    public function getNumberOfNights()
+    {
+        $fromDate = new \DateTime($this->getFromDateString('Y-m-d'));
+        $toDate = new \DateTime($this->getToDateString('Y-m-d'));
+        return $fromDate->diff($toDate)->days;
+    }
+    
+    /**
      * Returns an array representation of the price
      * 
      * @return array 

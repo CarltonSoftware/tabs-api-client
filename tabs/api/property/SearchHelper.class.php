@@ -225,12 +225,16 @@ class SearchHelper
      * @param integer $numPages Range of page numbers.  If set to greater than 
      * zero the function will limit the amount of pages shown to the 
      * range specified.
-     * @param string  $glue     Implode glue between each link
+     * @param string  $glue          Implode glue between each link
+     * @param array   $inActiveLinks Array of key names to hide the links too
      *
      * @return string
      */
-    public function getPaginationLinks($numPages = 0, $glue = ' ')
-    {
+    public function getPaginationLinks(
+        $numPages = 0, 
+        $glue = ' ',
+        $inActiveLinks = array()
+    ) {
         $pagination = '';
         $hrefs = $this->getPaginationHrefs($numPages);
         if (count($hrefs) > 0) {
@@ -238,39 +242,41 @@ class SearchHelper
                 $pages = array();
                 
                 foreach ($hrefs as $key => $href) {
-                    switch (strtolower($key)) {
-                    case 'first':
-                    case 'previous':
-                    case 'next':
-                    case 'last':
-                    case 'all':
-                        array_push(
-                            $pages, 
-                            sprintf(
-                                '<a href="%s" class="page %s page%s">%s</a>',
-                                $href,
-                                strtolower($key),
-                                $this->getSearch()->getPage(),
-                                ucfirst($key)
-                            )
-                        );
-                        break;
-                    default:
-                        $pageNo = str_replace('page', '', $key);
-                        $active = '';
-                        if ($this->getSearch()->getPage() == $pageNo) {
-                            $active = 'active';
+                    if (!in_array($key, $inActiveLinks)) {
+                        switch (strtolower($key)) {
+                        case 'first':
+                        case 'previous':
+                        case 'next':
+                        case 'last':
+                        case 'all':
+                            array_push(
+                                $pages, 
+                                sprintf(
+                                    '<a href="%s" class="page %s page%s">%s</a>',
+                                    $href,
+                                    strtolower($key),
+                                    $this->getSearch()->getPage(),
+                                    ucfirst($key)
+                                )
+                            );
+                            break;
+                        default:
+                            $pageNo = str_replace('page', '', $key);
+                            $active = '';
+                            if ($this->getSearch()->getPage() == $pageNo) {
+                                $active = 'active';
+                            }
+                            array_push(
+                                $pages, 
+                                sprintf(
+                                    '<a href="%s" class="page %s">%d</a>',
+                                    $href,
+                                    $active,
+                                    $pageNo
+                                )
+                            );
+                            break;
                         }
-                        array_push(
-                            $pages, 
-                            sprintf(
-                                '<a href="%s" class="page %s">%d</a>',
-                                $href,
-                                $active,
-                                $pageNo
-                            )
-                        );
-                        break;
                     }
                 }
                 

@@ -108,6 +108,18 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_string($this->property->getAreaName()));
         $this->assertTrue(is_string($this->property->getAreaCode()));
     }
+    
+    /**
+     * Test price range function when no pricing exists
+     * 
+     * @return void 
+     */
+    public function testNoPriceRange()
+    {
+        $brand = new \tabs\api\property\PropertyBrand('XX');
+        $this->assertEquals(0, $brand->getPriceRange()->high);
+        $this->assertEquals(0, $brand->getPriceRange()->low);
+    }
 
     /**
      * Test the property location
@@ -174,13 +186,16 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
             $this->property->getPriceRange('2020', 'XX')->low
         );
         $this->assertEquals(
+            0, 
+            $this->property->getPriceRange('2020', 'XX')->high
+        );
+        $this->assertEquals(
             'Call', 
             $this->property->getPriceRangeString('2020', 'XX')
         );
         $this->assertEquals(
-            "<span class='low-price'>&pound;302</span>
-            to <span class='high-price'>&pound;529</span>", 
-            $this->property->getPriceRangeString()
+            "<span class='low-price'>&pound;302</span> to <span class='high-price'>&pound;529</span>", 
+            $this->_removeWhiteSpace($this->property->getPriceRangeString())
         );
     }
 
@@ -229,6 +244,11 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         );
         
         $this->assertEquals(
+            $image->getImagePath() . '/tocc/50x50/' . $image->getFilename(), 
+            $image->createImageSrc('tocc', 50, 50)
+        );
+        
+        $this->assertEquals(
             sprintf(
                 '<img src="%s" alt="%s" title="%s" width="%d" height="%d">',
                 $image->createImageSrc(),
@@ -253,6 +273,25 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         );
         
         $this->assertTrue(is_array($image->toArray()));
+        
+        // Test the remove new lines function
+        $newImg = new tabs\api\property\Image('newimage.jpg');
+        $newImg->setTitle('This is a test title 
+with a couple of line 
+
+breaks');
+        $newImg->setAlt('This is a test title 
+with a couple of line 
+
+breaks');
+        $this->assertEquals(
+            'This is a test title with a couple of line breaks', 
+            $newImg->getTitle()
+        );
+        $this->assertEquals(
+            'This is a test title with a couple of line breaks', 
+            $newImg->getAlt()
+        );
     }
 
     /**
@@ -319,5 +358,21 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Mr J Bloggs', $comments[0]->getName());
         $this->assertTrue(is_string($comments[0]->getComment()));
         $this->assertEquals('The property was fantastic!', $comments[0]->getComment());
+        $this->assertEquals(
+            'Mr J Bloggs - The property was fantastic!', 
+            (string) $comments[0]
+        );
+    }
+
+    /**
+     * Remove any new lines and whitepsace
+     *
+     * @param string $string String to remove whitespace from
+     *
+     * @return string
+     */
+    private function _removeWhiteSpace($string)
+    {
+        return preg_replace('/^\s+|\n|\r|\r\n\s+$/m', '', $string);
     }
 }

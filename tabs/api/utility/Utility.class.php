@@ -27,7 +27,7 @@ namespace tabs\api\utility;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  */
-class Utility
+class Utility extends \tabs\api\core\Base
 {
     /**
      * Fetched area/location array
@@ -64,11 +64,6 @@ class Utility
                 );
                 array_push($countries, $country);
             }
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $countriesResponse, 
-                'Error fetching countries'
-            );
         }
 
         return $countries;
@@ -130,7 +125,7 @@ class Utility
      * 
      * @deprecated
      */
-    public static function postcodeLookUp($postcode)
+    /**public static function postcodeLookUp($postcode)
     {
         // Remove spaces
         $postcode = str_replace(' ', '', trim($postcode));
@@ -157,7 +152,7 @@ class Utility
         }
 
         return $addresses;
-    }
+    }*/
 
 
     /**
@@ -209,11 +204,6 @@ class Utility
 
                 array_push($areas, $area);
             }
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $areasResponse, 
-                'Error fetching Areas'
-            );
         }
 
         // Randomise results
@@ -352,14 +342,8 @@ class Utility
                     self::_createSourceObject($source)
                 );
             }
-            
-            return $sourceCodes;
-        } else {
-            throw new ApiException(
-                $sourceResponse, 
-                'Error fetching Source Codes'
-            );
         }
+        return $sourceCodes;
     }
     
     /**
@@ -436,11 +420,21 @@ class Utility
     public static function getApiInformation()
     {
         $resources = \tabs\api\client\ApiClient::getApi()->get('/');
+        $resource = new \tabs\api\utility\Resource();
         if ($resources
             && $resources->status == 200
             && $resources->response != ''
         ) {
-            $resource = new \tabs\api\utility\Resource();
+            parent::setObjectProperties(
+                $resource, 
+                $resources->response,
+                array(
+                    'brands',
+                    'attributes',
+                    'searchTerms'
+                )
+            );
+            
             foreach ($resources->response as $key => $val) {
                 // Add brands to resource
                 if ($key == 'brands' && is_object($val)) {
@@ -454,11 +448,6 @@ class Utility
                             $resource->addBrand($brand);
                         }
                     }
-                } else {
-                    $func = 'set' . ucfirst($key);
-                    if (property_exists($resource, $key)) {
-                        $resource->$func($val);
-                    }
                 }
 
                 // Add attributes to resource
@@ -471,14 +460,21 @@ class Utility
                         }
                     }
                 }
+
+                // Add attributes to resource
+                if ($key == 'constants' && property_exists($val, 'searchTerms')) {
+                    foreach ($val->searchTerms as $searchType => $searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            $strm = new \tabs\api\utility\SearchTerm();
+                            parent::setObjectProperties($strm, $term);
+                            $strm->setSearchType($searchType);
+                            $resource->addSearchTerm($strm);
+                        }
+                    }
+                }
             }
-            return $resource;
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $resource, 
-                'Error fetching api root'
-            );
         }
+        return $resource;
     }
     
     /**
@@ -508,12 +504,7 @@ class Utility
     private static function _createSourceObject($source)
     {
         $sourceObj = new \tabs\api\core\Source();
-        foreach ($source as $key => $val) {
-            $func = "set" . ucfirst($key);
-            if (property_exists($sourceObj, $key)) {
-                $sourceObj->$func($val);
-            }
-        }
+        self::setObjectProperties($sourceObj, $source);
         return $sourceObj;
     }
     
@@ -527,17 +518,9 @@ class Utility
      */
     private static function _createResourceBrand($brandCode, $node)
     {
-        if (is_object($node)) {
-            $brand = new \tabs\api\utility\ResourceBrand($brandCode);
-            foreach (get_object_vars($node) as $brKey => $brVal) {
-                $func = 'set' . ucfirst($brKey);
-                if (property_exists($brand, $brKey)) {
-                    $brand->$func($brVal);
-                }
-            }
-            return $brand;
-        }
-        return false;
+        $brand = new \tabs\api\utility\ResourceBrand($brandCode);
+        self::setObjectProperties($brand, $node);
+        return $brand;
     }
     
     /**
@@ -549,16 +532,8 @@ class Utility
      */
     private static function _createResourceAttribute($node)
     {
-        if (is_object($node)) {
-            $attr = new \tabs\api\utility\ResourceAttribute();
-            foreach (get_object_vars($node) as $key => $val) {
-                $func = 'set' . ucfirst($key);
-                if (property_exists($attr, $key)) {
-                    $attr->$func($val);
-                }
-            }
-            return $attr;
-        }
-        return false;
+        $attr = new \tabs\api\utility\ResourceAttribute();
+        self::setObjectProperties($attr, $node);
+        return $attr;
     }
 }
