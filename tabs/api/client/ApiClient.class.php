@@ -38,7 +38,7 @@ class ApiClient
 {
     /**
      * Static api instance
-     * 
+     *
      * @var ApiClient
      */
     static $api;
@@ -99,11 +99,11 @@ class ApiClient
      * @var tabs\api\client\HMAC
      */
     public $hmacHelper;
-    
+
     /**
      * Create a new Api Connection for use within the tabs php client
      * api.
-     * 
+     *
      * @param string $apiUrl Url of the api
      * @param string $apiKey API Key
      * @param string $secret HMAC Secret Key
@@ -111,17 +111,17 @@ class ApiClient
      * @return \tabs\api\client\ApiClient
      */
     public static function factory(
-        $apiUrl, 
-        $apiKey = '', 
+        $apiUrl,
+        $apiKey = '',
         $secret = ''
     ) {
         self::$api = new ApiClient($apiUrl, $apiKey, $secret);
         return self::$api;
     }
-    
+
     /**
      * Get the api connection
-     * 
+     *
      * @return ApiClient
      */
     public static function getApi()
@@ -130,7 +130,7 @@ class ApiClient
         if (!self::$api) {
             throw new ApiException(null, 'No api connection available');
         }
-        
+
         return self::$api;
     }
 
@@ -150,7 +150,7 @@ class ApiClient
     ) {
         // Look for the curl module
         if (!function_exists("curl_exec")) {
-            throw new Exception("Could not find curl_exec, is CURL installed?");
+            throw new \Exception("Could not find curl_exec, is CURL installed?");
         }
 
         // Setup required fields
@@ -240,7 +240,7 @@ class ApiClient
     {
         return $this->urlRoute;
     }
-    
+
     /**
      * Returns all of the urls that have been accessed in the api instance
      *
@@ -250,13 +250,13 @@ class ApiClient
     {
         return $this->routes;
     }
-    
+
     /**
      * Multiple get requests
-     * 
+     *
      * @param array $paths Array of url paths and parameters to be requested in
      *                     in path/param key value pairs
-     * 
+     *
      * @return array
      */
     public function mGet($paths)
@@ -328,12 +328,12 @@ class ApiClient
     {
         return $this->_doRequest("_options", $urlPath, $params);
     }
-    
+
     /**
      * Return the url parameters with the included hmac hash
-     * 
+     *
      * @param array $params Parameters to encode
-     * 
+     *
      * @return array
      */
     public function getHmacParams($params = array())
@@ -348,13 +348,13 @@ class ApiClient
             return $params;
         }
     }
-    
+
     /**
      * Return the url parameters with the included hmac hash in query string
      * format.
-     * 
+     *
      * @param array $params Parameters to encode
-     * 
+     *
      * @return array
      */
     public function getHmacQuery($params = array())
@@ -367,7 +367,7 @@ class ApiClient
 
     // ------------------ Private Functions ---------------------//
 
-    
+
     /**
      * Function used to call the api functions, _get, _post, _put & _delete
      * multiple times!
@@ -381,17 +381,17 @@ class ApiClient
     {
         if (count($paths) > 20) {
             throw new \tabs\api\client\ApiException(
-                null, 
+                null,
                 'Number of multi connections must not exceed 20'
             );
         }
-        
+
         $mResource = curl_multi_init();
         $resources = array();
         $results = array();
         foreach ($paths as $path) {
             $this->$apiFunc(
-                $path['path'], 
+                $path['path'],
                 $this->getHmacParams($path['params'])
             );
             $this->_setCurlOpt();
@@ -399,17 +399,17 @@ class ApiClient
             curl_multi_add_handle($mResource, $this->resource);
             curl_close($this->resource);
         }
- 
+
         // execute the handles
         $running = null;
         do {
             curl_multi_exec($mResource, $running);
         } while ($running > 0);
-        
+
         foreach ($resources as $res) {
             extract(
                 $this->_getResponseData(
-                    curl_multi_getcontent($res), 
+                    curl_multi_getcontent($res),
                     $res
                 )
             );
@@ -422,11 +422,11 @@ class ApiClient
             );
             curl_multi_remove_handle($mResource, $res);
         }
-        
+
         curl_multi_close($mResource);
         return $results;
     }
-    
+
     /**
      * Function used to call the api functions, _get, _post, _put & _delete
      *
@@ -441,7 +441,7 @@ class ApiClient
         if (method_exists($this, $apiFunc)) {
             // Get parameters with hmac hash
             $params = $this->getHmacParams($params);
-            
+
             // Request curl response
             $this->$apiFunc($urlPath, $params);
 
@@ -453,7 +453,7 @@ class ApiClient
 
             // Close current request
             curl_close($this->resource);
-            
+
             // Attempt to output response.
             // All variables apart from $headers are returned from the
             // extract call on the _getResponseData function
@@ -488,11 +488,11 @@ class ApiClient
 
         // Set curl resource to follow redirects
         curl_setopt($this->resource, CURLOPT_FOLLOWLOCATION, $follow);
-        
+
         // Set the User-Agent header
         curl_setopt(
-            $this->resource, 
-            CURLOPT_USERAGENT, 
+            $this->resource,
+            CURLOPT_USERAGENT,
             'TABS ApiClient (http://github.com/CarltonSoftware/tocc-api-client)'
         );
     }
@@ -509,7 +509,7 @@ class ApiClient
     {
         // Set the curl options
         $this->_setCurlOpt($follow);
-        
+
         // Commit the curl request and return the response
         return curl_exec($this->resource);
     }
@@ -529,7 +529,7 @@ class ApiClient
         }
         // Extract HTTP status code and header size
         extract($this->_getHeaderAndStatus($resource));
-        
+
         // Headers String
         $header = substr($response, 0, $headerSize);
 
@@ -560,12 +560,12 @@ class ApiClient
             "location"   => $location
         );
     }
-    
+
     /**
      * Return the header and status in an array from a specified resource
-     * 
+     *
      * @param resource $resource Curl handle
-     * 
+     *
      * @return array
      */
     private function _getHeaderAndStatus($resource)
@@ -757,7 +757,7 @@ class ApiClient
         if (count($params) > 0) {
             $urlPath .= "?" . http_build_query($params);
         }
-        
+
         // Find the curl path to use
         $this->_getResource($urlPath);
 
