@@ -62,10 +62,10 @@ class SearchHelper
      * @var array
      */
     protected $searchParams = array();
-    
+
     /**
      * Key/Val pair array of filter key substitutes.
-     * 
+     *
      * @var array
      */
     protected $keyMap = array();
@@ -76,17 +76,17 @@ class SearchHelper
      * @var array
      */
     protected $reservedKeys = array('page', 'pageSize', 'orderBy', 'searchId');
-    
+
     /**
      * Fields you wish to return
-     * 
+     *
      * @var array
      */
     protected $fields = array();
-    
+
     /**
      * Short break filter code
-     * 
+     *
      * @var string
      */
     protected $sbFilter = '';
@@ -104,10 +104,10 @@ class SearchHelper
      * @var integer
      */
     protected $offset = 268435456;
-    
+
     /**
      * Search prefix, set to append a string to query string parameters
-     * 
+     *
      * @var string
      */
     protected $searchPrefix = '';
@@ -134,13 +134,13 @@ class SearchHelper
         // Set the base url of the search which is used for pagination.
         $this->baseUrl = $baseUrl;
     }
-    
+
     /**
      * Search for properties
-     * 
+     *
      * @param string  $searchId Search id, tp persist search order
      * @param boolean $findAll  Set to true if you want to find all properties
-     * 
+     *
      * @return boolean True if search is Ok
      */
     public function search($searchId = '', $findAll = false)
@@ -149,7 +149,7 @@ class SearchHelper
         extract(
             $this->_searchFilter()
         );
-        
+
         if ($findAll) {
             $this->setSearch(
                 \tabs\api\property\PropertySearch::fetchAll(
@@ -173,36 +173,36 @@ class SearchHelper
                 )
             );
         }
-        
+
         return $this->getSearch();
     }
-    
+
     /**
      * Set the query search prefix
-     * 
+     *
      * @param string $prefix Specified search prefix
-     * 
+     *
      * @return void
      */
     public function setSearchPrefix($prefix)
     {
         $this->searchPrefix = $prefix;
     }
-    
+
     /**
      * Get the query search prefix
-     * 
+     *
      * @return string
      */
     public function getSearchPrefix()
     {
         return $this->searchPrefix;
     }
-    
+
     /**
      * Get the resever keys array.  This will include the search prefix
      * if specified in the constructor
-     * 
+     *
      * @return array
      */
     public function getReservedKeys()
@@ -221,26 +221,27 @@ class SearchHelper
 
     /**
      * Default pagination function, returns a basic pagination links list
-     * 
-     * @param integer $numPages Range of page numbers.  If set to greater than 
-     * zero the function will limit the amount of pages shown to the 
-     * range specified.
+     *
+     * @param integer $numPages      Range of page numbers.  If set to greater
+     *                               than zero the function will limit the
+     *                               amount of pages shown to the range
+     *                               specified.
      * @param string  $glue          Implode glue between each link
      * @param array   $inActiveLinks Array of key names to hide the links too
      *
      * @return string
      */
     public function getPaginationLinks(
-        $numPages = 0, 
+        $numPages = 0,
         $glue = ' ',
         $inActiveLinks = array()
     ) {
         $pagination = '';
         $hrefs = $this->getPaginationHrefs($numPages);
         if (count($hrefs) > 0) {
-            if ($this->getSearch()->getMaxPages() > 1) {                
+            if ($this->getSearch()->getMaxPages() > 1) {
                 $pages = array();
-                
+
                 foreach ($hrefs as $key => $href) {
                     if (!in_array($key, $inActiveLinks)) {
                         switch (strtolower($key)) {
@@ -250,7 +251,7 @@ class SearchHelper
                         case 'last':
                         case 'all':
                             array_push(
-                                $pages, 
+                                $pages,
                                 sprintf(
                                     '<a href="%s" class="page %s page%s">%s</a>',
                                     $href,
@@ -267,7 +268,7 @@ class SearchHelper
                                 $active = 'active';
                             }
                             array_push(
-                                $pages, 
+                                $pages,
                                 sprintf(
                                     '<a href="%s" class="page %s">%d</a>',
                                     $href,
@@ -279,12 +280,12 @@ class SearchHelper
                         }
                     }
                 }
-                
+
                 $pagination = sprintf(
                     '<div class="page-links">%s</div>',
                     implode($glue, $pages)
                 );
-                
+
             }
         }
         return $pagination;
@@ -296,42 +297,42 @@ class SearchHelper
      * Returns an associative array of links, first, previous, page1..n, next,
      * last.  If an elelment is not relevant (e.g. previous on page 1) that
      * index will not be filled.
-     * 
+     *
      * @param integer $numPages Range of page numbers.  If set to greater than zero
      * the function will limit the amount of pages shown to the range specified.
-     * 
+     *
      * @return array
      */
     public function getPaginationHrefs($numPages = 0)
     {
         $pagination = array();
         if ($this->getBaseUrl() && $this->getSearch()->getMaxPages() > 1) {
-            
+
             $rangeStart = 1;
             $rangeEnd = $this->getSearch()->getMaxPages();
-            
+
             // If $numPages is set and is less than the maximum number of pages
             // in the search, then start to slice up the range of pages
-            if ($numPages > 0 
+            if ($numPages > 0
                 && $this->getSearch()->getMaxPages() > $numPages
             ) {
                 // Find middle of numPages
                 $rangePad = floor($numPages / 2);
-                
+
                 // Find middle of page range
                 //$pageMiddle = floor($this->getSearch()->getMaxPages() / 2);
                 $pageMiddle = $this->getSearch()->getPage();
-                
+
                 // Set start and end.
                 $rangeStart = $pageMiddle - $rangePad;
-                $rangeEnd = $pageMiddle + $rangePad; 
-                
+                $rangeEnd = $pageMiddle + $rangePad;
+
                 // If the start of the range is out of bounds, reset the bounds
                 if ($rangeStart < 1) {
                     $rangeStart = 1;
                     $rangeEnd = $numPages;
                 }
-                
+
                 // If the end of the range is out of bounds, reset also
                 if ($rangeEnd >= $this->getSearch()->getMaxPages()) {
                     $numPages -= 1;
@@ -339,8 +340,8 @@ class SearchHelper
                     $rangeStart = $rangeEnd - $numPages;
                 }
             }
-            
-            
+
+
             for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
                 $pagination['page' . $i] = sprintf(
                     '%s?%s',
@@ -348,21 +349,21 @@ class SearchHelper
                     $this->getQuery($i)
                 );
             }
-            
+
             if ($this->getSearch()->getPage() > 1) {
                 $pagination = $this->_arrayUnshiftAssoc(
-                    $pagination, 
-                    'previous', 
+                    $pagination,
+                    'previous',
                     sprintf(
                         '%s?%s',
                         $this->getBaseUrl(),
                         $this->getPrevPageQuery()
                     )
                 );
-                
+
                 $pagination = $this->_arrayUnshiftAssoc(
-                    $pagination, 
-                    'first', 
+                    $pagination,
+                    'first',
                     sprintf(
                         '%s?%s',
                         $this->getBaseUrl(),
@@ -410,13 +411,13 @@ class SearchHelper
     {
         return $this->search;
     }
-    
+
     /**
      * Set a new search object
-     * 
-     * @param \tabs\api\property\PropertySearch $search 
+     *
+     * @param \tabs\api\property\PropertySearch $search
      * API PropertySearch object
-     * 
+     *
      * @return void
      */
     public function setSearch($search)
@@ -435,7 +436,7 @@ class SearchHelper
     {
         $query = '';
         $prefix = $this->getSearchPrefix();
-        
+
         if ($this->search) {
             $query .= $prefix . "page={$pageNum}&";
 
@@ -507,10 +508,10 @@ class SearchHelper
         }
         return 1;
     }
-    
+
     /**
      * Get next page integer
-     * 
+     *
      * @return integer
      */
     public function getNextPage()
@@ -523,23 +524,23 @@ class SearchHelper
                 $nextPage = 1;
             }
         }
-        
+
         return $nextPage;
     }
-    
+
     /**
      * Return the full query string of the next page query
-     * 
+     *
      * @return string
      */
     public function getNextPageQuery()
     {
         return $this->getQuery($this->getNextPage());
     }
-    
+
     /**
      * Get perious page integer
-     * 
+     *
      * @return integer
      */
     public function getPrevPage()
@@ -552,13 +553,13 @@ class SearchHelper
                 $prevPage = $this->getSearch()->getMaxPages();
             }
         }
-        
+
         return $prevPage;
     }
-    
+
     /**
      * Return the full query string of the previous page query
-     * 
+     *
      * @return string
      */
     public function getPrevPageQuery()
@@ -648,32 +649,32 @@ class SearchHelper
         }
         return '';
     }
-    
+
     /**
      * Set the initial filter parameters
-     * 
+     *
      * @param array $array Merged array of dymanic and fixed search parameters
-     * 
+     *
      * @return void
      */
     public function setInitialParams(array $array)
     {
         $this->initialParams = $array;
     }
-    
+
     /**
      * Get the merged array of initial parameters
-     * 
+     *
      * @return array
      */
     public function getInitialParams()
     {
         return $this->initialParams;
     }
-    
+
     /**
      * Shortcut function to get the properties from the search object
-     * 
+     *
      * @return \tabs\api\property\Property|Array Properties
      */
     public function getProperties()
@@ -681,54 +682,54 @@ class SearchHelper
         if ($this->getSearch()) {
             return $this->getSearch()->getProperties();
         }
-        
+
         return array();
     }
-    
+
     /**
      * Set fields to return from api
-     * 
+     *
      * @param array $fields Array of fields you wish to return
-     * 
+     *
      * @return void
      */
     public function setFields(array $fields)
     {
         $this->fields = $fields;
     }
-    
+
     /**
      * Return the fields required from the api
-     * 
+     *
      * @return array
      */
     public function getFields()
     {
         return $this->fields;
     }
-    
+
     /**
      * Set short break filter
-     * 
+     *
      * @param string $sbFilter Short break filter
-     * 
+     *
      * @return void
      */
     public function setSbFilter($sbFilter)
     {
         $this->sbFilter = $sbFilter;
     }
-    
+
     /**
      * Return the short break filter
-     * 
+     *
      * @return string
      */
     public function getSbFilter()
     {
         return $this->sbFilter;
     }
-    
+
     // --------------------- Map Clustering Functions ---------------------- //
 
     /**
@@ -737,7 +738,7 @@ class SearchHelper
      * http://www.movable-type.co.uk/scripts/latlong.html
      *
      * @param \tabs\api\core\Coordinates $coord               Coordinates object
-     * @param integer                    $distanceAroundPoint Distance around 
+     * @param integer                    $distanceAroundPoint Distance around
      * point that properties will be searched for in km.
      *
      * @return array
@@ -971,19 +972,19 @@ class SearchHelper
 
     /**
      * Creates a the search parameters
-     * 
+     *
      * @return array
      */
     private function _searchFilter()
     {
         // Array to return
         $searchFilterVars = array();
-        
+
         // Reserved variables
         $page = 1;
         $pageSize = 10;
         $orderBy = '';
-        
+
         // If there is a prefix, unset the prefix from each key
         $prefix = $this->getSearchPrefix();
 
@@ -998,7 +999,7 @@ class SearchHelper
             if (array_key_exists($key, $this->keyMap)) {
                 $mappedKey = $keyMap[$key];
             }
-            
+
             $filterKey = $key;
             if (strlen($prefix) > 0) {
                 if (substr($filterKey, 0, strlen($prefix)) == $prefix) {
@@ -1009,7 +1010,7 @@ class SearchHelper
             // Check for reserved key (i.e. pageSize, orderBy & page)
             if (!in_array($key, $this->getReservedKeys())) {
                 if ($val != '') {
-                    
+
                     // Look for mapped key and use for filtering if found
                     if ($mappedKey) {
                         $searchFilterVars[$mappedKey] = $val;
@@ -1036,14 +1037,14 @@ class SearchHelper
             'filter' => $filter
         );
     }
-    
+
     /**
      * Add an element to the start of an array
-     * 
+     *
      * @param array $array Input array
      * @param mixed $key   Key of new index
      * @param mixed $val   Val of new index
-     * 
+     *
      * @return array
      */
     private function _arrayUnshiftAssoc($array, $key, $val)
