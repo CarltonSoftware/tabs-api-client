@@ -1424,8 +1424,8 @@ class Property extends \tabs\api\core\Base
         if ($descriptionsObj && $descriptionsObj->status == 200) {
             foreach ($descriptionsObj->response as $description) {
                 $descriptions[] = array(
-                    'descriptiontype'  => $description['descriptiontype'],
-                    'description'      => $description['description']
+                    'descriptiontype'  => $description->descriptiontype,
+                    'description'      => $description->description
                 );
             }
         }
