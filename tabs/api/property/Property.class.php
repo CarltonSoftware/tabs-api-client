@@ -25,7 +25,7 @@ namespace tabs\api\property;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
- * 
+ *
  * @method string                                 getId()
  * @method string                                 getPropertyRef()
  * @method string                                 getBrandCode()
@@ -44,7 +44,7 @@ namespace tabs\api\property;
  * @method \tabs\api\property\PropertyBrand|Array getBrands()
  * @method \tabs\api\property\SpecialOffer|Array  getSpecialOffers()
  * @method \tabs\api\core\Coordinates             getCoordinates()
- * 
+ *
  * @method void setAccommodates(integer $accommodates)
  * @method void setAccommodationDescription(string $description)
  * @method void setAccountingBrand(string $brandCode)
@@ -261,17 +261,17 @@ class Property extends \tabs\api\core\Base
      * @var array
      */
     protected $bookings;
-    
+
     /**
      * Short break object
-     * 
+     *
      * @var ShortBreak
      */
     protected $shortBreak;
 
     // ------------------ Static Functions  --------------------- //
-    
-    
+
+
     /**
      * Get property function, returns a basic property object from the
      * tabs API.
@@ -294,7 +294,7 @@ class Property extends \tabs\api\core\Base
         $propertyData = \tabs\api\client\ApiClient::getApi()->get(
             "/property/{$propRef}_{$brandCode}"
         );
-            
+
         if ($propertyData->status == 200) {
             return self::factory(
                 $propertyData->response,
@@ -312,7 +312,7 @@ class Property extends \tabs\api\core\Base
             );
         }
     }
-    
+
 
     /**
      * Function used to map property data into the property class
@@ -332,7 +332,7 @@ class Property extends \tabs\api\core\Base
     ) {
         $property = new \tabs\api\property\Property();
         \tabs\api\core\Base::setObjectProperties(
-            $property, 
+            $property,
             $propertyData,
             array(
                 'address',
@@ -350,7 +350,7 @@ class Property extends \tabs\api\core\Base
         if (array_key_exists('address', $propertyData)) {
             $address = \tabs\api\core\Address::factory();
             \tabs\api\core\Base::setObjectProperties(
-                $address, 
+                $address,
                 $propertyData->address
             );
             $property->setAddress($address);
@@ -360,7 +360,7 @@ class Property extends \tabs\api\core\Base
         if (array_key_exists('area', $propertyData)) {
             $property->setArea(
                 new \tabs\api\core\Area(
-                    $propertyData->area->code, 
+                    $propertyData->area->code,
                     $propertyData->area->name
                 )
             );
@@ -372,11 +372,11 @@ class Property extends \tabs\api\core\Base
                 $propertyData->location->code,
                 $propertyData->location->name
             );
-            
+
             if (isset($propertyData->location->coordinates->latitude)) {
                 $location->setCoordinates(
                     new \tabs\api\core\Coordinates(
-                        $propertyData->location->coordinates->latitude, 
+                        $propertyData->location->coordinates->latitude,
                         $propertyData->location->coordinates->longitude
                     )
                 );
@@ -432,7 +432,7 @@ class Property extends \tabs\api\core\Base
             foreach ($propertyData->brands as $brandCode => $brandData) {
                 $brand = new \tabs\api\property\PropertyBrand($brandCode);
                 \tabs\api\core\Base::setObjectProperties(
-                    $brand, 
+                    $brand,
                     $brandData
                 );
                 foreach ($brandData as $key => $val) {
@@ -454,13 +454,13 @@ class Property extends \tabs\api\core\Base
                                 }
                             }
                         }
-                        
+
                         // Set the search filter price if supplied
                         if (isset($brandData->$key->searchPrice)) {
                             $searchPrice = \tabs\api\pricing\Pricing::factory(
                                 $brandData->$key->searchPrice
                             );
-                            
+
                             if ($searchPrice) {
                                 // Set property ref & brandcode
                                 $searchPrice->setPropertyRef(
@@ -468,7 +468,7 @@ class Property extends \tabs\api\core\Base
                                 );
                                 $searchPrice->setBrandCode(
                                     $brand->getBrandcode()
-                                );                                
+                                );
                                 $brand->setSearchPrice($searchPrice);
                             }
                         }
@@ -511,40 +511,40 @@ class Property extends \tabs\api\core\Base
         unset($this->specialOffers);
         unset($this->brands);
     }
-    
+
     /**
      * Helpful accessor for those who cant spell accommodates!
-     * 
+     *
      * @return integer
      */
     public function getSleeps()
     {
         return $this->getAccommodates();
     }
-    
+
     /**
      * Helpful accessor for propRef!
-     * 
+     *
      * @return integer
      */
     public function getPropref()
     {
         return $this->getPropertyRef();
     }
-    
+
     /**
      * Return the property brandcode
-     * 
+     *
      * @return string
      */
     public function getBrandcode()
     {
         return $this->brandCode;
     }
-    
+
     /**
      * Return the booking url string
-     * 
+     *
      * @return string
      */
     public function getBookingUrl()
@@ -584,10 +584,10 @@ class Property extends \tabs\api\core\Base
             return 6; // Saturday
         }
     }
-    
+
     /**
      * Return the calendar url
-     * 
+     *
      * @return string
      */
     public function getCalendarUrl()
@@ -741,7 +741,7 @@ class Property extends \tabs\api\core\Base
     ) {
         $priceRange = $this->getPriceRange($year, $brandcode);
         if ($priceRange->low > 0 && $priceRange->high > 0) {
-            return "<span class='low-price'>&pound;{$priceRange->low}</span> 
+            return "<span class='low-price'>&pound;{$priceRange->low}</span>
              to <span class='high-price'>&pound;{$priceRange->high}</span>";
         } else {
             return $noPrice;
@@ -1208,13 +1208,13 @@ class Property extends \tabs\api\core\Base
     {
         $this->specialOffers[] = $specialOffer;
     }
-    
+
     /**
      * Return the special offers description as a text block
-     * 
+     *
      * @param string $before Any html required before the special offer desc
      * @param string $after  Any html required after the special offer desc
-     * 
+     *
      * @return string
      */
     public function getSpecialOffersDescriptions($before = '', $after = '')
@@ -1230,7 +1230,7 @@ class Property extends \tabs\api\core\Base
                 );
             }
         }
-        
+
         return $offerText;
     }
 
@@ -1247,7 +1247,7 @@ class Property extends \tabs\api\core\Base
     /**
      * Add a booking to the confirmed bookings array
      *
-     * @param \tabs\api\booking\TabsBooking $tabsBooking 
+     * @param \tabs\api\booking\TabsBooking $tabsBooking
      * Confirmed tabs booking object
      *
      * @return void
@@ -1406,6 +1406,35 @@ class Property extends \tabs\api\core\Base
 
 
     /**
+     * Gets all the descriptions of the property
+     *
+     * @return array Array of descriptiontype and descriptions
+     */
+    public function getAllDescriptions()
+    {
+        $descriptions = array();
+        $descriptionsObj = \tabs\api\client\ApiClient::getApi()->get(
+            sprintf(
+                '/property/%s_%s/description',
+                $this->getPropref(),
+                $this->getBrandcode()
+            )
+        );
+
+        if ($descriptionsObj && $descriptionsObj->status == 200) {
+            foreach ($descriptionsObj->response as $description) {
+                $descriptions[] = array(
+                    'descriptiontype'  => $description['descriptiontype'],
+                    'description'      => $description['description']
+                );
+            }
+        }
+
+        return $descriptions;
+    }
+
+
+    /**
      * Get the customer comments for a property
      *
      * @return \tabs\api\property\CustomerComments|Array
@@ -1424,8 +1453,8 @@ class Property extends \tabs\api\core\Base
         if ($commentsObj && $commentsObj->status == 200) {
             foreach ($commentsObj->response as $comment) {
                 $comments[] = new \tabs\api\property\CustomerComment(
-                    new \DateTime($comment->date), 
-                    $comment->name, 
+                    new \DateTime($comment->date),
+                    $comment->name,
                     $comment->comment
                 );
             }
@@ -1433,11 +1462,11 @@ class Property extends \tabs\api\core\Base
 
         return $comments;
     }
-    
-    
+
+
     /**
      * Get all bookings for a property.  Returns tabs booking objects
-     * 
+     *
      * @return \tabs\api\booking\TabsBooking|Array
      */
     public function getBookings()
@@ -1449,10 +1478,10 @@ class Property extends \tabs\api\core\Base
                 $this->getId()
             )
         );
-        
+
         // Return array
         $bookings = array();
-        
+
         if ($bookingCheck && $bookingCheck->status == 200) {
             foreach ($bookingCheck->response as $booking) {
                 $tabsBooking = \tabs\api\booking\TabsBooking::createFromNode(
@@ -1462,15 +1491,15 @@ class Property extends \tabs\api\core\Base
                     array_push($bookings, $tabsBooking);
                 }
             }
-            
+
             $this->bookings = $bookings;
         } else {
             throw new \tabs\api\client\ApiException(
-                $bookingCheck, 
+                $bookingCheck,
                 'Tabs Bookings not found'
             );
         }
-        
+
         return $bookings;
     }
 
