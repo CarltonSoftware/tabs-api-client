@@ -379,8 +379,8 @@ breaks');
         $this->assertEquals(2, sizeof($descriptions));
         $this->assertEquals('TABSLONG', $descriptions[0]['descriptiontype']);
         $this->assertEquals('Example tabslong description', $descriptions[0]['description']);
-        $this->assertEquals('TABSSHORT', $descriptions[0]['descriptiontype']);
-        $this->assertEquals('Example tabsshort description', $descriptions[0]['description']);
+        $this->assertEquals('TABSSHORT', $descriptions[1]['descriptiontype']);
+        $this->assertEquals('Example tabsshort description', $descriptions[1]['description']);
 
     }
 
