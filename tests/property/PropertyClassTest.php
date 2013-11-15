@@ -1,9 +1,9 @@
 <?php
 
-$file = dirname(__FILE__) 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
+$file = dirname(__FILE__)
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'tabs'
     . DIRECTORY_SEPARATOR . 'autoload.php';
 require_once $file;
 
@@ -11,7 +11,7 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Resource
-     * 
+     *
      * @var \tabs\api\property\Property
      */
     protected $property;
@@ -27,7 +27,7 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         \tabs\api\client\ApiClient::factory($route, 'mouse', 'cottage');
         $this->property = \tabs\api\property\Property::getProperty('1212', 'NO');
     }
-    
+
     public function testProperty()
     {
         // Test property object
@@ -108,11 +108,11 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_string($this->property->getAreaName()));
         $this->assertTrue(is_string($this->property->getAreaCode()));
     }
-    
+
     /**
      * Test price range function when no pricing exists
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function testNoPriceRange()
     {
@@ -162,15 +162,15 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
             )
         );
         $this->assertEquals(
-            '', 
+            '',
             $this->property->getAvailabilityDescription('XX')
         );
         $this->assertEquals(
-            '', 
+            '',
             $this->property->getFullDescription('XX')
         );
         $this->assertEquals(
-            '', 
+            '',
             $this->property->getShortDescription('XX')
         );
 
@@ -182,19 +182,19 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
             is_numeric($this->property->getPriceRange()->low)
         );
         $this->assertEquals(
-            0, 
+            0,
             $this->property->getPriceRange('2020', 'XX')->low
         );
         $this->assertEquals(
-            0, 
+            0,
             $this->property->getPriceRange('2020', 'XX')->high
         );
         $this->assertEquals(
-            'Call', 
+            'Call',
             $this->property->getPriceRangeString('2020', 'XX')
         );
         $this->assertEquals(
-            "<span class='low-price'>&pound;302</span> to <span class='high-price'>&pound;529</span>", 
+            "<span class='low-price'>&pound;302</span> to <span class='high-price'>&pound;529</span>",
             $this->_removeWhiteSpace($this->property->getPriceRangeString())
         );
     }
@@ -227,27 +227,27 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         // Test image object
         $this->assertEquals('tabs\api\property\Image', get_class($image));
         $this->assertEquals('tabs\api\property\Image', get_class($this->property->getMainImage()));
-        
+
         $this->assertEquals(
-            'http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/image', 
+            'http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/image',
             $image->getImagePath()
         );
-        
+
         $this->assertEquals(
-            '1212ext.jpg?APIKEY=mouse&hash=4f64c897c40d1edebbf9dc294575a1baf8bd991f1c1aa81a96de538c2eb8fdaa', 
+            '1212ext.jpg?APIKEY=mouse&hash=4f64c897c40d1edebbf9dc294575a1baf8bd991f1c1aa81a96de538c2eb8fdaa',
             $image->getFilename()
         );
-        
+
         $this->assertEquals(
-            $image->getImagePath() . '/square/100x100/' . $image->getFilename(), 
+            $image->getImagePath() . '/square/100x100/' . $image->getFilename(),
             $image->createImageSrc()
         );
-        
+
         $this->assertEquals(
-            $image->getImagePath() . '/tocc/50x50/' . $image->getFilename(), 
+            $image->getImagePath() . '/tocc/50x50/' . $image->getFilename(),
             $image->createImageSrc('tocc', 50, 50)
         );
-        
+
         $this->assertEquals(
             sprintf(
                 '<img src="%s" alt="%s" title="%s" width="%d" height="%d">',
@@ -256,10 +256,10 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
                 $image->getTitle(),
                 100,
                 100
-            ), 
+            ),
             $image->createImageTag()
         );
-        
+
         $this->assertEquals(
             sprintf(
                 '<img src="%s" alt="%s" title="%s" width="%d" height="%d" />',
@@ -268,28 +268,28 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
                 $image->getTitle(),
                 100,
                 100
-            ), 
+            ),
             $image->createImageTag('square', 100, 100, true)
         );
-        
+
         $this->assertTrue(is_array($image->toArray()));
-        
+
         // Test the remove new lines function
         $newImg = new tabs\api\property\Image('newimage.jpg');
-        $newImg->setTitle('This is a test title 
-with a couple of line 
+        $newImg->setTitle('This is a test title
+with a couple of line
 
 breaks');
-        $newImg->setAlt('This is a test title 
-with a couple of line 
+        $newImg->setAlt('This is a test title
+with a couple of line
 
 breaks');
         $this->assertEquals(
-            'This is a test title with a couple of line breaks', 
+            'This is a test title with a couple of line breaks',
             $newImg->getTitle()
         );
         $this->assertEquals(
-            'This is a test title with a couple of line breaks', 
+            'This is a test title with a couple of line breaks',
             $newImg->getAlt()
         );
     }
@@ -303,11 +303,11 @@ breaks');
     {
         $offers = $this->property->getSpecialOffers();
         $this->assertTrue(is_array($offers));
-        
+
         $this->assertEquals(
-            '<p>10% off</p><p>Fixed price 200 pounds</p>', 
+            '<p>10% off</p><p>Fixed price 200 pounds</p>',
             $this->property->getSpecialOffersDescriptions(
-                '<p>', 
+                '<p>',
                 '</p>'
             )
         );
@@ -359,9 +359,29 @@ breaks');
         $this->assertTrue(is_string($comments[0]->getComment()));
         $this->assertEquals('The property was fantastic!', $comments[0]->getComment());
         $this->assertEquals(
-            'Mr J Bloggs - The property was fantastic!', 
+            'Mr J Bloggs - The property was fantastic!',
             (string) $comments[0]
         );
+    }
+
+    /**
+     * Test the getAllDescriptions function
+     *
+     * @return void
+     */
+    public function testDescriptions()
+    {
+        $route = "http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/";
+        \tabs\api\client\ApiClient::factory($route, 'mouse', 'cottage');
+        $property = \tabs\api\property\Property::getProperty('1105', 'NO');
+        $descriptions = $property->getAllDescriptions();
+        $this->assertTrue(is_array($descriptions));
+        $this->assertEquals(2, sizeof($descriptions));
+        $this->assertEquals('TABSLONG', $descriptions[0]['descriptiontype']);
+        $this->assertEquals('Example tabslong description', $descriptions[0]['description']);
+        $this->assertEquals('TABSSHORT', $descriptions[1]['descriptiontype']);
+        $this->assertEquals('Example tabsshort description', $descriptions[1]['description']);
+
     }
 
     /**

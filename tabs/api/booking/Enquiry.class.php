@@ -4,7 +4,7 @@
  * Tabs Rest API Enquiry object.
  *
  * PHP Version 5.3
- * 
+ *
  * @category  API_Client
  * @package   Tabs
  * @author    Alex Wyett <alex@wyett.co.uk>
@@ -25,7 +25,7 @@ namespace tabs\api\booking;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
- * 
+ *
  * @method \tabs\api\pricing\Pricing getPricing()
  * @method void                      setPricing(\tabs\api\pricing\Pricing $pricing)
  */
@@ -33,11 +33,11 @@ class Enquiry extends \tabs\api\core\Base
 {
     /**
      * Pricing object
-     * 
-     * @var \tabs\api\pricing\Pricing 
+     *
+     * @var \tabs\api\pricing\Pricing
      */
     protected $pricing;
-    
+
     // ------------------ Static Functions --------------------- //
 
     /**
@@ -58,10 +58,10 @@ class Enquiry extends \tabs\api\core\Base
      * @return \tabs\api\booking\Enquiry
      */
     public static function create(
-        $propRef, 
-        $brandCode, 
-        $fromDate, 
-        $toDate, 
+        $propRef,
+        $brandCode,
+        $fromDate,
+        $toDate,
         $adults,
         $children = 0,
         $infants = 0,
@@ -88,7 +88,7 @@ class Enquiry extends \tabs\api\core\Base
             return self::factory($enquiryData->response);
         } else {
             throw new \tabs\api\client\ApiException(
-                $enquiryData, 
+                $enquiryData,
                 'Could not create enquiry'
             );
         }
@@ -115,20 +115,20 @@ class Enquiry extends \tabs\api\core\Base
             $enquiry->setPricing($pricing);
         } else {
             throw new \tabs\api\client\ApiException(
-                null, 
+                null,
                 'Price not found for enquiry'
             );
         }
-        
+
         return $enquiry;
     }
-    
+
     // ------------------ Public Functions --------------------- //
-    
+
     /**
      * Constructor
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -137,8 +137,8 @@ class Enquiry extends \tabs\api\core\Base
 
     /**
      * Availability status checker
-     * 
-     * @return boolean 
+     *
+     * @return boolean
      */
     public function isAvailable()
     {
@@ -147,23 +147,23 @@ class Enquiry extends \tabs\api\core\Base
         }
         return false;
     }
-    
+
     /**
      * Get the customer object
-     * 
+     *
      * @return \tabs\api\property\Property
      */
     public function getProperty()
     {
         return \tabs\api\property\Property::getProperty(
-            $this->getPropertyRef(), 
+            $this->getPropertyRef(),
             $this->getBrandCode()
         );
     }
-    
+
     /**
      * To array function
-     * 
+     *
      * @return array
      */
     public function toArray()
@@ -173,15 +173,15 @@ class Enquiry extends \tabs\api\core\Base
         }
         return array();
     }
-    
-    
+
+
     /**
      * Generic getter/setter
-     * 
+     *
      * @param string $name Name of property
      * @param array  $args Function arguments
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function __call($name, $args = array())
     {
@@ -214,7 +214,8 @@ class Enquiry extends \tabs\api\core\Base
                 }
                 if (method_exists($this->pricing, $func)) {
                     if (count($args) > 0) {
-                        return call_user_func_array(array($this->pricing, $func), $args);
+                        return call_user_func_array(
+                                array($this->pricing, $func), $args);
                     } else {
                         return call_user_func(array($this->pricing, $func));
                     }

@@ -25,13 +25,13 @@ namespace tabs\api\property;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
- * 
+ *
  * @method integer                             getPageSize()
  * @method integer                             getPage()
  * @method \tabs\api\property\Property | Array getProperties()
  * @method string                              getFilter()
  * @method string                              getSearchId()
- * 
+ *
  * @method void setPageSize(integer $pageSize)
  * @method void setPage(integer $page)
  * @method void setFilter(string $filter)
@@ -41,11 +41,11 @@ class PropertySearch extends \tabs\api\core\Base
 {
     /**
      * Max request page size
-     * 
+     *
      * @var integer
      */
     private static $_maxPageSize = 200;
-    
+
     /**
      * Number of results of the current page
      *
@@ -73,6 +73,13 @@ class PropertySearch extends \tabs\api\core\Base
      * @var array
      */
     protected $properties = array();
+
+    /**
+     * Count of properties in current search
+     *
+     * @var array
+     */
+    protected $count = 0;
 
     /**
      * Results label
@@ -117,10 +124,10 @@ class PropertySearch extends \tabs\api\core\Base
     protected $searchId = '';
 
     // ------------------ Static Functions --------------------- //
-    
+
     /**
      * Fetch all properties in the api for a given request
-     * 
+     *
      * @param string $filter   Url parameters
      * @param string $orderBy  Ordering config
      * @param int    $searchId The search ID
@@ -130,29 +137,29 @@ class PropertySearch extends \tabs\api\core\Base
      * of the property node.
      * @param string $sbFilter Short break filter code.  Leave blank to not
      * enable this feature.  See documentation for more details.
-     * 
+     *
      * @return \tabs\api\property\PropertySearch
      */
     public static function fetchAll(
-        $filter = '', 
-        $orderBy = '', 
-        $searchId = '', 
+        $filter = '',
+        $orderBy = '',
+        $searchId = '',
         $fields = array(),
         $sbFilter = ''
     ) {
         // Fetch the first page of properties
         $propertyData = self::_getPropertyData(
             self::_getParams(
-                $filter, 
-                1, 
-                1, 
-                $orderBy, 
+                $filter,
+                1,
+                1,
+                $orderBy,
                 $searchId,
                 $fields,
                 $sbFilter
             )
         );
-            
+
         if ($propertyData && $propertyData->status == 200) {
             $res = $propertyData->response;
             $pages = ceil(
@@ -188,10 +195,10 @@ class PropertySearch extends \tabs\api\core\Base
                     )
                 );
             }
-            
+
             // Call the multiple execution handle
             $responses = \tabs\api\client\ApiClient::getApi()->mGet($paths);
-            
+
             if (is_array($responses) && count($responses) > 0) {
                 foreach ($responses as $resp) {
                     self::_addProperties(
@@ -207,7 +214,7 @@ class PropertySearch extends \tabs\api\core\Base
                     'Could not fetch properties'
                 );
             }
-            
+
             return $propertySearch;
         }
     }
@@ -242,36 +249,36 @@ class PropertySearch extends \tabs\api\core\Base
         // Check for 'all' keyword and use the new fetchAll method
         if ($pageSize == 9999) {
             return self::fetchAll(
-                $filter, 
-                $orderBy, 
-                $searchId, 
-                $fields, 
+                $filter,
+                $orderBy,
+                $searchId,
+                $fields,
                 $sbFilter
             );
         }
-        
+
         // Check that the pageSize isnt too big
         if ($pageSize <= self::$_maxPageSize) {
             $propertyData = self::_getPropertyData(
                 self::_getParams(
-                    $filter, 
-                    $page, 
-                    $pageSize, 
-                    $orderBy, 
+                    $filter,
+                    $page,
+                    $pageSize,
+                    $orderBy,
                     $searchId,
                     $fields,
                     $sbFilter
                 )
             );
-            
+
             if ($propertyData && $propertyData->status == 200) {
                 $propertyData = $propertyData->response;
 
                 $propertySearch = self::_createPropertySearch($propertyData);
                 self::_addProperties(
-                    $propertySearch, 
-                    $propertyData, 
-                    1, 
+                    $propertySearch,
+                    $propertyData,
+                    1,
                     $pageSize
                 );
 
@@ -286,7 +293,7 @@ class PropertySearch extends \tabs\api\core\Base
             $pages = ceil($pageSize / self::$_maxPageSize);
             $propertySearch = false;
             for ($i = 1; $i <= $pages; $i++) {
-                
+
                 // If a property search has already been made
                 // test whether the search is applicable or not
                 if ($propertySearch) {
@@ -295,14 +302,14 @@ class PropertySearch extends \tabs\api\core\Base
                         break;
                     }
                 }
-                
+
                 // Request a properties from api
                 $propertyData = self::_getPropertyData(
                     self::_getParams(
-                        $filter, 
-                        $i, 
-                        self::$_maxPageSize, 
-                        $orderBy, 
+                        $filter,
+                        $i,
+                        self::$_maxPageSize,
+                        $orderBy,
                         $searchId,
                         $fields,
                         $sbFilter
@@ -321,9 +328,9 @@ class PropertySearch extends \tabs\api\core\Base
                     }
 
                     self::_addProperties(
-                        $propertySearch, 
-                        $propertyData, 
-                        $i, 
+                        $propertySearch,
+                        $propertyData,
+                        $i,
                         $pageSize
                     );
                 } else {
@@ -333,13 +340,13 @@ class PropertySearch extends \tabs\api\core\Base
                     );
                 }
             }
-            
+
             return $propertySearch;
         }
     }
 
     /**
-     * Private function used to call the tabs api. Returns an array of 
+     * Private function used to call the tabs api. Returns an array of
      * property objects.
      *
      * @param array $params Api Filter parameters
@@ -350,7 +357,7 @@ class PropertySearch extends \tabs\api\core\Base
         $params = array()
     ) {
         return \tabs\api\client\ApiClient::getApi()->get(
-            '/property', 
+            '/property',
             $params
         );
     }
@@ -406,19 +413,19 @@ class PropertySearch extends \tabs\api\core\Base
         if ($sbFilter != '') {
             $params['shortBreak'] = $sbFilter;
         }
-        
+
         if (is_array($fields) && count($fields) > 0) {
             $params['fields'] = implode(':', $fields);
         }
-        
+
         return $params;
     }
-    
+
     /**
      * Creates a property search object from a tabs api response
-     * 
+     *
      * @param object $propertyData json string returned from api
-     * 
+     *
      * @return \tabs\api\property\PropertySearch
      */
     private static function _createPropertySearch($propertyData)
@@ -428,7 +435,7 @@ class PropertySearch extends \tabs\api\core\Base
             $propertyData->page,
             $propertyData->pageSize
         );
-        
+
         // Add search id if set
         if (property_exists($propertyData, 'searchId')) {
             $propertySearch->setSearchId($propertyData->searchId);
@@ -443,25 +450,25 @@ class PropertySearch extends \tabs\api\core\Base
         if (property_exists($propertyData, 'filter')) {
             $propertySearch->setFilter($propertyData->filter);
         }
-        
+
         return $propertySearch;
     }
-    
+
     /**
      * Add a property to a property search object from a given api response
-     * 
-     * @param \tabs\api\property\PropertySearch &$propertySearch PropSearch 
+     *
+     * @param \tabs\api\property\PropertySearch &$propertySearch PropSearch
      * object passed by reference
      * @param object                            $propertyData    Api response data
      * @param integer                           $page            Page number
      * @param integer                           $pageSize        Page size
-     * 
+     *
      * @return void
      */
     private static function _addProperties(
-        &$propertySearch, 
-        $propertyData, 
-        $page, 
+        &$propertySearch,
+        $propertyData,
+        $page,
         $pageSize
     ) {
         // Create the property objects
@@ -484,13 +491,13 @@ class PropertySearch extends \tabs\api\core\Base
             }
         }
     }
-    
+
     /**
      * Set the short break rule exceptions for a property
-     * 
+     *
      * @param object   $response  JSON Response object
      * @param Property &$property Created property object
-     * 
+     *
      * @return void
      */
     private static function _addShortBreakRules($response, &$property)
@@ -700,7 +707,7 @@ class PropertySearch extends \tabs\api\core\Base
             return array(1);
         }
     }
-    
+
     /**
      * Returns some basic information about your property search
      *
