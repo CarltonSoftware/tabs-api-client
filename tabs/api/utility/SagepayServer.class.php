@@ -455,7 +455,7 @@ class SagepayServer
         // You should remove them if you have any problems in earlier 
         // versions of cURL
         curl_setopt($curlSession, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curlSession, CURLOPT_SSL_VERIFYHOST, 1);
+        //curl_setopt($curlSession, CURLOPT_SSL_VERIFYHOST, 2);
     
         //Send the request and store the result in an array
         $response = curl_exec($curlSession);
