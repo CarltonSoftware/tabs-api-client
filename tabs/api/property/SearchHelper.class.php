@@ -200,7 +200,7 @@ class SearchHelper
     }
 
     /**
-     * Get the resever keys array.  This will include the search prefix
+     * Get the reseved keys array.  This will include the search prefix
      * if specified in the constructor
      *
      * @return array
@@ -486,11 +486,9 @@ class SearchHelper
         if ($this->baseUrl != '') {
             return $this->baseUrl;
         } else {
-            if (!empty($_SERVER)) {
-                if (isset($_SERVER['REQUEST_URI'])) {
-                    $baseUrl = explode('?', $_SERVER['REQUEST_URI'], 2);
-                    return $baseUrl[0];
-                }
+            if (!empty($_SERVER) && isset($_SERVER['REQUEST_URI'])) {
+                $baseUrl = explode('?', $_SERVER['REQUEST_URI'], 2);
+                return $baseUrl[0];
             }
         }
         return '/';

@@ -1,13 +1,14 @@
 <?php
 
-$file = dirname(__FILE__)
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . 'tabs'
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+$file = dirname(__FILE__) 
+    . DIRECTORY_SEPARATOR . '..' 
+    . DIRECTORY_SEPARATOR . '..' 
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class PropertyClassTest extends PHPUnit_Framework_TestCase
+class PropertyClassTest extends ApiClientClassTest
 {
     /**
      * Resource
@@ -23,33 +24,37 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $route = "http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/";
-        \tabs\api\client\ApiClient::factory($route, 'mouse', 'cottage');
-        $this->property = \tabs\api\property\Property::getProperty('1212', 'NO');
+        $this->property = \tabs\api\property\Property::getProperty(
+            'WAV541', 
+            'ZZ'
+        );
     }
 
     public function testProperty()
     {
         // Test property object
-        $this->assertEquals('1212_NO', $this->property->getId());
-        $this->assertEquals('1212', $this->property->getPropertyRef());
-        $this->assertEquals('NO', $this->property->getBrandcode());
-        $this->assertEquals("1212-no", $this->property->getSlug());
-        $this->assertEquals("Reedmere", $this->property->getName());
-        $this->assertEquals(4, $this->property->getAccommodates());
-        $this->assertEquals(4, $this->property->getSleeps());
-        $this->assertTrue($this->property->hasPets());
+        $this->assertEquals('WAV541_ZZ', $this->property->getId());
+        $this->assertEquals('WAV541', $this->property->getPropertyRef());
+        $this->assertEquals('ZZ', $this->property->getBrandcode());
+        $this->assertEquals("wav541-zz", $this->property->getSlug());
+        $this->assertEquals("Cottage 363", $this->property->getName());
+        $this->assertEquals('Cottage 363 (WAV541)', (string) $this->property);
+        $this->assertEquals(7, $this->property->getAccommodates());
+        $this->assertEquals(7, $this->property->getSleeps());
+        $this->assertFalse($this->property->hasPets());
         $this->assertTrue(is_object($this->property->getBrand()));
-        $this->assertTrue(is_object($this->property->getBrand('NO')));
+        $this->assertTrue(is_object($this->property->getBrand('ZZ')));
         $this->assertFalse($this->property->isPromoted());
-        $this->assertEquals(2, $this->property->getBedrooms());
+        $this->assertEquals(4, $this->property->getBedrooms());
         $this->assertEquals("Saturday", $this->property->getChangeOverDay());
         $this->assertEquals(6, $this->property->getChangeDayNum());
-        $this->assertEquals(4, $this->property->getRating());
+        $this->assertEquals(3, $this->property->getRating());
+        $this->assertFalse($this->property->getAttribute('XXXXXX'));
+        $this->assertTrue(is_object($this->property->getAttribute('< Coast')));
 
         // Calendar url
         $this->assertEquals(
-            \tabs\api\client\ApiClient::getApi()->getRoute() . "/property/1212_NO/calendar",
+            \tabs\api\client\ApiClient::getApi()->getRoute() . "/property/WAV541_ZZ/calendar",
             $this->property->getCalendarUrl()
         );
 
@@ -80,7 +85,61 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
     public function testPropertyAddress()
     {
         $address = $this->property->getAddress();
-        $this->assertEquals("Horning, Norfolk, NR12 8AA, GB", $address->getFullAddress());
+        $this->assertEquals("The Manse, Timperley, Chester, Cleveland, S11 9RA, GB", $address->getFullAddress());
+    }
+    
+    /**
+     * Test invalid address
+     * 
+     * @return void
+     */
+    public function testNoAddress()
+    {
+        $property = new \tabs\api\property\Property();
+        $this->assertFalse($property->getFullAddress());
+    }
+    
+    /**
+     * Test image removal func
+     * 
+     * @return void
+     */
+    public function testRemoveImages()
+    {
+        $property = new \tabs\api\property\Property();
+        $property->removeImages();
+        $this->assertEquals(0, count($property->getImages()));
+    }
+    
+    /**
+     * Test area name/location name functions when objects are not set
+     * 
+     * @return void
+     */
+    public function testBlankAreaAndLocations()
+    {
+        $property = new \tabs\api\property\Property();
+        $this->assertEquals('', $property->getAreaCode());
+        $this->assertEquals('', $property->getAreaName());
+        $this->assertEquals('', $property->getLocationCode());
+        $this->assertEquals('', $property->getLocationName());
+        $this->assertEquals(0, $property->getLatitude());
+        $this->assertEquals(0, $property->getLongitude());
+    }
+    
+    /**
+     * Test shortlist function
+     * 
+     * @return void
+     */
+    public function testPropertyShortlist()
+    {
+        $property = new \tabs\api\property\Property();
+        $property->setShortlist(true);
+        $this->assertTrue($property->isOnShortlist());
+        
+        $property->setPromote(true);
+        $this->assertTrue($property->isPromoted());
     }
 
     /**
@@ -193,10 +252,30 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
             'Call',
             $this->property->getPriceRangeString('2020', 'XX')
         );
-        $this->assertEquals(
-            "<span class='low-price'>&pound;302</span> to <span class='high-price'>&pound;529</span>",
-            $this->_removeWhiteSpace($this->property->getPriceRangeString())
-        );
+        
+        if ($this->property->getPriceRange(date('Y'))->high > 0) {
+            $this->assertEquals(
+                sprintf(
+                    "<span class='low-price'>&pound;%s</span> to <span class='high-price'>&pound;%s</span>",
+                    $this->property->getPriceRange(date('Y'))->low,
+                    $this->property->getPriceRange(date('Y'))->high
+                ),
+                $this->_removeWhiteSpace($this->property->getPriceRangeString())
+            );
+        } else {
+            $this->assertEquals(
+                "Call",
+                $this->_removeWhiteSpace($this->property->getPriceRangeString())
+            );
+            $this->assertEquals(
+                'Please Call',
+                $this->property->getPriceRangeString(
+                    date('Y'),
+                    $this->property->getBrandCode(),
+                    'Please Call'
+                )
+            );
+        }
     }
 
     /**
@@ -229,12 +308,12 @@ class PropertyClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('tabs\api\property\Image', get_class($this->property->getMainImage()));
 
         $this->assertEquals(
-            'http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/image',
+            'http://zz.api.carltonsoftware.co.uk/image',
             $image->getImagePath()
         );
 
         $this->assertEquals(
-            '1212ext.jpg?APIKEY=mouse&hash=4f64c897c40d1edebbf9dc294575a1baf8bd991f1c1aa81a96de538c2eb8fdaa',
+            'sk6eio0--v541-1.jpg?APIKEY=mouse&hash=4f64c897c40d1edebbf9dc294575a1baf8bd991f1c1aa81a96de538c2eb8fdaa',
             $image->getFilename()
         );
 
@@ -303,14 +382,13 @@ breaks');
     {
         $offers = $this->property->getSpecialOffers();
         $this->assertTrue(is_array($offers));
-
-        $this->assertEquals(
-            '<p>10% off</p><p>Fixed price 200 pounds</p>',
-            $this->property->getSpecialOffersDescriptions(
-                '<p>',
-                '</p>'
-            )
-        );
+        if (count($offers) > 0) {
+            $this->assertTrue(
+                is_string(
+                    $this->property->getSpecialOffersDescriptions('<p>', '</p>')
+                )
+            );
+        }
     }
 
     /**
@@ -322,10 +400,12 @@ breaks');
     {
         $priceBands = $this->property->getDateRangePrices(date('Y'));
         $this->assertTrue(is_array($priceBands));
-        $this->assertEquals(
-            'New Year',
-            call_user_func($priceBands[count($priceBands)-1]->getDateRangeString, 'jS M Y')
-        );
+        if (count($priceBands) > 0) {
+            $this->assertEquals(
+                'New Year',
+                call_user_func($priceBands[count($priceBands)-1]->getDateRangeString, 'jS M Y')
+            );
+        }
     }
 
     /**
@@ -335,13 +415,15 @@ breaks');
      */
     public function testPriceBands()
     {
-        $priceBands = $this->property->getPriceBands('2013');
+        $priceBands = $this->property->getPriceBands(date('Y'));
         $this->assertTrue(is_array($priceBands));
-        $this->assertTrue(is_numeric($priceBands[0]->price));
-        $this->assertEquals(
-            'A',
-            $priceBands[0]->priceBand
-        );
+        if (count($priceBands) > 0) {
+            $this->assertTrue(is_numeric($priceBands[0]->price));
+            $this->assertEquals(
+                'A',
+                $priceBands[0]->priceBand
+            );
+        }
     }
 
     /**
@@ -353,15 +435,6 @@ breaks');
     {
         $comments = $this->property->getComments();
         $this->assertTrue(is_array($comments));
-        $this->assertEquals(2, sizeof($comments));
-        $this->assertTrue(is_string($comments[0]->getName()));
-        $this->assertEquals('Mr J Bloggs', $comments[0]->getName());
-        $this->assertTrue(is_string($comments[0]->getComment()));
-        $this->assertEquals('The property was fantastic!', $comments[0]->getComment());
-        $this->assertEquals(
-            'Mr J Bloggs - The property was fantastic!',
-            (string) $comments[0]
-        );
     }
 
     /**
@@ -371,16 +444,12 @@ breaks');
      */
     public function testDescriptions()
     {
-        $route = "http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/";
-        \tabs\api\client\ApiClient::factory($route, 'mouse', 'cottage');
-        $property = \tabs\api\property\Property::getProperty('1105', 'NO');
-        $descriptions = $property->getAllDescriptions();
+        $descriptions = $this->property->getAllDescriptions();
         $this->assertTrue(is_array($descriptions));
-        $this->assertEquals(2, sizeof($descriptions));
-        $this->assertEquals('TABSLONG', $descriptions[0]['descriptiontype']);
-        $this->assertEquals('Example tabslong description', $descriptions[0]['description']);
-        $this->assertEquals('TABSSHORT', $descriptions[1]['descriptiontype']);
-        $this->assertEquals('Example tabsshort description', $descriptions[1]['description']);
+        if (count($descriptions) > 0) {
+            $this->assertEquals('TABSLONG', $descriptions[0]['descriptiontype']);
+            $this->assertEquals('TABSSHORT', $descriptions[1]['descriptiontype']);
+        }
 
     }
 

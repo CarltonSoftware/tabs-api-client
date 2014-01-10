@@ -27,11 +27,11 @@ namespace tabs\api\property;
  * @link      http://www.carltonsoftware.co.uk
  * 
  * @method string getComment()
- * @method string getDate()
+ * @method \DateTime getDate()
  * @method string getName()
  * 
  * @method void setComment(string $comment)
- * @method void setDate(string $date)
+ * @method void setDate(\DateTime $date)
  * @method void setName(string $name)
  */
 class CustomerComment extends \tabs\api\core\Base
@@ -39,7 +39,7 @@ class CustomerComment extends \tabs\api\core\Base
     /**
      * Date the comment was left
      *
-     * @var string
+     * @var \DateTime
      */
     protected $date;
     

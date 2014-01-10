@@ -10,25 +10,49 @@ require_once $file;
 class BookingTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Booking object
-     *
-     * @var \tabs\api\booking\Booking
-     */
-    var $booking;
-    
-    /**
-     * Sets up the tests
-     *
-     * @return null
+     * Run on each test
+     * 
+     * @return void
      */
     public function setUp()
     {
-        $route = "http://carltonsoftware.apiary.io/";
-        \tabs\api\client\ApiClient::factory($route);
+        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
         \tabs\api\client\ApiClient::getApi()->setTestMode(true);
-
-        $this->booking = \tabs\api\booking\Booking::createBookingFromId(
-            "c70175835bda68846e"
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidBookingId()
+    {
+        \tabs\api\booking\Booking::createBookingFromId(
+            "blablabla"
+        );
+    }
+    
+    /**
+     * Test creating a new booking
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return null
+     */
+    public function testNewInvalidBooking()
+    {
+        \tabs\api\client\ApiClient::factory('http://bad.url/');
+        $booking = \tabs\api\booking\Booking::create(
+            "mousecott",
+            "SS",
+            strtotime("2012-07-01"),
+            strtotime("2012-07-08"),
+            2,
+            1,
+            0,
+            1
         );
     }
 
@@ -50,7 +74,13 @@ class BookingTest extends PHPUnit_Framework_TestCase
             1
         );
 
-        $this->_testBookingObject($booking);
+        $this->_testBookingObject($booking);        
+        $this->assertTrue($booking->addPetExtra(1));
+        $this->assertTrue($booking->hasPetExtra());        
+        $this->assertTrue($booking->getWeeksToNow() < 0);
+        $this->assertTrue(is_array($booking->toArray()));
+        $this->assertTrue(is_string($booking->toJson()));        
+        $this->assertTrue(is_object($booking->getProperty()));
 
         $otherBooking = new \tabs\api\booking\Booking();
         $this->assertEquals(0, $otherBooking->getDepositAmount());
@@ -65,7 +95,7 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */    
     public function testRemoveAllExtras()
     {
-        $booking = clone $this->booking;
+        $booking = $this->_getTestBooking();
         $this->assertEquals(45, $booking->getExtrasTotal());
         $booking->removeAllExtras();
         $this->assertEquals(0, $booking->getExtrasTotal());
@@ -78,7 +108,7 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testExistingBooking()
     {
-        $this->_testBookingObject($this->booking);
+        $this->_testBookingObject($this->_getTestBooking());
     }
 
     /**
@@ -88,24 +118,25 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testAddCustomerToBooking()
     {
-        $customer = \tabs\api\core\Customer::factory('Mr', 'Bloggs');
-
-        // Set customer details
-        $customer->setFirstName("Joe");
-        $customer->getAddress()->setAddr1("Carlton House");
-        $customer->getAddress()->setAddr2("Market Place");
-        $customer->getAddress()->setTown("Reepham");
-        $customer->getAddress()->setCounty("Norfolk");
-        $customer->getAddress()->setPostcode("NR10 4JJ");
-        $customer->getAddress()->setCountry("GB");
-        $customer->setDaytimePhone("01603 871872");
-        $customer->setEveningPhone("01603 871871");
-        $customer->setMobilePhone("07999 123456");
-        $customer->setEmail("support@carltonsoftware.co.uk");
-        $customer->setEmailOptIn(true);
-        $customer->setSource("GOO");
-        $this->booking->setCustomer($customer);        
-        $this->assertTrue($this->booking->hasCustomer());
+        $customer = $this->_getCustomer();
+        $otherBooking = new \tabs\api\booking\Booking();
+        $otherBooking->setCustomer($customer);        
+        $this->assertTrue($otherBooking->hasCustomer());
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidSetCustomer()
+    {
+        $booking = $this->_getTestBooking();
+        $customer = $this->_getCustomer();
+        \tabs\api\client\ApiClient::factory('http://bad.url/');
+        $booking->setCustomer($customer);
     }
 
     /**
@@ -127,13 +158,32 @@ class BookingTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($infant->toArray()));
         $this->assertTrue(is_array($infant->toArray(false)));
 
+        $booking = $this->_getTestBooking();
+        
         // Add to Booking
-        $this->booking->setPartyMember($joe);
-        $this->booking->setPartyMember($ann);
-        $this->booking->setPartyMember($hayley);
+        $booking->setPartyMember($joe);
+        $booking->setPartyMember($ann);
+        $booking->setPartyMember($hayley);
 
         // Check for true response
-        $this->assertTrue($this->booking->setPartyDetails());
+        $this->assertTrue($booking->setPartyDetails());
+        $this->assertTrue($booking->clearPartyMembers());
+        $this->assertEquals(0, count($booking->getPartyDetails()));
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidPartyDetails()
+    {
+        $joe = \tabs\api\booking\PartyDetail::createAdult("Joe", "Bloggs", "19-35", "Mr");
+        $booking = new \tabs\api\booking\Booking();
+        $booking->setPartyMember($joe);
+        $booking->setPartyDetails();
     }
 
     /**
@@ -143,7 +193,22 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingAddPetExtra()
     {
-        $this->assertTrue($this->booking->addNewExtra("PET", 1));
+        $booking = $this->_getTestBooking();        
+        $this->assertTrue($booking->addNewExtra("PET", 1));
+        $this->assertTrue($booking->addNewExtra("PET", 1, 20));
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidSetExtra()
+    {
+        $booking = $this->_getTestBooking();
+        $booking->addNewExtra('XXX', 99);
     }
 
     /**
@@ -153,7 +218,35 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingRemovePetExtra()
     {
-        $this->assertTrue($this->booking->removeExtra("PET"));
+        $booking = $this->_getTestBooking();
+        
+        $this->assertTrue($booking->removeExtra("PET"));
+    }
+
+    /**
+     * Test adding party members to the booking
+     * 
+     * @return null
+     */
+    public function testBookingRemoveInvalidExtra()
+    {
+        $booking = $this->_getTestBooking();        
+        $this->assertFalse($booking->removeExtra('XXX'));
+    }
+    
+    /**
+     * Test options request for current booking
+     * 
+     * @return void
+     */
+    public function testBookingGetAvailableExtras()
+    {
+        $booking = $this->_getTestBooking();
+        $extras = $booking->getAvailableExtras();
+        $this->assertEquals(2, count($extras));
+        
+        $extra = array_shift($extras);
+        $this->assertEquals('COT', $extra->getCode());
     }
 
     /**
@@ -163,10 +256,25 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingConfirm()
     {
-        $this->assertTrue($this->booking->confirmBooking());        
+        $booking = $this->_getTestBooking();
+        
+        $this->assertTrue($booking->confirmBooking());        
         // Get the new booking reference and test if confirmed
-        $this->assertTrue($this->booking->isConfirmed());
-        $this->assertEquals("W12345", $this->booking->getWNumber());
+        $this->assertTrue($booking->isConfirmed());
+        $this->assertEquals("W12345", $booking->getWNumber());
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidBookingConfirmation()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->confirmBooking();
     }
 
     /**
@@ -176,10 +284,50 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingAddNote()
     {
-        $note = $this->booking->setNote("Customer will be arriving around 4pm");
+        $booking = $this->_getTestBooking();
+        $note = $booking->setNote("Customer will be arriving around 4pm");
         $this->assertEquals(39, $note);
-        $this->assertEquals(3, count($this->booking->getNotes()));
-        $this->assertTrue($this->booking->noteExists(39));
+        $this->assertEquals(3, count($booking->getNotes()));
+        $this->assertTrue($booking->noteExists(39));
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidBookingNote()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->setNote('Bla bla');
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidBookingUpdateNote()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->updateNote(1, 'Bla bla');
+    }
+    
+    /**
+     * Test invalid request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testInvalidBookingDeleteNote()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->deleteNote(1);
     }
 
     /**
@@ -189,9 +337,10 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingUpdateNote()
     {
-        $note = $this->booking->updateNote(39, "Customer will now be arriving around 5pm");
+        $booking = $this->_getTestBooking();
+        $note = $booking->updateNote(39, "Customer will now be arriving around 5pm");
         $this->assertTrue($note);
-        $this->assertEquals(3, count($this->booking->getNotes()));
+        $this->assertEquals(3, count($booking->getNotes()));
     }
 
     /**
@@ -201,9 +350,10 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingRemoveNote()
     {
-        $note = $this->booking->deleteNote(39);
+        $booking = $this->_getTestBooking();
+        $note = $booking->deleteNote(39);
         $this->assertTrue($note);
-        $this->assertEquals(2, count($this->booking->getNotes()));
+        $this->assertEquals(2, count($booking->getNotes()));
     }
 
     /**
@@ -213,11 +363,12 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingGetNote()
     {
-        $note = $this->booking->getNote(39);
+        $booking = $this->_getTestBooking();
+        $note = $booking->getNote(39);
         $this->assertFalse($note);
 
-        $note = $this->booking->setNote("Customer will be arriving around 4pm");
-        $note = $this->booking->getNote(39);
+        $note = $booking->setNote("Customer will be arriving around 4pm");
+        $note = $booking->getNote(39);
         $this->assertEquals('public', $note->visible);
     }
 
@@ -228,31 +379,63 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingPayment()
     {
-        $payment = \tabs\api\booking\Payment::createPaymentFromSagePayResponse(
-            123.45,
-            array(
-                "VPSProtocol" => "",
-                "TxType" => "PAYMENT",
-                "VendorTxCode" => "231d43aa3251",
-                "VPSTxId" => "231d43aa4",
-                "Status" => "OK",
-                "StatusDetail" => "",
-                "TxAuthNo" => 123124,
-                "AVSCV2" => "ALL MATCH",
-                "AddressResult" => "MATCHED",
-                "PostCodeResult" => "MATCHED",
-                "CV2Result" => "NOTMATCHED",
-                "GiftAid" => 0,
-                "3DSecureStatus" => "OK",
-                "CAVV" => "12314c76ae1d",
-                "CardType" => "VISA",
-                "Last4Digits" => 4321,
-                "VPSSignature" => "d6782b2c213fa212a"
-            )
-        );
+        $payment = $this->_getPayment();
 
+        $booking = $this->_getTestBooking();
         $this->assertTrue(
-            $this->booking->addNewPayment($payment)
+            $booking->addNewPayment($payment)
+        );
+    }
+    
+    /**
+     * Test the sagepay processing function
+     * 
+     * @return void
+     */
+    public function testSagePayProcess()
+    {
+        $booking = $this->_getTestBooking();
+        $payment = $booking->processSagepayResponse($this->_getSagePayResponse());
+        $this->assertEquals(
+            'tabs\api\booking\Payment',
+            get_class($payment)
+        );
+    }
+    
+    /**
+     * Test the sagepay processing function with a card charge
+     * 
+     * @return void
+     */
+    public function testSagePayProcessWithCC()
+    {
+        // TODO: Once tests are converted over to test api rather than static
+        // api.
+        //        $response = $this->_getSagePayResponse();
+        //        
+        //        // Add a 4 pound surcharge onto the response array
+        //        $response['Surcharge'] = 4;
+        //        
+        //        $booking = $this->_getTestBooking();
+        //        $payment = $booking->processSagepayResponse($response);
+        //        $extras = $booking->getExtras();
+        //        $this->assertTrue(isset($extras['CCC']));
+    }
+
+    /**
+     * Test adding a payment to a booking
+     * $array
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return null
+     */
+    public function testInvalidBookingPayment()
+    {
+        $payment = $this->_getPayment();
+
+        $booking = new \tabs\api\booking\Booking();
+        $this->assertTrue(
+            $booking->addNewPayment($payment)
         );
     }
 
@@ -263,14 +446,15 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testGetBookingPayment()
     {
+        $booking = $this->_getTestBooking();
         $payment = \tabs\api\booking\Payment::getPayment(
-            $this->booking->getBookingId(),
+            $booking->getBookingId(),
             "12abcde3456fghi"
         );
 
         $this->assertEquals($payment->getAmount(), 123.45);
-        $this->booking->addNewPayment($payment);
-        $this->assertEquals(123.45, $this->booking->getAmountPaid());
+        $booking->addNewPayment($payment);
+        $this->assertEquals(123.45, $booking->getAmountPaid());
 
     }
 
@@ -282,7 +466,8 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingAddVoucher()
     {
-        $this->assertTrue($this->booking->addPromotion('PROMO001'));
+        $booking = $this->_getTestBooking();
+        $this->assertTrue($booking->addPromotion('PROMO001'));
     }
 
 
@@ -293,7 +478,8 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testBookingRemoveVoucher()
     {
-        $this->assertTrue($this->booking->removePromotion('PROMO001'));
+        $booking = $this->_getTestBooking();
+        $this->assertTrue($booking->removePromotion('PROMO001'));
     }
     
     /**
@@ -303,7 +489,7 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */    
     public function testRemoveSd()
     {
-        $booking = clone $this->booking;
+        $booking = $this->_getTestBooking();
         $this->assertEquals(100, $booking->getSecurityDeposit());
         $booking->setSecurityDeposit(0);
         $this->assertEquals(0, $booking->getSecurityDeposit());
@@ -360,5 +546,86 @@ class BookingTest extends PHPUnit_Framework_TestCase
 
         // Check for payments
         $this->assertFalse($booking->hasPayment(''));
+    }
+    
+    
+    /**
+     * Return a test booking object
+     * 
+     * @return \tabs\api\booking\Booking
+     */
+    private function _getTestBooking()
+    {
+        return \tabs\api\booking\Booking::createBookingFromId(
+            "c70175835bda68846e"
+        );
+    }
+    
+    /**
+     * Return a customer object
+     * 
+     * @return \tabs\api\core\Customer
+     */
+    private function _getCustomer()
+    {
+        $customer = \tabs\api\core\Customer::factory('Mr', 'Bloggs');
+
+        // Set customer details
+        $customer->setFirstName("Joe");
+        $customer->getAddress()->setAddr1("Carlton House");
+        $customer->getAddress()->setAddr2("Market Place");
+        $customer->getAddress()->setTown("Reepham");
+        $customer->getAddress()->setCounty("Norfolk");
+        $customer->getAddress()->setPostcode("NR10 4JJ");
+        $customer->getAddress()->setCountry("GB");
+        $customer->setDaytimePhone("01603 871872");
+        $customer->setEveningPhone("01603 871871");
+        $customer->setMobilePhone("07999 123456");
+        $customer->setEmail("support@carltonsoftware.co.uk");
+        $customer->setEmailOptIn(true);
+        $customer->setSource("GOO");
+        
+        return $customer;
+    }
+    
+    /**
+     * Return a new payment object
+     * 
+     * @return \tabs\api\booking\Payment
+     */
+    private function _getPayment()
+    {
+        return \tabs\api\booking\Payment::createPaymentFromSagePayResponse(
+            123.45,
+            $this->_getSagePayResponse()
+        );
+    }
+    
+    /**
+     * Return the Sagepay Response array
+     * 
+     * @return array
+     */
+    private function _getSagePayResponse()
+    {
+        return array(
+            "VPSProtocol" => "",
+            "TxType" => "PAYMENT",
+            "VendorTxCode" => "231d43aa3251",
+            "VPSTxId" => "231d43aa4",
+            "Status" => "OK",
+            "StatusDetail" => "",
+            "TxAuthNo" => 123124,
+            "AVSCV2" => "ALL MATCH",
+            "AddressResult" => "MATCHED",
+            "PostCodeResult" => "MATCHED",
+            "CV2Result" => "NOTMATCHED",
+            "GiftAid" => 0,
+            "3DSecureStatus" => "OK",
+            "CAVV" => "12314c76ae1d",
+            "CardType" => "VISA",
+            "Last4Digits" => 4321,
+            "VPSSignature" => "d6782b2c213fa212a"
+        );
     }
 }

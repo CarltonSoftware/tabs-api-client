@@ -622,7 +622,7 @@ class Property extends \tabs\api\core\Base
      *                          defaulted to the accounting brand of the
      *                          property
      *
-     * @return array
+     * @return \tabs\api\property\PropertyBrand
      */
     public function getBrand($brandcode = '')
     {

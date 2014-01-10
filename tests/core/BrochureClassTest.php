@@ -3,11 +3,12 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class BrochureClassTest extends PHPUnit_Framework_TestCase
+class BrochureClassTest extends ApiClientClassTest
 {
     /**
      * Brochure 
@@ -63,5 +64,16 @@ class BrochureClassTest extends PHPUnit_Framework_TestCase
     public function testBrochureArray()
     {
         $this->assertEquals(3, count($this->brochure->toArray()));
+    }
+    
+    /**
+     * Test api exception when getting brochures
+     * 
+     * @return void
+     */
+    public function testGetBrochures()
+    {
+        $brochures = \tabs\api\core\Brochure::getBrochures();
+        $this->assertTrue(is_array($brochures));
     }
 }

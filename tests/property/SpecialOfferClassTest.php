@@ -10,7 +10,7 @@ require_once $file;
 class SpecialOfferClassTest extends PHPUnit_Framework_TestCase
 {    
     /**
-     * Test a new Source object
+     * Test a new Special Offer object
      * 
      * @return void 
      */
@@ -44,6 +44,12 @@ class SpecialOfferClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(10, $specialOffer->getAmount());
     }
     
+    
+    /**
+     * Test the factory create method
+     * 
+     * @return void
+     */
     public function testSpecialOfferNode()
     {
         $offer = new stdClass();

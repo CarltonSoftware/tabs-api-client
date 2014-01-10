@@ -208,14 +208,14 @@ class PropertySearch extends \tabs\api\core\Base
                         $resp->response->totalResults
                     );
                 }
-            } else {
-                throw new \tabs\api\client\ApiException(
-                    $responses,
-                    'Could not fetch properties'
-                );
             }
 
             return $propertySearch;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $propertyData,
+                'Could not fetch properties'
+            );
         }
     }
 

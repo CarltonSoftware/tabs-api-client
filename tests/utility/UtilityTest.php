@@ -3,29 +3,13 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class UtilityTest extends PHPUnit_Framework_TestCase
+class UtilityTest extends ApiClientClassTest
 {
-    /**
-     * Api root
-     *
-     * @var string
-     */
-    var $route = "http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app_dev.php/";
-
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
-    {
-        \tabs\api\client\ApiClient::factory($this->route);
-    }
-
     /**
      * Test countries utility
      *
@@ -58,12 +42,10 @@ class UtilityTest extends PHPUnit_Framework_TestCase
     public function testCountry()
     {
         $country = \tabs\api\utility\Utility::getCountry("GB");
-        // Get last country
         $this->assertTrue(
             get_class($country) == 'tabs\api\core\Country'
         );
-
-
+        
         // Test
         $this->assertEquals("GB", $country->getAlpha2());
         $this->assertEquals("GBR", $country->getAlpha3());
@@ -94,7 +76,7 @@ class UtilityTest extends PHPUnit_Framework_TestCase
         $areas = \tabs\api\utility\Utility::getAreasAndLocations();
 
         // Test
-        $this->assertEquals(5, count($areas));
+        $this->assertEquals(6, count($areas));
 
         // Get last area
         $area = array_pop($areas);
@@ -133,7 +115,7 @@ class UtilityTest extends PHPUnit_Framework_TestCase
         $areas = \tabs\api\utility\Utility::getAreasAndLocations(0, true);
 
         // Test
-        $this->assertEquals(5, count($areas));
+        $this->assertEquals(6, count($areas));
     }
 
     /**
@@ -146,13 +128,7 @@ class UtilityTest extends PHPUnit_Framework_TestCase
         $sourcecodes = \tabs\api\utility\Utility::getSourceCodes();
 
         // Test
-        $this->assertEquals(7, count($sourcecodes));
-
-        $sourcecode = array_pop($sourcecodes);
-        $this->assertEquals("TIM", $sourcecode->getCode());
-        $this->assertEquals("The Times", $sourcecode->getDescription());
-        $this->assertEquals("Newspaper", $sourcecode->getCategory());
-
+        $this->assertEquals(40, count($sourcecodes));
         $this->assertTrue(
             is_array(\tabs\api\utility\Utility::getSourceCodesBasic())
         );
@@ -165,12 +141,12 @@ class UtilityTest extends PHPUnit_Framework_TestCase
      */
     public function testGetSourceCode()
     {
-        $sourcecode = \tabs\api\utility\Utility::getSourceCode('TIM');
+        $sourcecode = \tabs\api\utility\Utility::getSourceCode('BOB');
 
         // Test
-        $this->assertEquals("TIM", $sourcecode->getCode());
-        $this->assertEquals("The Times", $sourcecode->getDescription());
-        $this->assertEquals("Newspaper", $sourcecode->getCategory());
+        $this->assertEquals("BOB", $sourcecode->getCode());
+        $this->assertEquals("Best of Britain, Holland", $sourcecode->getDescription());
+        $this->assertEquals("", $sourcecode->getCategory());
 
         $this->assertFalse(\tabs\api\utility\Utility::getSourceCode('BLA'));
 
@@ -187,9 +163,9 @@ class UtilityTest extends PHPUnit_Framework_TestCase
         $areas = \tabs\api\utility\Utility::getAreas();
 
         // Test
-        $this->assertEquals(5, count($areas));
+        $this->assertEquals(6, count($areas));
 
-        $foundArea = \tabs\api\utility\Utility::findAreaFromSlug('north-norfolk-coast-west');
+        $foundArea = \tabs\api\utility\Utility::findAreaFromSlug('pembrokeshire-west-wales');
         $this->assertTrue(get_class($foundArea) == 'tabs\api\core\Area');
 
         $notFoundArea = \tabs\api\utility\Utility::findAreaFromSlug('area-not-found');
@@ -256,29 +232,33 @@ class UtilityTest extends PHPUnit_Framework_TestCase
         $resource = \tabs\api\utility\Utility::getApiInformation();
         $this->assertEquals("tabs\api\utility\Resource", get_class($resource));
         $this->assertEquals("0.2", $resource->getApiVersion());
-        $this->assertEquals($this->route, $resource->getApiRoot());
+        $this->assertEquals(
+            rtrim(\tabs\api\client\ApiClient::getApi()->getRoute(), '/'),
+            rtrim($resource->getApiRoot(), '/')
+        );
 
         // Brands test
         $brands = $resource->getBrands();
-        $this->assertEquals(1, count($brands));
+        
+        if (count($brands) == 1) {
+            // Test the first brand
+            $brand = array_shift($brands);
+            $this->assertTrue(is_string($brand->getBrandCode()));
+            $this->assertTrue(is_string($brand->getName()));
+            $this->assertTrue(is_string($brand->getWebsite()));
+            $this->assertTrue(is_string($brand->getEmail()));
+            $this->assertTrue(is_string($brand->getTelephone()));
+            $this->assertTrue(is_string($brand->getSagepayVendorName()));
+            $this->assertEquals(440, $brand->getNumberOfProperties());
 
-        // Test the first brand (suffolk)
-        $brand = array_shift($brands);
-        $this->assertTrue(is_string($brand->getBrandCode()));
-        $this->assertTrue(is_string($brand->getName()));
-        $this->assertTrue(is_string($brand->getWebsite()));
-        $this->assertTrue(is_string($brand->getEmail()));
-        $this->assertTrue(is_string($brand->getTelephone()));
-        $this->assertTrue(is_string($brand->getSagepayVendorName()));
-        $this->assertEquals(28, $brand->getNumberOfProperties());
-
-        // Attributes
-        $attributes = $resource->getAttributes();
-        $this->assertEquals(12, count($attributes));
-        $attr = array_shift($attributes);
-        $this->assertEquals("ATTR01", $attr->getCode());
-        $this->assertEquals("Character", $attr->getLabel());
-        $this->assertEquals("boolean", strtolower($attr->getType()));
+            // Attributes
+            $attributes = $resource->getAttributes();
+            $this->assertEquals(12, count($attributes));
+            $attr = array_shift($attributes);
+            $this->assertEquals("ATTR01", $attr->getCode());
+            $this->assertEquals("Character", $attr->getLabel());
+            $this->assertEquals("boolean", strtolower($attr->getType()));            
+        }
     }
 
 
@@ -289,7 +269,7 @@ class UtilityTest extends PHPUnit_Framework_TestCase
      */
     public function testNumberOfProperties()
     {
-        $this->assertEquals(28, \tabs\api\utility\Utility::getNumberOfProperties());
+        $this->assertEquals(440, \tabs\api\utility\Utility::getNumberOfProperties());
     }
 
 
@@ -300,6 +280,6 @@ class UtilityTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAllLocations()
     {
-        $this->assertEquals(13, count(\tabs\api\utility\Utility::getAllLocations()));
+        $this->assertEquals(104, count(\tabs\api\utility\Utility::getAllLocations()));
     }
 }

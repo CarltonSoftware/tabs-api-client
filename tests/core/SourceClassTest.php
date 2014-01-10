@@ -8,28 +8,7 @@ $file = dirname(__FILE__)
 require_once $file;
 
 class SourceClassTest extends PHPUnit_Framework_TestCase
-{
-    /**
-     * Source 
-     * 
-     * @var \tabs\api\core\Source
-     */
-    protected $source;
-
-    /**
-     * Sets up the tests
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        $this->source = \tabs\api\core\Source::factory(
-            'GAD',
-            'Google',
-            'Internet'
-        );
-    }
-    
+{    
     /**
      * Test a new Source object
      * 
@@ -37,8 +16,13 @@ class SourceClassTest extends PHPUnit_Framework_TestCase
      */
     public function testSourceObject()
     {
-        $this->assertEquals('GAD', $this->source->getCode());
-        $this->assertEquals('Google', $this->source->getDescription());
-        $this->assertEquals('Internet', $this->source->getCategory());
+        $source = \tabs\api\core\Source::factory(
+            'GAD',
+            'Google',
+            'Internet'
+        );
+        $this->assertEquals('GAD', $source->getCode());
+        $this->assertEquals('Google', $source->getDescription());
+        $this->assertEquals('Internet', $source->getCategory());
     }
 }

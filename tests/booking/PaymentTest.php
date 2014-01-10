@@ -21,6 +21,21 @@ class PaymentTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+     * Test invalid payment
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return null 
+     */
+    public function testInvalidPaymentRequest()
+    {
+        $payment = \tabs\api\booking\Payment::getPayment(
+            '12345', 
+            '12345'
+        );
+    }
+    
+    /**
      * Test create payment
      * 
      * @return void 
@@ -68,5 +83,30 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('VPSTxId', $payment->getVpsTxId());
         $this->assertEquals('VendorTxCode', $payment->getVendorTxCode());
         $this->assertEquals(100, $payment->getAmount());
+        
+        $this->assertEquals(
+            'Status=OK\r\nStatusDetail=StatusDetail\r\nRedirectURL=http://sagepay.com\r\n',
+            $payment->sagePayOutput('http://sagepay.com')
+        );
+        ob_start();
+        $payment->sagePayPaymentAcknowledgement(
+            'http://sagepay.com/OK', 
+            'http://sagepay.com/ERROR'
+        );
+        $this->assertEquals(
+            "Status=OK\r\nStatusDetail=StatusDetail\r\nRedirectURL=http://sagepay.com/OK\r\n",
+            ob_get_clean()
+        );
+        
+        $payment->setStatus('ERROR');
+        ob_start();
+        $payment->sagePayPaymentAcknowledgement(
+            'http://sagepay.com/OK', 
+            'http://sagepay.com/ERROR'
+        );
+        $this->assertEquals(
+            "Status=ERROR\r\nStatusDetail=StatusDetail\r\nRedirectURL=http://sagepay.com/ERROR\r\n",
+            ob_get_clean()
+        );
     }
 }

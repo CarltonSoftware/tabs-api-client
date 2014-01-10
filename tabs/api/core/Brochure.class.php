@@ -100,11 +100,6 @@ class Brochure extends \tabs\api\core\Base
                     $brochure->current
                 );
             }
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $paymentObj,
-                "Unable to get available brochures"
-            );
         }
 
         return $_brochures;

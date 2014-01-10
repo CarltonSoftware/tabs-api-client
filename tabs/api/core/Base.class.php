@@ -97,7 +97,7 @@ abstract class Base
     }
 
     /**
-     * Function used to assign a variable a valur if it exists in an array 
+     * Function used to assign a variable a value if it exists in an array 
      * else, assign failed value
      * 
      * @param array  $array            the array to validate
@@ -175,9 +175,13 @@ abstract class Base
         case 'integer':
         case 'object':
         case 'null':
-        case 'boolean':
         case 'resource':
             $obj->$property = $value;
+            break;
+        case 'boolean':
+            if (is_bool($value)) {
+                $obj->$property = $value;
+            }
             break;
         case 'string':
             $obj->$property = trim($value);

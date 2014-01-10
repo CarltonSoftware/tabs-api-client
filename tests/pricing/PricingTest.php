@@ -3,24 +3,13 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class PricingTest extends PHPUnit_Framework_TestCase
+class PricingTest extends ApiClientClassTest
 {    
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
-    {
-        $route = "http://carltonsoftware.apiary.io/";
-        \tabs\api\client\ApiClient::factory($route);
-        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
-    }
-    
     /**
      * Test enquiry object
      * 
@@ -28,17 +17,27 @@ class PricingTest extends PHPUnit_Framework_TestCase
      */
     public function testGetEnquiryClass()
     {
-        $enquiry = \tabs\api\booking\Enquiry::create(
-            'mousecott', 
-            'SS',
-            strtotime('2012-07-01'), 
-            strtotime('2012-07-08'), 
-            5, 
-            2
-        );
-        
-        $this->assertEquals($enquiry->getFullPrice(), 268.45);
-        $this->_testPriceObject($enquiry->getPricing());
+        // TODO - find first available property and create{
+        // an enquiry based on the dates given.
+        $property = $this->getFirstAvailablePropertyWithPricing();
+        if ($property) {
+            $searchPrice = $property->getBrand()->getSearchPrice();
+            if ($searchPrice) {
+                $enquiry = \tabs\api\booking\Enquiry::create(
+                    $property->getPropref(), 
+                    $searchPrice->getBrandCode(),
+                    $searchPrice->getFromDate(), 
+                    $searchPrice->getToDate(), 
+                    1, 
+                    0
+                );
+
+                $this->assertEquals(
+                    $enquiry->getFullPrice(), 
+                    $searchPrice->getFullPrice()
+                );
+            }
+        }
     }
     
     /**
