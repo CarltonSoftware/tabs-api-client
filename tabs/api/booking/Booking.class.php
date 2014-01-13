@@ -25,7 +25,7 @@ namespace tabs\api\booking;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
- * 
+ *
  * @method string                             getBookingId()
  * @method integer                            getAdults()
  * @method integer                            getChildren()
@@ -34,7 +34,7 @@ namespace tabs\api\booking;
  * @method \tabs\api\boking\PartyDetail|Array getPartyDetails()
  * @method stdClass|Array                     getNotes()
  * @method \tabs\api\boking\Payment|Array     getPayments()
- * 
+ *
  * @method void setBookingId(string $bookingId)
  * @method void setAdults(integer $adults)
  * @method void setChildren(integer $children)
@@ -123,7 +123,7 @@ class Booking extends \tabs\api\booking\Enquiry
     private $_secondsInAWeek = 604800;
 
     // ------------------ Static Functions --------------------- //
-    
+
     /**
      * Get property function, returns a basic property object from the
      * tabs API.
@@ -175,7 +175,7 @@ class Booking extends \tabs\api\booking\Enquiry
             return self::_addBookingData($bookingData->response);
         } else {
             throw new \tabs\api\client\ApiException(
-                $bookingData, 
+                $bookingData,
                 'Could not create booking'
             );
         }
@@ -199,7 +199,7 @@ class Booking extends \tabs\api\booking\Enquiry
             return self::_addBookingData($bookingCheck->response, false);
         } else {
             throw new \tabs\api\client\ApiException(
-                $bookingCheck, 
+                $bookingCheck,
                 "Booking not found"
             );
         }
@@ -209,7 +209,7 @@ class Booking extends \tabs\api\booking\Enquiry
      * Booking creation function
      *
      * @param object  $bookingData  JSON response object
-     * @param boolean $saveCustomer Boolean option to set the customer 
+     * @param boolean $saveCustomer Boolean option to set the customer
      *                              to the booking object
      *
      * @return \tabs\api\booking\Booking
@@ -237,7 +237,7 @@ class Booking extends \tabs\api\booking\Enquiry
         // Check price
         if ($pricing->getTotalPrice() > 0) {
             $booking->setPricing($pricing);
-            
+
             // Set party size
             $booking->getPricing()->setPartySize(
                 $booking->getAdults()
@@ -249,7 +249,7 @@ class Booking extends \tabs\api\booking\Enquiry
             $booking->getPricing()->setAvailable(true);
         } else {
             throw new \tabs\api\client\ApiException(
-                null, 
+                null,
                 'Price not found for booking'
             );
         }
@@ -276,7 +276,7 @@ class Booking extends \tabs\api\booking\Enquiry
                     $paymentId = array_pop($paymentId);
                     if (strlen($paymentId) > 0) {
                         $payment = \tabs\api\booking\Payment::getPayment(
-                            $booking->getBookingId(), 
+                            $booking->getBookingId(),
                             $paymentId
                         );
                         if ($payment) {
@@ -328,19 +328,19 @@ class Booking extends \tabs\api\booking\Enquiry
         // Return populated booking object
         return $booking;
     }
-    
+
     // ------------------ Public Functions --------------------- //
-    
+
     /**
      * Function used to check if a customer has been set or not
-     * 
+     *
      * @return boolean
      */
     public function hasCustomer()
     {
         return !is_null($this->getCustomer());
     }
-    
+
     /**
      * Retrieve the wnumber of the booking
      *
@@ -481,7 +481,7 @@ class Booking extends \tabs\api\booking\Enquiry
         // Could not update booking note
         return false;
     }
-    
+
     /**
      * Function used to determine how much of the booking has been paid
      *
@@ -509,7 +509,7 @@ class Booking extends \tabs\api\booking\Enquiry
      * @throws Exception
      */
     public function setCustomer(
-        \tabs\api\core\Customer $customer, 
+        \tabs\api\core\Customer $customer,
         $saveCustomer = true
     ) {
         $this->customer = $customer;
@@ -609,7 +609,7 @@ class Booking extends \tabs\api\booking\Enquiry
             }
         } else {
             throw new \tabs\api\client\ApiException(
-                $extraResponse, 
+                $extraResponse,
                 'Invalid extra request'
             );
         }
@@ -799,11 +799,11 @@ class Booking extends \tabs\api\booking\Enquiry
             return true;
         } else {
             throw new \tabs\api\client\ApiException(
-                $conf, 
+                $conf,
                 'Invalid confirmation request'
             );
         }
-        
+
         return false;
     }
 
@@ -914,7 +914,7 @@ class Booking extends \tabs\api\booking\Enquiry
             return true;
         } else {
             throw new \tabs\api\client\ApiException(
-                $conf, 
+                $conf,
                 'Invalid promotion code request'
             );
         }
@@ -945,34 +945,34 @@ class Booking extends \tabs\api\booking\Enquiry
             return true;
         } else {
             throw new \tabs\api\client\ApiException(
-                $conf, 
+                $conf,
                 'Unable to remove promotion'
             );
         }
     }
-    
+
     /**
      * Get the property object
-     * 
+     *
      * @return \tabs\api\property\Property
      */
     public function getProperty()
     {
         return \tabs\api\property\Property::getProperty(
-            $this->getPropertyRef(), 
+            $this->getPropertyRef(),
             $this->getBrandCode()
         );
     }
-    
+
     /**
-     * Function used to process a $_POST response from sagepay and add a 
+     * Function used to process a $_POST response from sagepay and add a
      * credit card charge in if required.
-     * 
-     * @param array   $array   Response array, typically from a $_POST response 
+     *
+     * @param array   $array   Response array, typically from a $_POST response
      * within the sagepay callback.
      * @param boolean $useFull Set to true if the customer has paid their full
      * balance.
-     * 
+     *
      * @return Payment
      */
     public function processSagepayResponse($array, $useFull = false)
@@ -991,8 +991,8 @@ class Booking extends \tabs\api\booking\Enquiry
         $CV2Result = $this->assignArrayValue($array, 'CV2Result', '');
         $GiftAid = $this->assignArrayValue($array, 'GiftAid', '');
         $ThreeDSecureStatus = $this->assignArrayValue(
-            $array, 
-            '3DSecureStatus', 
+            $array,
+            '3DSecureStatus',
             ''
         );
         $CAVV = $this->assignArrayValue($array, 'CAVV', '');
@@ -1000,25 +1000,25 @@ class Booking extends \tabs\api\booking\Enquiry
         $Last4Digits = $this->assignArrayValue($array, 'Last4Digits', '');
         $VPSSignature = $this->assignArrayValue($array, 'VPSSignature', '');
         $Surcharge = $this->assignArrayValue($array, 'Surcharge', 0);
-        
+
         $paymentType = 'deposit';
         if ($this->getDepositAmount() >= $this->getTotalPrice() || $useFull) {
             $paymentType = 'balance';
         }
-        
+
         // Remove credit card extra if found
         $this->removeExtra('CCC');
-        
+
         // Create amount variable.  Use full price if option is
         // chosen.
         $amount = $this->getPayableAmount($useFull);
-        
+
         // Change payment type to be credit card charge
-        if ($Surcharge > 0) {
+        if ($Status == 'OK' && $Surcharge > 0) {
             $paymentType .= '-ccc';
             $this->addNewExtra('CCC', 1, $Surcharge);
             $amount = $amount + $Surcharge;
-        }        
+        }
 
         // Create new payment object
         $payment = new \tabs\api\booking\Payment();
@@ -1040,21 +1040,21 @@ class Booking extends \tabs\api\booking\Enquiry
         $payment->setVpsSignature($VPSSignature);
         $payment->setCavv($CAVV);
         $payment->setGiftAid($GiftAid);
-        
+
         // Add new payment to booking
         $this->addNewPayment($payment);
-        
+
         return $payment;
     }
-    
-    
+
+
     /**
      * Get a payable amount.  Returns the full price if the deposit amount
      * is greater than or equal to the total price.
-     * 
+     *
      * @param boolean $useFull Set to true if the customer has paid their full
      * balance.
-     * 
+     *
      * @return float
      */
     public function getPayableAmount($useFull = false)
@@ -1138,7 +1138,7 @@ class Booking extends \tabs\api\booking\Enquiry
         );
 
         // Loop through the accessors of the requested booking object
-        if ($booking) {            
+        if ($booking) {
             foreach (get_class_vars(\tabs\api\pricing\Pricing) as $property) {
                 $setter = 'set' . ucfirst($property);
                 $getter = 'get' . ucfirst($property);
