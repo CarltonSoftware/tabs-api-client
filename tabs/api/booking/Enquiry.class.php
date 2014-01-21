@@ -215,7 +215,9 @@ class Enquiry extends \tabs\api\core\Base
                 if (method_exists($this->pricing, $func)) {
                     if (count($args) > 0) {
                         return call_user_func_array(
-                                array($this->pricing, $func), $args);
+                            array($this->pricing, $func), 
+                            $args
+                        );
                     } else {
                         return call_user_func(array($this->pricing, $func));
                     }
