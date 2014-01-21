@@ -232,27 +232,19 @@ class Booking extends \tabs\api\booking\Enquiry
 
         // Add pricing object, check price is greater than zero first
         // else throw exception
-        $pricing = \tabs\api\pricing\Pricing::factory($bookingData);
+        $booking->setPricing(
+            \tabs\api\pricing\Pricing::factory($bookingData)
+        );
 
-        // Check price
-        if ($pricing->getTotalPrice() > 0) {
-            $booking->setPricing($pricing);
+        // Set party size
+        $booking->getPricing()->setPartySize(
+            $booking->getAdults()
+            + $booking->getChildren()
+            + $booking->getInfants()
+        );
 
-            // Set party size
-            $booking->getPricing()->setPartySize(
-                $booking->getAdults()
-                + $booking->getChildren()
-                + $booking->getInfants()
-            );
-
-            // Price found, set available
-            $booking->getPricing()->setAvailable(true);
-        } else {
-            throw new \tabs\api\client\ApiException(
-                null,
-                'Price not found for booking'
-            );
-        }
+        // Price found, set available
+        $booking->getPricing()->setAvailable(true);
 
         // Add customer object
         if (property_exists($bookingData, "customer")
@@ -406,21 +398,20 @@ class Booking extends \tabs\api\booking\Enquiry
             )
         );
 
-        if ($conf) {
+        if ($conf && $conf->status == 201) {
             $notes = explode('/', $conf->location);
             $noteId = array_pop($notes);
-            if (is_numeric($noteId)) {
-                $this->notes[$noteId] = (object) array(
-                    'message' => $message,
-                    'visible' => (($visible) ? 'public' : 'private')
-                );
-                return $noteId;
-            }
-            return $conf;
+            $this->notes[$noteId] = (object) array(
+                'message' => $message,
+                'visible' => (($visible) ? 'public' : 'private')
+            );
+            return $noteId;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $conf,
+                'Could not add note to booking'
+            );
         }
-
-        // Could not add note to booking
-        return false;
     }
 
     /**
@@ -453,10 +444,12 @@ class Booking extends \tabs\api\booking\Enquiry
                 'visible' => $visible
             );
             return true;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $conf,
+                'Could not update booking note'
+            );
         }
-
-        // Could not update booking note
-        return false;
     }
 
     /**
@@ -476,10 +469,12 @@ class Booking extends \tabs\api\booking\Enquiry
         if ($conf && $conf->status == 204) {
             unset($this->notes[$noteId]);
             return true;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $conf,
+                'Could not delete booking note'
+            );
         }
-
-        // Could not update booking note
-        return false;
     }
 
     /**
@@ -512,9 +507,10 @@ class Booking extends \tabs\api\booking\Enquiry
         \tabs\api\core\Customer $customer,
         $saveCustomer = true
     ) {
+        // Add customer object
         $this->customer = $customer;
+        
         if ($saveCustomer && $this->getBookingId() != '') {
-
             // Add customer via an api request
             $conf = \tabs\api\client\ApiClient::getApi()->put(
                 "/booking/{$this->getBookingId()}/customer",
@@ -523,9 +519,10 @@ class Booking extends \tabs\api\booking\Enquiry
 
             // Throw exception if status or response not valid
             if ($conf && $conf->status != 204) {
+                $this->customer = null;
                 throw new \tabs\api\client\ApiException(
                     $conf,
-                    'Error saving customer onto booking' . $conf->body
+                    'Error saving customer onto booking: ' . $conf->body
                 );
             }
         }
@@ -548,12 +545,12 @@ class Booking extends \tabs\api\booking\Enquiry
     /**
      * Clears the party details object
      *
-     * @return void
+     * @return boolean
      */
     public function clearPartyMembers()
     {
         $this->partyDetails = array();
-        $this->setPartyDetails();
+        return $this->setPartyDetails();
     }
 
     /**
@@ -613,7 +610,6 @@ class Booking extends \tabs\api\booking\Enquiry
                 'Invalid extra request'
             );
         }
-        return false;
     }
 
     /**
@@ -632,6 +628,8 @@ class Booking extends \tabs\api\booking\Enquiry
      * Removes an extra from the object and via an api call
      *
      * @param string $extraCode Extra code, defined in Tabs
+     * 
+     * @throws \tabs\api\client\ApiException
      *
      * @return boolean
      */
@@ -653,8 +651,9 @@ class Booking extends \tabs\api\booking\Enquiry
 
                 return ($extra->status == 204);
             }
+        } else {
+            return false;
         }
-        return false;
     }
 
 
@@ -714,42 +713,32 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @return boolean
      *
-     * @throws Exception
+     * @throws \tabs\api\client\ApiException
      */
     public function setPartyDetails()
     {
-        // Check for a booking id
-        if ($this->getBookingId() != '') {
-            $partyDetails = array();
-            foreach ($this->getPartyDetails() as $detail) {
-                $partyDetails[] = $detail->toArray();
-            }
-
-            // Add party detail via an api request
-            $conf = \tabs\api\client\ApiClient::getApi()->put(
-                "/booking/{$this->getBookingId()}/party",
-                array(
-                    'data' => json_encode(array('party' => $partyDetails))
-                )
-            );
-
-            // Throw exception if status or response not valid
-            if ($conf && $conf->status != 204) {
-                throw new \tabs\api\client\ApiException(
-                    $conf,
-                    'Error saving party details onto booking'
-                );
-            } else {
-                return true;
-            }
-        } else {
-            throw new \tabs\api\client\ApiException(
-                null,
-                'Error saving party details onto booking, no booking id defined'
-            );
+        $partyDetails = array();
+        foreach ($this->getPartyDetails() as $detail) {
+            $partyDetails[] = $detail->toArray();
         }
 
-        return false;
+        // Add party detail via an api request
+        $conf = \tabs\api\client\ApiClient::getApi()->put(
+            "/booking/{$this->getBookingId()}/party",
+            array(
+                'data' => json_encode(array('party' => $partyDetails))
+            )
+        );
+
+        // Throw exception if status or response not valid
+        if ($conf && $conf->status != 204) {
+            throw new \tabs\api\client\ApiException(
+                $conf,
+                'Error saving party details onto booking'
+            );
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -845,11 +834,9 @@ class Booking extends \tabs\api\booking\Enquiry
         } else {
             throw new \tabs\api\client\ApiException(
                 $conf,
-                'Invalid confirmation request ' . $conf->status
+                'Invalid payment post ' . $conf->body
             );
         }
-
-        return false;
     }
 
     /**

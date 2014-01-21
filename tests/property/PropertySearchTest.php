@@ -3,26 +3,13 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class PropertySearchTest extends PHPUnit_Framework_TestCase
+class PropertySearchTest extends ApiClientClassTest
 {
-
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
-    {
-        $route = "http://api-dev.nocc.co.uk/~alex/tocc-sy2/web/app.php/";
-        \tabs\api\client\ApiClient::factory($route, '', '');
-    }
-
-
-
     /**
      * Test the property search end point
      *
@@ -31,15 +18,16 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
     public function testPropertySearch()
     {
         $propSearch = \tabs\api\property\PropertySearch::factory();
+        $total = \tabs\api\utility\Utility::getApiInformation()->getTotalNumberOfProperties();
 
         $this->assertEquals(
             $propSearch->getTotal(),
-            28
+            $total
         );
 
         $this->assertEquals(
             $propSearch->getMaxPages(),
-            3
+            ceil($total / 10)
         );
 
         $this->assertEquals(
@@ -83,7 +71,7 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $propSearch->getSearchInfo(),
-            '1 to 10 of 28'
+            '1 to 10 of ' . $total
         );
 
         $this->assertTrue(
@@ -99,7 +87,10 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse(
-            in_array(4, $propSearch->getPagination())
+            in_array(
+                ceil($total / 10) + 1,
+                $propSearch->getPagination()
+            )
         );
 
         // Change label to Cottage
@@ -156,21 +147,19 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
      */
     public function testPropertySearchAll()
     {
-        $propSearch = \tabs\api\property\PropertySearch::factory(
-            'specialOffer=true',
-            1,
-            9999,
-            'accom_desc'
+        $propSearch = \tabs\api\property\PropertySearch::fetchAll(
+            '',
+            'accom_desc',
+            '',
+            array(
+                'id'
+            )
         );
+        $total = \tabs\api\utility\Utility::getApiInformation()->getTotalNumberOfProperties();
 
         $this->assertEquals(
             $propSearch->getTotal(),
-            8
-        );
-
-        $this->assertEquals(
-            $propSearch->getMaxPages(),
-            1
+            $total
         );
 
         $this->assertEquals(
@@ -184,24 +173,6 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            $propSearch->getPageSize(),
-            8
-        );
-
-        $this->assertTrue(
-            in_array(1, $propSearch->getPagination())
-        );
-
-        $this->assertFalse(
-            in_array(4, $propSearch->getPagination())
-        );
-
-        $this->assertEquals(
-            $propSearch->getFilter(),
-            'specialOffer=true'
-        );
-
-        $this->assertEquals(
             $propSearch->getOrder(),
             'accom_desc'
         );
@@ -209,6 +180,87 @@ class PropertySearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             $propSearch->getSearchInfo(),
             'All'
+        );
+    }
+
+    /**
+     * Test labels
+     * 
+     * @return void
+     */
+    public function testLabels()
+    {
+        $propSearch = new \tabs\api\property\PropertySearch(0, 0, 0, 0);
+        $propSearch->setTotalResults(1);
+        $this->assertEquals(
+            $propSearch->getLabel(),
+            'Property'
+        );
+        
+        $propSearch->setPageSize(20);
+        $this->assertEquals(1, $propSearch->getEnd());
+        $this->assertEquals(1, count($propSearch->getPagination()));
+
+        $propSearch = new \tabs\api\property\PropertySearch(0, 0, 0, 0);
+        $propSearch->setTotalResults(5);
+        $this->assertEquals(
+            $propSearch->getLabel(),
+            'Properties'
+        );
+
+        $propSearch = new \tabs\api\property\PropertySearch(0, 0, 0, 0);
+        $propSearch->setTotalResults(0);
+        $this->assertEquals(
+            $propSearch->getLabel(),
+            'Properties'
+        );
+    }
+
+    /**
+     * Test query string
+     * 
+     * @return void
+     */
+    public function testQuery()
+    {
+        $propSearch = new \tabs\api\property\PropertySearch(0, 0, 0, 0);
+        $propSearch->setTotalResults(100);
+        $propSearch->setPageSize(20);
+        $this->assertEquals(
+            $propSearch->getQuery(1),
+            'page=1&pageSize=20'
+        );
+
+        $propSearch->setOrder('accom_desc');
+        $this->assertEquals(
+            $propSearch->getQuery(1),
+            'page=1&pageSize=20&orderBy=accom_desc'
+        );
+
+        $propSearch->setFilter('pets=Y');
+        $this->assertEquals(
+            $propSearch->getQuery(1),
+            'page=1&pageSize=20&orderBy=accom_desc&pets=Y'
+        );
+    }
+
+
+    /**
+     * Test the property search end point
+     *
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testPropertySearchException()
+    {
+        \tabs\api\client\ApiClient::getApi()->setUrlRoute(
+            'http://xxx.api.carltonsoftware.co.uk/'
+        );
+        $propSearch = \tabs\api\property\PropertySearch::factory(
+            '',
+            1,
+            9999
         );
     }
 }

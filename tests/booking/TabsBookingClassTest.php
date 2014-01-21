@@ -8,31 +8,17 @@ $file = dirname(__FILE__)
 require_once $file;
 
 class TabsBookingClassTest extends PHPUnit_Framework_TestCase
-{
+{    
     /**
-     * Resource
+     * Test invalid booking request
      * 
-     * @var \tabs\api\booking\TabsBooking
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return null 
      */
-    protected $booking;
-
-    /**
-     * Api root
-     *
-     * @var string
-     */
-    var $route = "http://carltonsoftware.apiary.io/";
-    
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
+    public function testInvalidBookingRequest()
     {
-        \tabs\api\client\ApiClient::factory($this->route);
-        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
-        $this->tabsBooking = \tabs\api\booking\TabsBooking::getBooking(299463);
+        \tabs\api\booking\TabsBooking::getBooking(1234);
     }
     
     /**
@@ -42,7 +28,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
      */
     public function testGetTabsBooking()
     {
-        $booking = $this->tabsBooking;
+        $booking = $this->_getBooking();
         $this->assertEquals("mousecott", $booking->getPropertyRef());
         $this->assertEquals("mousecott", $booking->getProperty()->getPropref());
         $this->assertEquals("SS", $booking->getBrandCode());
@@ -80,6 +66,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("01-01", date("m-d", $booking->getSecurityDepositDueDate()));
         $this->assertEquals(0, $booking->getSecurityDepositAmount());
         $this->assertEquals(0, $booking->getSecurityDepositPaid());
+        $this->assertEquals(510.00, $booking->getBalanceAmountWithSecurityDeposit());
     }
     
     /**
@@ -108,9 +95,21 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $payment->setVpsSignature("d6782b2c213fa212a");
         $payment->setVpsTxId("231d43aa4");
         
-        $booking = $this->tabsBooking;
+        $booking = $this->_getBooking();
         $this->assertTrue($booking->addPayment($payment));
         $this->assertEquals(0.00, $booking->getBalanceAmount());
         
+    }
+    
+    /**
+     * Return a tab booking object
+     * 
+     * @return \tabs\api\booking\TabsBooking
+     */
+    private function _getBooking()
+    {
+        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
+        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
+        return \tabs\api\booking\TabsBooking::getBooking(299463);
     }
 }

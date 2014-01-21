@@ -17,30 +17,13 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class CreateBookingTest extends PHPUnit_Framework_TestCase
+class CreateBookingTest extends ApiClientClassTest
 {
-    /**
-     * Booking object
-     *
-     * @var \tabs\api\booking\Booking
-     */
-    var $booking;
-    
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
-    {
-        $route = "http://zz.api.carltonsoftware.co.uk/";
-        \tabs\api\client\ApiClient::factory($route, 'mouse', 'cottage');
-    }
-
     /**
      * Find an available property
      *

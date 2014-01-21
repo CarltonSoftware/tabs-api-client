@@ -3,29 +3,23 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class OwnerTest extends PHPUnit_Framework_TestCase
-{
+class OwnerTest extends ApiClientClassTest
+{    
     /**
-     * Owner object
+     * Api Exception object by requesting an invalid owner
      * 
-     * @var Owner
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return null 
      */
-    var $owner;
-    
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
+    public function testInvalidOwner()
     {
-        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
-        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
-        $this->owner = \tabs\api\core\Owner::create('JBLOG');
+        \tabs\api\core\Owner::create('XXX123');
     }
     
     /**
@@ -80,48 +74,49 @@ class OwnerTest extends PHPUnit_Framework_TestCase
      */
     public function testCreateOwner()
     {
-        $owner = $this->owner;
-        
-        $this->assertEquals("JBLOG", $owner->getReference());
-        $this->assertEquals("SS", $owner->getBrandCode());
-        $this->assertEquals("SS", $owner->getAccountingBrandCode());
+        $owner = \tabs\api\core\Owner::create('JOHNS1');
+       
+        $this->assertEquals("JOHNS1", $owner->getReference());
+        $this->assertEquals("ZZ", $owner->getBrandCode());
+        $this->assertEquals("ZZ", $owner->getAccountingBrandCode());
         
         // Check Name
-        $this->assertEquals("Mr Joe Bloggs", $owner->getFullName());
+        $this->assertEquals("Mr & Mrs S Pearson", $owner->getFullName());
+        $this->assertEquals("Mr & Mrs Pearson", $owner->getFullName(false));
         
         // Check Address
-        $this->assertEquals("Carlton House", $owner->getAddress()->getAddr1());
-        $this->assertEquals("Market Place", $owner->getAddress()->getAddr2());
-        $this->assertEquals("Reepham", $owner->getAddress()->getTown());
-        $this->assertEquals("Norfolk", $owner->getAddress()->getCounty());
-        $this->assertEquals("NR10 4JJ", $owner->getAddress()->getPostcode());
-        $this->assertEquals("GB", $owner->getAddress()->getCountry());
+        $this->assertEquals("The Old Post Office", $owner->getAddress()->getAddr1());
+        $this->assertEquals("Charlton Kings", $owner->getAddress()->getAddr2());
+        $this->assertEquals("Loughborough", $owner->getAddress()->getTown());
+        $this->assertEquals("Renfrewshire", $owner->getAddress()->getCounty());
+        $this->assertEquals("S11 9RA", $owner->getAddress()->getPostcode());
+        $this->assertEquals("", $owner->getAddress()->getCountry());
         
         // Check phone numbers
-        $this->assertEquals("01603 871872", $owner->getDaytimePhone());
-        $this->assertEquals("01603 872871", $owner->getEveningPhone());
-        $this->assertEquals("07999 123456", $owner->getMobilePhone());
+        $this->assertEquals("08450550714", $owner->getDaytimePhone());
+        $this->assertEquals("08450550714", $owner->getEveningPhone());
+        $this->assertEquals("08450550714", $owner->getMobilePhone());
         
         // Check Email Address, fax, password and conf preferences
         $this->assertEquals("support@carltonsoftware.co.uk", $owner->getEmail());
-        $this->assertTrue($owner->isPostConfirmation());
-        $this->assertTrue($owner->isEmailConfirmation());
+        $this->assertFalse($owner->isPostConfirmation());
+        $this->assertFalse($owner->isEmailConfirmation());
         
         // CHeck bank details
-        $this->assertEquals("MR J BLOGGS", $owner->getBankAccountName());
-        $this->assertEquals("87560824", $owner->getBankAccountNumber());
-        $this->assertEquals("12-34-56", $owner->getBankAccountSortCode());
-        $this->assertEquals("HSBC", $owner->getBankName());
-        $this->assertEquals("HSBC", $owner->getBankAddress()->getAddr1());
-        $this->assertEquals("Market Place", $owner->getBankAddress()->getAddr2());
-        $this->assertEquals("Reepham", $owner->getBankAddress()->getTown());
-        $this->assertEquals("Norfolk", $owner->getBankAddress()->getCounty());
-        $this->assertEquals("NR10 4JJ", $owner->getBankAddress()->getPostcode());
-        $this->assertEquals("GB", $owner->getBankAddress()->getCountry());
+        $this->assertEquals("S & S John", $owner->getBankAccountName());
+        $this->assertEquals("", $owner->getBankAccountNumber());
+        $this->assertEquals("", $owner->getBankAccountSortCode());
+        $this->assertEquals("", $owner->getBankName());
+        $this->assertEquals("", $owner->getBankAddress()->getAddr1());
+        $this->assertEquals("", $owner->getBankAddress()->getAddr2());
+        $this->assertEquals("", $owner->getBankAddress()->getTown());
+        $this->assertEquals("", $owner->getBankAddress()->getCounty());
+        $this->assertEquals("", $owner->getBankAddress()->getPostcode());
+        $this->assertEquals("", $owner->getBankAddress()->getCountry());
         $this->assertEquals("", $owner->getBankReference());
         $this->assertEquals("", $owner->getBankPaymentReference());
         $this->assertEquals("", $owner->getVatNumber());
-        $this->assertTrue(!$owner->isVatRegistered());
+        $this->assertFalse($owner->isVatRegistered());
     }
     
     /**
@@ -131,7 +126,10 @@ class OwnerTest extends PHPUnit_Framework_TestCase
      */
     public function testOwnerPasswordAuthenticate()
     {
-        $this->assertEquals("204", \tabs\api\core\Owner::authenticate("JBLOG", "apassword"));
+        $this->assertEquals(
+            "204", 
+            \tabs\api\core\Owner::authenticate("JOHNS1", "34dd8f85")
+        );
     }
     
     /**
@@ -141,14 +139,14 @@ class OwnerTest extends PHPUnit_Framework_TestCase
      */
     public function testCreateOwnerBooking()
     {
-        $this->assertTrue(
-            $this->owner->setOwnerBooking(
-                "mousecott", 
-                strtotime("2012-07-01"), 
-                strtotime("2012-07-08"), 
-                "Staying their ourselves"
-            )
-        );
+//        $this->assertTrue(
+//            $this->_getOwner()->setOwnerBooking(
+//                "mousecott", 
+//                strtotime("2012-07-01"), 
+//                strtotime("2012-07-08"), 
+//                "Staying their ourselves"
+//            )
+//        );
     }
     
     /**
@@ -158,9 +156,9 @@ class OwnerTest extends PHPUnit_Framework_TestCase
      */
     public function testUpdateOwner()
     {
-        $this->assertTrue(
-            $this->owner->update()
-        );
+        //$this->assertTrue(
+        //    $this->_getOwner()->update()
+        //);
     }
     
     /**
@@ -170,8 +168,13 @@ class OwnerTest extends PHPUnit_Framework_TestCase
      */
     public function testUpdateOwnerPassword()
     {
-        $this->assertTrue(
-            $this->owner->updatePassword('apassword')
-        );
+        //$this->assertTrue(
+        //    $this->_getOwner()->updatePassword('34dd8f85')
+        //);
+    }
+    
+    private function _getOwner()
+    {
+        return \tabs\api\core\Owner::create('JOHNS1');
     }
 }

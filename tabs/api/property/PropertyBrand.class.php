@@ -28,7 +28,7 @@ namespace tabs\api\property;
  * 
  * @method string getBrandcode()
  * @method string getDescription()
- * @method string getSearchPrice()
+ * @method \tabs\api\pricing\Pricing getSearchPrice()
  * @method string getShort()
  * @method string getTeaser()
  * 

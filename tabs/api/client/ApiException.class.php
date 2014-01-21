@@ -77,7 +77,12 @@ class ApiException extends \RuntimeException
      */
     public function __toString()
     {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+        return sprintf(
+            '%s: [%s]: %s',
+            __CLASS__,
+            $this->code,
+            $this->message
+        );
     }
     
     /**
@@ -150,12 +155,11 @@ class ApiException extends \RuntimeException
      */
     private function _getErrorResponseFromObject($response, $key)
     {
-        if ($response) {
-            if (property_exists($response, "response")) {
-                if (property_exists($response->response, $key)) {
-                    return $response->response->$key;
-                }
-            }
+        if ($response 
+            && property_exists($response, "response")
+            && property_exists($response->response, $key)
+        ) {
+            return $response->response->$key;
         }
         return false;
     }

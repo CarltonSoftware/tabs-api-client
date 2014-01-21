@@ -3,29 +3,23 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class CustomerTest extends PHPUnit_Framework_TestCase
-{
+class CustomerTest extends ApiClientClassTest
+{    
     /**
-     * Customer object
+     * Api Exception object by requesting an invalid customer
      * 
-     * @var Customer
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return null 
      */
-    var $customer;
-    
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
+    public function testInvalidCustomer()
     {
-        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
-        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
-        $this->customer = \tabs\api\core\Customer::create('COTJ033');
+        \tabs\api\core\Customer::create('XXX123');
     }
     
     /**
@@ -47,7 +41,8 @@ class CustomerTest extends PHPUnit_Framework_TestCase
      */
     public function testGetCustomer()
     {
-        $this->_testCustomerObject($this->customer);
+        $customer = \tabs\api\core\Customer::create('WY13930');
+        $this->_testCustomerObject($customer);
     }
     
     /**
@@ -57,9 +52,10 @@ class CustomerTest extends PHPUnit_Framework_TestCase
      */
     public function testUpdateCustomer()
     {
-        $this->assertTrue(
-            $this->customer->update()
-        );
+        // $customer = \tabs\api\core\Customer::create('WY13930');
+        //$this->assertTrue(
+        //    $customer->update()
+        //);
     }
     
     /**
@@ -69,29 +65,28 @@ class CustomerTest extends PHPUnit_Framework_TestCase
      */
     private function _testCustomerObject($customer)
     {
-        $this->assertEquals("COTJ033", $customer->getReference());
-        $this->assertEquals("COTJ033", $customer->getCusref());
-        $this->assertEquals("Mr John Cottenden", $customer->getFullName());
-        $this->assertEquals("John", $customer->getSalutation());
-        $this->assertEquals("01603 871872", $customer->getDaytimePhone());
-        $this->assertEquals("01603 872871", $customer->getEveningPhone());
-        $this->assertEquals("07999 123456", $customer->getMobilePhone());
+        $this->assertEquals("WY13930", $customer->getReference());
+        $this->assertEquals("WY13930", $customer->getCusref());
+        $this->assertEquals("Mrs L Davies", $customer->getFullName());
+        $this->assertEquals("Mrs Davies", $customer->getFullName(false));
+        $this->assertEquals("", $customer->getSalutation());
+        $this->assertEquals("08450550714", $customer->getDaytimePhone());
+        $this->assertEquals("08450550714", $customer->getEveningPhone());
+        $this->assertEquals("08450550714", $customer->getMobilePhone());
         $this->assertEquals(
             "support@carltonsoftware.co.uk", 
             $customer->getEmail()
         );
-        $this->assertEquals(
-            true, 
+        $this->assertFalse(
             $customer->isPostConfirmation()
         );
-        $this->assertEquals(
-            true, 
+        $this->assertFalse(
             $customer->isEmailConfirmation()
         );
-        $this->assertTrue(!$customer->doNotEmail());
-        $this->assertTrue($customer->isOnEmailList());
+        $this->assertFalse($customer->doNotEmail());
+        $this->assertFalse($customer->isOnEmailList());
         $this->assertEquals(
-            "Carlton House, Market Place, Reepham, Norfolk, NR10 4JJ, GB", 
+            "Hawthorns, The Street, Kettering, Banffshire, CM23 2BQ, United Kingdom", 
             $customer->getAddress()->getFullAddress()
         );
     }

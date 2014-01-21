@@ -8,25 +8,7 @@ $file = dirname(__FILE__)
 require_once $file;
 
 class PropertyAvailabilityTest extends PHPUnit_Framework_TestCase
-{
-    /**
-     * Property object
-     * 
-     * @var \tabs\api\property\Property 
-     */
-    protected $property;
-    
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
-    {
-        $route = "http://carltonsoftware.apiary.io/";
-        \tabs\api\client\ApiClient::factory($route);
-    }
-    
+{    
     /**
      * Test the property end point
      * 
@@ -34,6 +16,9 @@ class PropertyAvailabilityTest extends PHPUnit_Framework_TestCase
      */
     public function testProperty()
     {
+        $route = "http://carltonsoftware.apiary.io/";
+        \tabs\api\client\ApiClient::factory($route);
+        
         $property = \tabs\api\property\Property::getProperty("mousecott", "SS");
         
         // Check available period

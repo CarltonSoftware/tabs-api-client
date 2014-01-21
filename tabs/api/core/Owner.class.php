@@ -346,6 +346,16 @@ class Owner Extends \tabs\api\core\Person
     }
     
     /**
+     * Return true if owner is VAT registered or not
+     * 
+     * @return boolean
+     */
+    public function isVatRegistered()
+    {
+        return $this->vatRegistered;
+    }
+    
+    /**
      * Give a property to the owner
      * 
      * @param \tabs\api\property\Property $property API Property object

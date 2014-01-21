@@ -3,47 +3,44 @@
 $file = dirname(__FILE__) 
     . DIRECTORY_SEPARATOR . '..' 
     . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tabs' 
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class ApiExceptionTest extends PHPUnit_Framework_TestCase
-{    
-    /**
-     * Sets up the tests
-     *
-     * @return null
-     */
-    public function setUp()
-    {
-        \tabs\api\client\ApiClient::factory(
-            'http://carltonsoftware.apiary.io/'
-        );
-        
-        // Need to do this as the apiary doesn't have the data wrapper
-        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
-    }
-    
+class ApiExceptionTest extends ApiClientClassTest
+{
     /**
      * Api Exception object by requesting an invalid property
+     * 
+     * @expectedException \tabs\api\client\ApiException
      * 
      * @return null 
      */
     public function testApiException()
     {
-//        try {
-//            PropertyFactory::getProperty('123', 'XX');
-//        } catch(ApiException $e) {
-//            $this->assertEquals(
-//                'Property not found, 123_XX', 
-//                $e->getMessage()
-//            );
-//            $this->assertEquals(
-//                'Property not found, 123_XX', 
-//                $e->getApiMessage()
-//            );
-//            $this->assertEquals(0, $e->getCode());
-//            $this->assertEquals(0, $e->getApiCode());
-//        }
+        \tabs\api\property\Property::getProperty('123', 'XX');
+    }
+    
+    /**
+     * Api Exception response object by requesting an invalid property
+     * 
+     * @return null 
+     */
+    public function testApiExceptionResponse()
+    {
+        try {
+            \tabs\api\property\Property::getProperty('123', 'XX');
+        } catch (Exception $ex) {
+            $this->assertEquals(-1, $ex->getApiCode());
+            $this->assertEquals(
+                'The property specified does not exist', 
+                $ex->getApiMessage()
+            );
+            $this->assertEquals(
+                'tabs\api\client\ApiException: [-1]: The property specified does not exist',
+                (string) $ex
+            );
+        }
     }
 }

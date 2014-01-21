@@ -14,144 +14,92 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function setUp()
+    public static function setUpBeforeClass()
     {
         \tabs\api\client\ApiClient::factory(
-            'http://carltonsoftware.apiary.io/',
+            'http://zz.api.carltonsoftware.co.uk/',
             'mouse',
             'cottage'
         );
-        
-        // Need to do this as the apiary doesn't have the data wrapper
-        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
     }
     
     /**
-     * Test a get request with the api client
+     * Return first available property with pricing
      * 
-     * @return void
+     * @return \tabs\api\property\Property
      */
-    public function testGet()
+    public function getFirstAvailablePropertyWithPricing()
     {
-        $homepage = \tabs\api\client\ApiClient::getApi()->get('/');
-        $this->assertEquals(200, $homepage->status);
+        if ($properties = $this->_getAvailableProperties()) {
+            foreach ($properties as $property) {
+                if ($property->getBrand()->getSearchPrice()) {
+                    return array_pop($properties);
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
     }
     
     /**
-     * Test a post request
+     * Return the first available property
      * 
-     * @return void
+     * @return \tabs\api\property\Property
      */
-    public function testPost()
+    public function getFirstAvailableProperty()
     {
-        $enquiry = \tabs\api\client\ApiClient::getApi()->post(
-            '/booking-enquiry',
+        if ($properties = $this->_getAvailableProperties()) {
+            return array_pop($properties);
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Return a list of all available properties
+     * 
+     * @return boolean
+     */
+    private function _getAvailableProperties()
+    {
+        // Create a new search helper object
+        $searchHelper = new \tabs\api\property\SearchHelper(
             array(
-                'data' => json_encode(
-                    array(
-                        'propertyRef' => 'mousecott',
-                        'brandCode' => 'SS',
-                        'fromDate'=>'2012-07-01',
-                        'toDate' => '2012-07-08',
-                        'partySize' => 5,
-                        'pets' => 2
-                    )
+                'fromDate' => date(
+                    'd-m-Y', 
+                    $this->_getNextSaturdayPlusOneWeek()
                 )
             )
         );
         
-        $this->assertEquals(201, $enquiry->status);
+        // Return all properties (second arg set to true)
+        $searchHelper->search('', true);
+        
+        if ($properties = $searchHelper->getProperties()) {
+            return $properties;
+        } else {
+            return false;
+        }
     }
     
     /**
-     * Test put
+     * Return next saturday
      * 
-     * This simulates adding an extra onto a booking
-     * 
-     * @return void 
+     * @return integer
      */
-    public function testPut()
+    private function _getNextSaturday()
     {
-        $extraTest = \tabs\api\client\ApiClient::getApi()->put(
-            '/booking/c70175835bda68846e/extra/PET',
-            array(
-                'data' => json_encode(
-                    array(
-                        'quantity' => 1
-                    )
-                )
-            )
-        );
-        
-        $this->assertEquals(201, $extraTest->status);
+        return strtotime('next saturday');
     }
     
     /**
-     * Test options
+     * Return the date of saturday week
      * 
-     * This simulates requesting which extras are available for a booking
-     * 
-     * @return void 
+     * @return integer
      */
-    public function testOptions()
+    private function _getNextSaturdayPlusOneWeek()
     {
-        $extraTest = \tabs\api\client\ApiClient::getApi()->options(
-            '/booking/c70175835bda68846e/extra'
-        );
-        
-        $this->assertEquals(200, $extraTest->status);
-    }
-    
-    /**
-     * Test delete
-     * 
-     * Simulates removing an extra from a booking
-     * 
-     * @return void 
-     */
-    public function testDelete()
-    {
-        $extraTest = \tabs\api\client\ApiClient::getApi()->delete(
-            '/booking/c70175835bda68846e/extra/PET'
-        );
-        
-        $this->assertEquals(204, $extraTest->status);
-    }
-    
-    /**
-     * Test the api client
-     * 
-     * @return void
-     */
-    public function testApiClient()
-    {
-        $api = \tabs\api\client\ApiClient::getApi();
-        $this->assertTrue(is_object($api));
-        $this->assertEquals(
-            'http://carltonsoftware.apiary.io', 
-            $api->getRoute()
-        );
-        $homepage = $api->get('/');        
-        $this->assertEquals(
-            1, 
-            count($api->getRoutes())
-        );
-        $this->assertEquals(
-            'cottage', 
-            $api->getSecret()
-        );
-        
-        $params = $api->getHmacParams(array('foo' => 'bar'));
-        $this->assertEquals(3, count($params));
-        $this->assertEquals(
-            '8f48ad6a17e08df9f3b9acb9be177fbfbfb111b0e099c339561186fea835cf3c', 
-            $params['hash']
-        );
-        $api->setApiKey('');
-        $api->setSecret('');
-        $this->assertEquals(
-            'foo=bar', 
-            $api->getHmacQuery(array('foo' => 'bar'))
-        );
+        return strtotime('+1 week', $this->_getNextSaturday());
     }
 }
