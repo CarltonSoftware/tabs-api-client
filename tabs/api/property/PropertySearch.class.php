@@ -163,7 +163,7 @@ class PropertySearch extends \tabs\api\core\Base
         if ($propertyData && $propertyData->status == 200) {
             $res = $propertyData->response;
             $pages = ceil(
-                $res->totalResults / 50
+                $res->totalResults / self::$_maxPageSize
             );
             if ($pages < 1) {
                 $pages = 1;
@@ -186,7 +186,7 @@ class PropertySearch extends \tabs\api\core\Base
                         'params' => self::_getParams(
                             $filter,
                             $i,
-                            50,
+                            self::$_maxPageSize,
                             $res->orderBy,
                             $res->searchId,
                             $fields,
