@@ -637,45 +637,45 @@ class BookingTest extends PHPUnit_Framework_TestCase
     public function testGetTabsBooking()
     {
         $booking = $this->_getTestBooking();
-        $booking->getTabsBooking();
-        $this->assertEquals("mousecott", $booking->getPropertyRef());
-        $this->assertEquals("mousecott", $booking->getProperty()->getPropref());
-        $this->assertEquals("SS", $booking->getBrandCode());
-        $this->assertEquals(299463, $booking->getBookingRef());
-        $this->assertEquals("2013-07-27", date("Y-m-d", $booking->getFromDate()));
-        $this->assertEquals("2013-08-03", date("Y-m-d", $booking->getToDate()));
-        $this->assertEquals("D", $booking->getStatus());
-        $this->assertEquals("COTJ033", $booking->getCusref());
-        $this->assertEquals("Cottenden", $booking->getSurname());
-        $this->assertEquals("Cottenden", $booking->getCustomer()->getSurname());
+        $tabsbooking = $booking->getTabsBooking();
+        $this->assertEquals("mousecott", $tabsbooking->getPropertyRef());
+        $this->assertEquals("mousecott", $tabsbooking->getProperty()->getPropref());
+        $this->assertEquals("SS", $tabsbooking->getBrandCode());
+        $this->assertEquals(299463, $tabsbooking->getBookingRef());
+        $this->assertEquals("2013-07-27", date("Y-m-d", $tabsbooking->getFromDate()));
+        $this->assertEquals("2013-08-03", date("Y-m-d", $tabsbooking->getToDate()));
+        $this->assertEquals("D", $tabsbooking->getStatus());
+        $this->assertEquals("COTJ033", $tabsbooking->getCusref());
+        $this->assertEquals("Cottenden", $tabsbooking->getSurname());
+        $this->assertEquals("Cottenden", $tabsbooking->getCustomer()->getSurname());
 
         // Party Details
         $this->assertEquals(
             "Mr J Cottenden, Ms A Griffiths",
-            $booking->getPartyDetails()
+            $tabsbooking->getPartyDetails()
         );
-        $this->assertEquals(2, $booking->getAdults());
-        $this->assertEquals(0, $booking->getChildren());
-        $this->assertEquals(0, $booking->getInfants());
+        $this->assertEquals(2, $tabsbooking->getAdults());
+        $this->assertEquals(0, $tabsbooking->getChildren());
+        $this->assertEquals(0, $tabsbooking->getInfants());
 
         // Commission
-        $this->assertEquals(563.26, $booking->getCommissionDueToOwner());
-        $this->assertEquals(0.00, $booking->getCommissionPaidToOwner());
-        $this->assertEquals(563.26, $booking->getCommissionOutstandingToOwner());
+        $this->assertEquals(563.26, $tabsbooking->getCommissionDueToOwner());
+        $this->assertEquals(0.00, $tabsbooking->getCommissionPaidToOwner());
+        $this->assertEquals(563.26, $tabsbooking->getCommissionOutstandingToOwner());
 
         // Price
-        $this->assertEquals(770.10, $booking->getTotalPrice());
-        $this->assertEquals(25.00, $booking->getBookingFee());
+        $this->assertEquals(770.10, $tabsbooking->getTotalPrice());
+        $this->assertEquals(25.00, $tabsbooking->getBookingFee());
 
         // Balance
-        $this->assertEquals("2013-10-19", date("Y-m-d", $booking->getBalanceDueDate()));
-        $this->assertEquals(510.00, $booking->getBalanceAmount());
+        $this->assertEquals("2013-10-19", date("Y-m-d", $tabsbooking->getBalanceDueDate()));
+        $this->assertEquals(510.00, $tabsbooking->getBalanceAmount());
 
         // Security Deposit
-        $this->assertEquals("01-01", date("m-d", $booking->getSecurityDepositDueDate()));
-        $this->assertEquals(0, $booking->getSecurityDepositAmount());
-        $this->assertEquals(0, $booking->getSecurityDepositPaid());
-        $this->assertEquals(510.00, $booking->getBalanceAmountWithSecurityDeposit());
+        $this->assertEquals("01-01", date("m-d", $tabsbooking->getSecurityDepositDueDate()));
+        $this->assertEquals(0, $tabsbooking->getSecurityDepositAmount());
+        $this->assertEquals(0, $tabsbooking->getSecurityDepositPaid());
+        $this->assertEquals(510.00, $tabsbooking->getBalanceAmountWithSecurityDeposit());
     }
 
 }
