@@ -437,6 +437,11 @@ class Property extends \tabs\api\core\Base
                 );
                 foreach ($brandData as $key => $val) {
 
+                    // Set the descriptions
+                    if (in_array($key, array("teaser", "short", "description"))) {
+                        $brand->setDescription($key, $val);
+                    }
+
                     // Start setting the booking brand info
                     if ($key == "pricing") {
                         if (isset($brandData->$key->bookingBrand)) {
@@ -654,7 +659,7 @@ class Property extends \tabs\api\core\Base
         }
 
         if (isset($this->brands[$brandcode])) {
-            return $this->brands[$brandcode]->getTeaser();
+            return $this->brands[$brandcode]->getDescription("teaser");
         }
 
         return '';
@@ -676,7 +681,7 @@ class Property extends \tabs\api\core\Base
         }
 
         if (isset($this->brands[$brandcode])) {
-            return $this->brands[$brandcode]->getShort();
+            return $this->brands[$brandcode]->getDescription("short");
         }
 
         return '';
@@ -698,7 +703,7 @@ class Property extends \tabs\api\core\Base
         }
 
         if (isset($this->brands[$brandcode])) {
-            return $this->brands[$brandcode]->getDescription();
+            return $this->brands[$brandcode]->getDescription("description");
         }
 
         return '';
