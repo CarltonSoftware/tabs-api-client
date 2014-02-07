@@ -437,6 +437,17 @@ class Property extends \tabs\api\core\Base
                 );
                 foreach ($brandData as $key => $val) {
 
+                    // Set the descriptions, mapping the API field to the descriptionttype within tabs
+                    if ($key == "teaser") {
+                        $brand->setDescription('TABSAVAIL', $val);
+                    }
+                    if ($key == "description") {
+                        $brand->setDescription('TABSLONG', $val);
+                    }
+                    if ($key == "short") {
+                        $brand->setDescription('TABSSHORT', $val);
+                    }
+
                     // Start setting the booking brand info
                     if ($key == "pricing") {
                         if (isset($brandData->$key->bookingBrand)) {
@@ -649,15 +660,7 @@ class Property extends \tabs\api\core\Base
      */
     public function getAvailabilityDescription($brandcode = '')
     {
-        if ($brandcode == '') {
-            $brandcode = $this->getAccountingBrand();
-        }
-
-        if (isset($this->brands[$brandcode])) {
-            return $this->brands[$brandcode]->getTeaser();
-        }
-
-        return '';
+        return $this->getDescription("TABSAVAIL", $brandcode);
     }
 
     /**
@@ -671,15 +674,7 @@ class Property extends \tabs\api\core\Base
      */
     public function getShortDescription($brandcode = '')
     {
-        if ($brandcode == '') {
-            $brandcode = $this->getAccountingBrand();
-        }
-
-        if (isset($this->brands[$brandcode])) {
-            return $this->brands[$brandcode]->getShort();
-        }
-
-        return '';
+        return $this->getDescription("TABSSHORT", $brandcode);
     }
 
     /**
@@ -693,15 +688,61 @@ class Property extends \tabs\api\core\Base
      */
     public function getFullDescription($brandcode = '')
     {
+        return $this->getDescription("TABSLONG", $brandcode);
+    }
+
+
+    /**
+     * Gets a description from a brand
+     *
+     * @param string $name     The name of the description to be returned
+     * @param string $brancode The brand to get the description from. Defaults to the accounting brand
+     *
+     * @return The description from $brand called $name
+     */
+    public function getDescription($name, $brandcode = '')
+    {
+        //If no brandcode is set use the accounting brandcode
         if ($brandcode == '') {
             $brandcode = $this->getAccountingBrand();
         }
 
+        //Lookup the description
         if (isset($this->brands[$brandcode])) {
-            return $this->brands[$brandcode]->getDescription();
+            if (!$this->brands[$brandcode]->hasDescription($name)) {
+                //The description called $name is not populated, try loading it from the /property/<ref>/description endpoint
+                $this->_loadAdditionalDescriptions($brandcode);
+            }
+            return $this->brands[$brandcode]->getDescription($name);
         }
 
         return '';
+    }
+
+
+    /**
+     * Loads additional property descriptions from the /property/<ref>/description endpoint
+     *
+     * @param string $brandcode The brandcode to load descriptions for
+     *
+     * @return void
+     */
+    private function _loadAdditionalDescriptions($brandcode)
+    {
+        $descriptionsObj = \tabs\api\client\ApiClient::getApi()->get(
+            sprintf(
+                '/property/%s_%s/description',
+                $this->getPropref(),
+                $brandcode
+            )
+        );
+
+        if ($descriptionsObj && $descriptionsObj->status == 200) {
+            foreach ($descriptionsObj->response as $description) {
+
+                $this->brands[$brandcode]->setDescription($description->descriptiontype, $description->description);
+            }
+        }
     }
 
     /**
@@ -1410,25 +1451,27 @@ class Property extends \tabs\api\core\Base
      *
      * @return array Array of descriptiontype and descriptions
      */
-    public function getAllDescriptions()
+    public function getAllDescriptions($brandcode = '')
     {
-        $descriptions = array();
-        $descriptionsObj = \tabs\api\client\ApiClient::getApi()->get(
-            sprintf(
-                '/property/%s_%s/description',
-                $this->getPropref(),
-                $this->getBrandcode()
-            )
-        );
 
-        if ($descriptionsObj && $descriptionsObj->status == 200) {
-            foreach ($descriptionsObj->response as $description) {
+        //If no brandcode is set use the accounting brandcode
+        if ($brandcode == '') {
+            $brandcode = $this->getAccountingBrand();
+        }
+
+        if (isset($this->brands[$brandcode])) {
+            $this->_loadAdditionalDescriptions($brandcode);
+            $descriptions = array();
+
+            foreach ($this->brands[$brandcode]->getDescriptions() as $descriptionType => $description) {
                 $descriptions[] = array(
-                    'descriptiontype'  => $description->descriptiontype,
-                    'description'      => $description->description
+                    'descriptiontype'  => $descriptionType,
+                    'description'      => $description
                 );
             }
         }
+
+
 
         return $descriptions;
     }

@@ -249,15 +249,15 @@ class UtilityTest extends ApiClientClassTest
             $this->assertTrue(is_string($brand->getEmail()));
             $this->assertTrue(is_string($brand->getTelephone()));
             $this->assertTrue(is_string($brand->getSagepayVendorName()));
-            $this->assertEquals(440, $brand->getNumberOfProperties());
+            $this->assertEquals(442, $brand->getNumberOfProperties());
 
             // Attributes
             $attributes = $resource->getAttributes();
-            $this->assertEquals(12, count($attributes));
+            $this->assertEquals(65, count($attributes));
             $attr = array_shift($attributes);
             $this->assertEquals("ATTR01", $attr->getCode());
-            $this->assertEquals("Character", $attr->getLabel());
-            $this->assertEquals("boolean", strtolower($attr->getType()));
+            $this->assertEquals("< Coast", $attr->getLabel());
+            $this->assertEquals("number", strtolower($attr->getType()));
         }
     }
 
