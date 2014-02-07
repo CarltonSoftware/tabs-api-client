@@ -146,9 +146,13 @@ class PropertyBrand extends \tabs\api\core\Base
      */
     public function getDescription($name = "TABSLONG")
     {
+        //Check description is set
+        if ($this->hasDescription($name)) {
+            //Return the description
+            return $this->descriptions[$name];
+        }
 
-        //Return the description
-        return $this->descriptions[$name];
+        return '';
     }
 
 

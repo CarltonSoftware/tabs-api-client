@@ -450,6 +450,18 @@ breaks');
 
     }
 
+
+    /**
+     * Test requesting a non-existent description
+     *
+     * @return void
+     */
+    public function testNonExistentDescription()
+    {
+        $description = $this->property->getDescription('DOESNOTEXIST');
+        $this->assertEquals('', $description);
+    }
+
     /**
      * Remove any new lines and whitepsace
      *
