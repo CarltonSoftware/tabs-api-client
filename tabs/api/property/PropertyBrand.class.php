@@ -137,6 +137,12 @@ class PropertyBrand extends \tabs\api\core\Base
     }
 
 
+    public function getAllDescriptions()
+    {
+        return $this->descriptions;
+    }
+
+
     /**
      * Gets a property description
      *
@@ -144,8 +150,20 @@ class PropertyBrand extends \tabs\api\core\Base
      *
      * @return The description identified by $name
      */
-    public function getDescription($name = "description")
+    public function getDescription($name = "TABSLONG")
     {
+
+        //Return the description
         return $this->descriptions[$name];
+    }
+
+
+    public function hasDescription($name = "TABSLONG")
+    {
+        if (isset($this->descriptions[$name])) {
+            return true;
+        }
+
+        return false;
     }
 }
