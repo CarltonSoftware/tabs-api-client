@@ -695,8 +695,8 @@ class Property extends \tabs\api\core\Base
     /**
      * Gets a description from a brand
      *
-     * @param string $name     The name of the description to be returned
-     * @param string $brancode The brand to get the description from. Defaults to the accounting brand
+     * @param string $name      The name of the description to be returned
+     * @param string $brandcode The brand to get the description from. Defaults to the accounting brand
      *
      * @return The description from $brand called $name
      */
@@ -1448,6 +1448,8 @@ class Property extends \tabs\api\core\Base
 
     /**
      * Gets all the descriptions of the property
+     *
+     * @param string $brandcode The brand to get the description from. Defaults to the accounting brand
      *
      * @return array Array of descriptiontype and descriptions
      */

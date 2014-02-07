@@ -166,7 +166,7 @@ class PropertyBrand extends \tabs\api\core\Base
      *
      * @param string $name The name of the description to check
      *
-     * @param true if a description called $name exists, otherwise false
+     * @return true if a description called $name exists, otherwise false
      */
     public function hasDescription($name = "TABSLONG")
     {
