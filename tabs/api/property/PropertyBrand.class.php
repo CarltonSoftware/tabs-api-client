@@ -131,6 +131,11 @@ class PropertyBrand extends \tabs\api\core\Base
     }
 
 
+    /**
+     * Returns all descriptions
+     *
+     * @return An array of descriptions
+     */
     public function getAllDescriptions()
     {
         return $this->descriptions;
@@ -156,6 +161,13 @@ class PropertyBrand extends \tabs\api\core\Base
     }
 
 
+    /**
+     * Checks whether a description with a specified name exists for this brand
+     *
+     * @param string $name The name of the description to check
+     *
+     * @param true if a description called $name exists, otherwise false
+     */
     public function hasDescription($name = "TABSLONG")
     {
         if (isset($this->descriptions[$name])) {

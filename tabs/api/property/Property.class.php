@@ -719,6 +719,14 @@ class Property extends \tabs\api\core\Base
         return '';
     }
 
+
+    /**
+     * Loads additional property descriptions from the /property/<ref>/description endpoint
+     *
+     * @param string $brandcode The brandcode to load descriptions for
+     *
+     * @return void
+     */
     private function _loadAdditionalDescriptions($brandcode)
     {
         $descriptionsObj = \tabs\api\client\ApiClient::getApi()->get(
