@@ -27,17 +27,11 @@ namespace tabs\api\property;
  * @link      http://www.carltonsoftware.co.uk
  *
  * @method string getBrandcode()
- * @method string getDescription()
  * @method \tabs\api\pricing\Pricing getSearchPrice()
- * @method string getShort()
- * @method string getTeaser()
  *
  * @method void setBookingBrand(string $brandCode)
  * @method void setBrandcode(string $brandCode)
- * @method void setDescription(string $description)
  * @method void setSearchPrice(\tabs\api\booking\Pricing $pricing)
- * @method void setShort(string $short)
- * @method void setTeaser(string $teaser)
  */
 class PropertyBrand extends \tabs\api\core\Base
 {
