@@ -1124,7 +1124,7 @@ class Booking extends \tabs\api\booking\Enquiry
             && $bookingCheck->status == 200
             && $bookingCheck->response != ''
         ) {
-            return self::createFromNode(
+            return \tabs\api\booking\TabsBooking::createFromNode(
                 $bookingCheck->response
             );
         } else {

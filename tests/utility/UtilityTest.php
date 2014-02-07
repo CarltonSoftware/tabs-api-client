@@ -1,10 +1,10 @@
 <?php
 
-$file = dirname(__FILE__) 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tests' 
-    . DIRECTORY_SEPARATOR . 'client' 
+$file = dirname(__FILE__)
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'tests'
+    . DIRECTORY_SEPARATOR . 'client'
     . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
@@ -45,7 +45,7 @@ class UtilityTest extends ApiClientClassTest
         $this->assertTrue(
             get_class($country) == 'tabs\api\core\Country'
         );
-        
+
         // Test
         $this->assertEquals("GB", $country->getAlpha2());
         $this->assertEquals("GBR", $country->getAlpha3());
@@ -184,7 +184,7 @@ class UtilityTest extends ApiClientClassTest
 
         // Test
         $this->assertTrue(count($locations) > 0);
-        
+
         $location = array_pop($locations);
 
         $foundLocation = \tabs\api\utility\Utility::findLocationFromSlug(
@@ -239,7 +239,7 @@ class UtilityTest extends ApiClientClassTest
 
         // Brands test
         $brands = $resource->getBrands();
-        
+
         if (count($brands) == 1) {
             // Test the first brand
             $brand = array_shift($brands);
@@ -257,7 +257,7 @@ class UtilityTest extends ApiClientClassTest
             $attr = array_shift($attributes);
             $this->assertEquals("ATTR01", $attr->getCode());
             $this->assertEquals("Character", $attr->getLabel());
-            $this->assertEquals("boolean", strtolower($attr->getType()));            
+            $this->assertEquals("boolean", strtolower($attr->getType()));
         }
     }
 
@@ -269,7 +269,7 @@ class UtilityTest extends ApiClientClassTest
      */
     public function testNumberOfProperties()
     {
-        $this->assertEquals(440, \tabs\api\utility\Utility::getNumberOfProperties());
+        $this->assertEquals(442, \tabs\api\utility\Utility::getNumberOfProperties());
     }
 
 
