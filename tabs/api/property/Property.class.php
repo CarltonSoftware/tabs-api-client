@@ -440,7 +440,9 @@ class Property extends \tabs\api\core\Base
                     // Start setting the booking brand info
                     if ($key == "pricing") {
                         if (isset($brandData->$key->bookingBrand)) {
-                            $brand->setBookingBrand($brandData->$key->bookingBrand);
+                            $brand->setBookingBrand(
+                                $brandData->$key->bookingBrand
+                            );
                         }
                         if (isset($brandData->$key->ranges)) {
                             $ranges = $brandData->$key->ranges;
@@ -981,8 +983,8 @@ class Property extends \tabs\api\core\Base
 
                 if ($date >= $startOfMonth && $date <= $endOfMonth) {
 
-                    // Find previous day and next day to add pre and post booking
-                    // classes
+                    // Find previous day and next day to add pre and post 
+                    // booking classes
                     $beforeBooking  = $this->_checkNextDayIsBooked($date);
                     $afterBooking = $this->_checkPreviousDayIsBooked($date);
 
@@ -1204,8 +1206,9 @@ class Property extends \tabs\api\core\Base
      *
      * @return void
      */
-    public function addSpecialOffer(\tabs\api\property\SpecialOffer $specialOffer)
-    {
+    public function addSpecialOffer(
+        \tabs\api\property\SpecialOffer $specialOffer
+    ) {
         $this->specialOffers[] = $specialOffer;
     }
 
