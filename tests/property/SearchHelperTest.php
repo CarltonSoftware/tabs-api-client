@@ -133,7 +133,7 @@ class SearchHelperTest extends ApiClientClassTest
         $searchHelper->setFields(array('id'));
         $searchHelper->setSearchPrefix('wp_');
         $properties = $searchHelper->search('', true);
-        $this->assertEquals(440, $searchHelper->getTotal());
+        $this->assertEquals(442, $searchHelper->getTotal());
 
         // Array should contain wp_page, wp_pageSize, wp_orderBy and wp_filter
         $this->assertEquals(4, count($searchHelper->getReservedKeys()));
