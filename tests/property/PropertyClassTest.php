@@ -1,10 +1,10 @@
 <?php
 
-$file = dirname(__FILE__) 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tests' 
-    . DIRECTORY_SEPARATOR . 'client' 
+$file = dirname(__FILE__)
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'tests'
+    . DIRECTORY_SEPARATOR . 'client'
     . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
@@ -25,7 +25,7 @@ class PropertyClassTest extends ApiClientClassTest
     public function setUp()
     {
         $this->property = \tabs\api\property\Property::getProperty(
-            'WAV541', 
+            'V541',
             'ZZ'
         );
     }
@@ -33,12 +33,12 @@ class PropertyClassTest extends ApiClientClassTest
     public function testProperty()
     {
         // Test property object
-        $this->assertEquals('WAV541_ZZ', $this->property->getId());
-        $this->assertEquals('WAV541', $this->property->getPropertyRef());
+        $this->assertEquals('V541_ZZ', $this->property->getId());
+        $this->assertEquals('V541', $this->property->getPropertyRef());
         $this->assertEquals('ZZ', $this->property->getBrandcode());
-        $this->assertEquals("wav541-zz", $this->property->getSlug());
+        $this->assertEquals("v541-zz", $this->property->getSlug());
         $this->assertEquals("Cottage 363", $this->property->getName());
-        $this->assertEquals('Cottage 363 (WAV541)', (string) $this->property);
+        $this->assertEquals('Cottage 363 (V541)', (string) $this->property);
         $this->assertEquals(7, $this->property->getAccommodates());
         $this->assertEquals(7, $this->property->getSleeps());
         $this->assertFalse($this->property->hasPets());
@@ -54,7 +54,7 @@ class PropertyClassTest extends ApiClientClassTest
 
         // Calendar url
         $this->assertEquals(
-            \tabs\api\client\ApiClient::getApi()->getRoute() . "/property/WAV541_ZZ/calendar",
+            \tabs\api\client\ApiClient::getApi()->getRoute() . "/property/V541_ZZ/calendar",
             $this->property->getCalendarUrl()
         );
 
@@ -85,12 +85,12 @@ class PropertyClassTest extends ApiClientClassTest
     public function testPropertyAddress()
     {
         $address = $this->property->getAddress();
-        $this->assertEquals("The Manse, Timperley, Chester, Cleveland, S11 9RA, GB", $address->getFullAddress());
+        $this->assertEquals("Spring Cottage, Main Road, PLYMOUTH, County Antrim, BL1 5HF, GB", $address->getFullAddress());
     }
-    
+
     /**
      * Test invalid address
-     * 
+     *
      * @return void
      */
     public function testNoAddress()
@@ -98,10 +98,10 @@ class PropertyClassTest extends ApiClientClassTest
         $property = new \tabs\api\property\Property();
         $this->assertFalse($property->getFullAddress());
     }
-    
+
     /**
      * Test image removal func
-     * 
+     *
      * @return void
      */
     public function testRemoveImages()
@@ -110,10 +110,10 @@ class PropertyClassTest extends ApiClientClassTest
         $property->removeImages();
         $this->assertEquals(0, count($property->getImages()));
     }
-    
+
     /**
      * Test area name/location name functions when objects are not set
-     * 
+     *
      * @return void
      */
     public function testBlankAreaAndLocations()
@@ -126,10 +126,10 @@ class PropertyClassTest extends ApiClientClassTest
         $this->assertEquals(0, $property->getLatitude());
         $this->assertEquals(0, $property->getLongitude());
     }
-    
+
     /**
      * Test shortlist function
-     * 
+     *
      * @return void
      */
     public function testPropertyShortlist()
@@ -137,7 +137,7 @@ class PropertyClassTest extends ApiClientClassTest
         $property = new \tabs\api\property\Property();
         $property->setShortlist(true);
         $this->assertTrue($property->isOnShortlist());
-        
+
         $property->setPromote(true);
         $this->assertTrue($property->isPromoted());
     }
@@ -205,21 +205,9 @@ class PropertyClassTest extends ApiClientClassTest
         $this->assertFalse($this->property->getBrand('XX'));
 
         // Test descriptions
-        $this->assertTrue(
-            is_string(
-                $this->property->getAvailabilityDescription()
-            )
-        );
-        $this->assertTrue(
-            is_string(
-                $this->property->getShortDescription()
-            )
-        );
-        $this->assertTrue(
-            is_string(
-                $this->property->getFullDescription()
-            )
-        );
+        $this->assertTrue(strlen($this->property->getAvailabilityDescription()) > 1);
+        $this->assertTrue(strlen($this->property->getShortDescription()) > 1);
+        $this->assertTrue(strlen($this->property->getFullDescription()) > 1);
         $this->assertEquals(
             '',
             $this->property->getAvailabilityDescription('XX')
@@ -231,6 +219,13 @@ class PropertyClassTest extends ApiClientClassTest
         $this->assertEquals(
             '',
             $this->property->getShortDescription('XX')
+        );
+
+        //Test getting additional descriptions
+        $this->assertTrue(
+            is_string(
+                $this->property->getDescription('ACCSTA')
+            )
         );
 
         // Test price ranges
@@ -252,7 +247,7 @@ class PropertyClassTest extends ApiClientClassTest
             'Call',
             $this->property->getPriceRangeString('2020', 'XX')
         );
-        
+
         if ($this->property->getPriceRange(date('Y'))->high > 0) {
             $this->assertEquals(
                 sprintf(
@@ -442,15 +437,29 @@ breaks');
      *
      * @return void
      */
-    public function testDescriptions()
+    public function testAllDescriptions()
     {
         $descriptions = $this->property->getAllDescriptions();
         $this->assertTrue(is_array($descriptions));
         if (count($descriptions) > 0) {
-            $this->assertEquals('TABSLONG', $descriptions[0]['descriptiontype']);
+            $this->assertEquals('TABSAVAIL', $descriptions[0]['descriptiontype']);
             $this->assertEquals('TABSSHORT', $descriptions[1]['descriptiontype']);
+            $this->assertEquals('TABSLONG', $descriptions[2]['descriptiontype']);
+            $this->assertEquals('ACCSTA', $descriptions[3]['descriptiontype']);
         }
 
+    }
+
+
+    /**
+     * Test requesting a non-existent description
+     *
+     * @return void
+     */
+    public function testNonExistentDescription()
+    {
+        $description = $this->property->getDescription('DOESNOTEXIST');
+        $this->assertEquals('', $description);
     }
 
     /**

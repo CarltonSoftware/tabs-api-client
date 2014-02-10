@@ -26,14 +26,14 @@ namespace tabs\api\booking;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  *
- * @method string                             getBookingId()
- * @method integer                            getAdults()
- * @method integer                            getChildren()
- * @method integer                            getInfants()
- * @method \tabs\api\core\Customer            getCustomer()
- * @method \tabs\api\boking\PartyDetail|Array getPartyDetails()
- * @method stdClass|Array                     getNotes()
- * @method \tabs\api\boking\Payment|Array     getPayments()
+ * @method string                               getBookingId()
+ * @method integer                              getAdults()
+ * @method integer                              getChildren()
+ * @method integer                              getInfants()
+ * @method \tabs\api\core\Customer              getCustomer()
+ * @method \tabs\api\boking\PartyDetail|Array   getPartyDetails()
+ * @method stdClass|Array                       getNotes()
+ * @method \tabs\api\boking\Payment|Array       getPayments()
  *
  * @method void setBookingId(string $bookingId)
  * @method void setAdults(integer $adults)
@@ -509,7 +509,7 @@ class Booking extends \tabs\api\booking\Enquiry
     ) {
         // Add customer object
         $this->customer = $customer;
-        
+
         if ($saveCustomer && $this->getBookingId() != '') {
             // Add customer via an api request
             $conf = \tabs\api\client\ApiClient::getApi()->put(
@@ -628,7 +628,7 @@ class Booking extends \tabs\api\booking\Enquiry
      * Removes an extra from the object and via an api call
      *
      * @param string $extraCode Extra code, defined in Tabs
-     * 
+     *
      * @throws \tabs\api\client\ApiException
      *
      * @return boolean
@@ -1107,6 +1107,33 @@ class Booking extends \tabs\api\booking\Enquiry
         return json_encode($this->toArray());
     }
 
+
+    /**
+     * Get a Tabs Booking from this booking id
+     *
+     * @return \tabs\api\booking\TabsBooking
+     */
+    public function getTabsBooking()
+    {
+
+        // Get the booking object
+        $bookingCheck = \tabs\api\client\ApiClient::getApi()->get(
+            "/booking/{$this->getBookingId()}/tabsbooking"
+        );
+        if ($bookingCheck
+            && $bookingCheck->status == 200
+            && $bookingCheck->response != ''
+        ) {
+            return \tabs\api\booking\TabsBooking::createFromNode(
+                $bookingCheck->response
+            );
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $bookingCheck,
+                "Booking not found"
+            );
+        }
+    }
     // ------------------ Private Functions --------------------- //
 
 

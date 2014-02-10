@@ -1,10 +1,10 @@
 <?php
 
-$file = dirname(__FILE__) 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tests' 
-    . DIRECTORY_SEPARATOR . 'client' 
+$file = dirname(__FILE__)
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'tests'
+    . DIRECTORY_SEPARATOR . 'client'
     . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
@@ -12,7 +12,7 @@ class SearchHelperTest extends ApiClientClassTest
 {
     /**
      * Test a new search helper object
-     * 
+     *
      * @return void
      */
     public function testNewSearchHelper()
@@ -49,7 +49,7 @@ class SearchHelperTest extends ApiClientClassTest
 
     /**
      * Test a default property search
-     * 
+     *
      * @return void
      */
     public function testSearchHelperSearch()
@@ -75,7 +75,7 @@ class SearchHelperTest extends ApiClientClassTest
 
         // Test pagination
         $this->assertEquals(
-            '<div class="page-links"><a href="/?page=1&orderBy=accom_desc&pets=Y&bedrooms=1" class="page active">1</a> <a href="/?page=2&orderBy=accom_desc&pets=Y&bedrooms=1" class="page ">2</a> <a href="/?page=3&orderBy=accom_desc&pets=Y&bedrooms=1" class="page ">3</a> <a href="/?page=4&orderBy=accom_desc&pets=Y&bedrooms=1" class="page ">4</a> <a href="/?page=2&orderBy=accom_desc&pets=Y&bedrooms=1" class="page next page1">Next</a> <a href="/?page=4&orderBy=accom_desc&pets=Y&bedrooms=1" class="page last page1">Last</a> <a href="/?page=1&pageSize=9999&orderBy=accom_desc&pets=Y&bedrooms=1" class="page all page1">All</a></div>', 
+            '<div class="page-links"><a href="/?page=1&orderBy=accom_desc&pets=Y&bedrooms=1" class="page active">1</a> <a href="/?page=2&orderBy=accom_desc&pets=Y&bedrooms=1" class="page ">2</a> <a href="/?page=3&orderBy=accom_desc&pets=Y&bedrooms=1" class="page ">3</a> <a href="/?page=4&orderBy=accom_desc&pets=Y&bedrooms=1" class="page ">4</a> <a href="/?page=2&orderBy=accom_desc&pets=Y&bedrooms=1" class="page next page1">Next</a> <a href="/?page=4&orderBy=accom_desc&pets=Y&bedrooms=1" class="page last page1">Last</a> <a href="/?page=1&pageSize=9999&orderBy=accom_desc&pets=Y&bedrooms=1" class="page all page1">All</a></div>',
             $searchHelper->getPaginationLinks()
         );
 
@@ -124,7 +124,7 @@ class SearchHelperTest extends ApiClientClassTest
 
     /**
      * Test a default property search for all properties
-     * 
+     *
      * @return void
      */
     public function testSearchHelperSearchAll()
@@ -141,7 +141,7 @@ class SearchHelperTest extends ApiClientClassTest
         $key = array_shift($searchHelper->getReservedKeys());
         $this->assertEquals('wp_page', $key);
 
-        // Next page will return 1 if next page is greater than the 
+        // Next page will return 1 if next page is greater than the
         // max page variable
         $this->assertEquals(1, $searchHelper->getNextPage());
 
