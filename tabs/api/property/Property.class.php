@@ -437,7 +437,8 @@ class Property extends \tabs\api\core\Base
                 );
                 foreach ($brandData as $key => $val) {
 
-                    // Set the descriptions, mapping the API field to the descriptionttype within tabs
+                    // Set the descriptions, mapping the API field to the 
+                    // descriptionttype within tabs
                     if ($key == "teaser") {
                         $brand->setDescription('TABSAVAIL', $val);
                     }
@@ -698,7 +699,8 @@ class Property extends \tabs\api\core\Base
      * Gets a description from a brand
      *
      * @param string $name      The name of the description to be returned
-     * @param string $brandcode The brand to get the description from. Defaults to the accounting brand
+     * @param string $brandcode The brand to get the description from. Defaults 
+     * to the accounting brand
      *
      * @return The description from $brand called $name
      */
@@ -712,7 +714,8 @@ class Property extends \tabs\api\core\Base
         //Lookup the description
         if (isset($this->brands[$brandcode])) {
             if (!$this->brands[$brandcode]->hasDescription($name)) {
-                //The description called $name is not populated, try loading it from the /property/<ref>/description endpoint
+                //The description called $name is not populated, try loading it 
+                //from the /property/<ref>/description endpoint
                 $this->_loadAdditionalDescriptions($brandcode);
             }
             return $this->brands[$brandcode]->getDescription($name);
@@ -723,7 +726,8 @@ class Property extends \tabs\api\core\Base
 
 
     /**
-     * Loads additional property descriptions from the /property/<ref>/description endpoint
+     * Loads additional property descriptions from 
+     * the /property/<ref>/description endpoint
      *
      * @param string $brandcode The brandcode to load descriptions for
      *
@@ -741,8 +745,10 @@ class Property extends \tabs\api\core\Base
 
         if ($descriptionsObj && $descriptionsObj->status == 200) {
             foreach ($descriptionsObj->response as $description) {
-
-                $this->brands[$brandcode]->setDescription($description->descriptiontype, $description->description);
+                $this->brands[$brandcode]->setDescription(
+                    $description->descriptiontype, 
+                    $description->description
+                );
             }
         }
     }
@@ -1452,7 +1458,8 @@ class Property extends \tabs\api\core\Base
     /**
      * Gets all the descriptions of the property
      *
-     * @param string $brandcode The brand to get the description from. Defaults to the accounting brand
+     * @param string $brandcode The brand to get the description from. 
+     * Defaults to the accounting brand
      *
      * @return array Array of descriptiontype and descriptions
      */
