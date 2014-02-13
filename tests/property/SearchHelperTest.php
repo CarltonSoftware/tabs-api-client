@@ -133,13 +133,14 @@ class SearchHelperTest extends ApiClientClassTest
         $searchHelper->setFields(array('id'));
         $searchHelper->setSearchPrefix('wp_');
         $properties = $searchHelper->search('', true);
-        $this->assertEquals(442, $searchHelper->getTotal());
+        $this->assertTrue($searchHelper->getTotal() > 0);
 
         // Array should contain wp_page, wp_pageSize, wp_orderBy and wp_filter
         $this->assertEquals(4, count($searchHelper->getReservedKeys()));
 
         $key = array_shift($searchHelper->getReservedKeys());
         $this->assertEquals('wp_page', $key);
+        $this->assertEquals('/', $searchHelper->getBaseUrl());
 
         // Next page will return 1 if next page is greater than the
         // max page variable

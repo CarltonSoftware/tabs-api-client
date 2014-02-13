@@ -22,5 +22,6 @@ class CoordinatesClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(270276476.0, $coord->lonToX());
         $this->assertEquals(176767045.0, $coord->latToY());
         $this->assertEquals(0, $coord->pixelDistance($coord));
+        $this->assertEquals('52.2345,1.2345', (string) $coord);
     }
 }

@@ -249,11 +249,11 @@ class UtilityTest extends ApiClientClassTest
             $this->assertTrue(is_string($brand->getEmail()));
             $this->assertTrue(is_string($brand->getTelephone()));
             $this->assertTrue(is_string($brand->getSagepayVendorName()));
-            $this->assertEquals(442, $brand->getNumberOfProperties());
+            $this->assertTrue($brand->getNumberOfProperties() > 0);
 
             // Attributes
             $attributes = $resource->getAttributes();
-            $this->assertEquals(65, count($attributes));
+            $this->assertTrue(count($attributes) > 0);
             $attr = array_shift($attributes);
             $this->assertEquals("ATTR01", $attr->getCode());
             $this->assertEquals("< Coast", $attr->getLabel());
@@ -269,7 +269,7 @@ class UtilityTest extends ApiClientClassTest
      */
     public function testNumberOfProperties()
     {
-        $this->assertEquals(442, \tabs\api\utility\Utility::getNumberOfProperties());
+        $this->assertTrue(\tabs\api\utility\Utility::getNumberOfProperties() > 0);
     }
 
 
@@ -280,6 +280,6 @@ class UtilityTest extends ApiClientClassTest
      */
     public function testGetAllLocations()
     {
-        $this->assertEquals(104, count(\tabs\api\utility\Utility::getAllLocations()));
+        $this->assertTrue(count(\tabs\api\utility\Utility::getAllLocations()) > 0);
     }
 }

@@ -28,10 +28,10 @@ try {
     );
     
     // Perform Search
-    $searchHelper->search('', true);
+    $searchHelper->search('1', true);
     
     $clusteredProperties = $searchHelper->cluster(
-        5, // Distance in kilometres
+        50, // Distance in kilometres
         9   // Map zoom level
     );
     
