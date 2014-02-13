@@ -854,46 +854,20 @@ class SearchHelper
      *
      * @param mixed $properties Optional array of properties
      *
-     * @return \tabs\api\core\Coordinates|boolean
+     * @return \tabs\api\core\Coordinates
      */
     public function getCenter($properties = false)
     {
         if (!$properties) {
             $properties = $this->getProperties();
         }
-
-        if ($properties) {
-            $maxLat  = -90;
-            $maxLong = -180;
-            $minLat  = 90;
-            $minLong = 180;
-
-            foreach ($properties as $property) {
-                if ($property->getLatitude() != 0
-                    && $property->getLongitude() != 0
-                ) {
-                    if ($property->getLatitude() < $minLat) {
-                        $minLat = $property->getLatitude();
-                    }
-                    if ($property->getLatitude() > $maxLat) {
-                        $maxLat = $property->getLatitude();
-                    }
-                    if ($property->getLongitude() < $minLong) {
-                        $minLong = $property->getLongitude();
-                    }
-                    if ($property->getLongitude() > $maxLong) {
-                        $maxLong = $property->getLongitude();
-                    }
-
-                    return new \Coordinates(
-                        ($minLat + (($maxLat - $minLat) / 2)),
-                        ($minLong + (($maxLong - $minLong) / 2))
-                    );
-                }
-            }
+        
+        $points = array();
+        foreach ($properties as $property) {
+            array_push($points, $property->getCoordinates());
         }
-
-        return false;
+        $bounds = $this->_getBounds($points);
+        return $bounds->center;
     }
 
     /**
@@ -901,46 +875,77 @@ class SearchHelper
      *
      * @param array $clusters Array of cluster elements
      *
-     * @return \tabs\api\core\Coordinates|boolean
+     * @return \tabs\api\core\Coordinates
      */
     public function getCenterOfCluster($clusters)
     {
-        if ($clusters) {
-            $maxLat  = -90;
-            $maxLong = -180;
-            $minLat  = 90;
-            $minLong = 180;
+        $bounds = $this->getBoundsOfCluster($clusters);
+        return $bounds->center;
+    }
 
-            foreach ($clusters as $cluster) {
-
-                // Get the position index of the cluster
-                $position = $cluster['position'];
-
-                if ($position->getLat() != 0
-                    && $position->getLong() != 0
-                ) {
-                    if ($position->getLat() < $minLat) {
-                        $minLat = $position->getLat();
-                    }
-                    if ($position->getLat() > $maxLat) {
-                        $maxLat = $position->getLat();
-                    }
-                    if ($position->getLong() < $minLong) {
-                        $minLong = $position->getLong();
-                    }
-                    if ($position->getLong() > $maxLong) {
-                        $maxLong = $position->getLong();
-                    }
-
-                    return new \Coordinates(
-                        ($minLat + (($maxLat - $minLat) / 2)),
-                        ($minLong + (($maxLong - $minLong) / 2))
-                    );
-                }
-            }
+    /**
+     * Get the center coordinates of a collection of properties
+     *
+     * @param array $clusters Array of cluster elements
+     *
+     * @return \tabs\api\core\Coordinates
+     */
+    public function getBoundsOfCluster($clusters)
+    {
+        $points = array();
+        foreach ($clusters as $cluster) {
+            array_push($points, $cluster['position']);
         }
+        return $this->_getBounds($points);
+    }
+    
+    /**public function getZoom($clusters)
+    {
+        $markerBounds = $this->getBoundsOfCluster($clusters);
+        $zoom = 21;
+        $found = false;
+        while ($found == false) {
+            $mapBounds = $this->getMapBounds($markerBounds->getCenter(), $zoom);
+            $found = $mapBounds->containsBounds($markerBounds);
+            $zoom--;
+        }
+        return $zoom + 1;
+    }
+    
+    public function getMapBounds($center, $zoom = 21, $width = 500, $height = 500)
+    {
+        $delta_x = round($width / 2);
+        $delta_y = round($height / 2);
+        
+        $lat = $center->getLat();
+        $long = $center->getLong();
+        
+        $north = \tabs\api\core\Mercator::adjustLatByPixels($lat, $delta_y * -1, $zoom);
+        $south = \tabs\api\core\Mercator::adjustLatByPixels($lat, $delta_y, $zoom);
+        $west = \tabs\api\core\Mercator::adjustLonByPixels($long, $delta_x * -1, $zoom);
+        $east = \tabs\api\core\Mercator::adjustLonByPixels($long, $delta_x, $zoom);
+        
+        return new \tabs\api\core\Bounds(
+            array(
+                new \tabs\api\core\Coordinates($north, $west),
+                new \tabs\api\core\Coordinates($south, $east)
+            )
+        );
+    }*/
 
-        return false;
+
+    // --------------------- Private Functions -------------------------- //
+    
+    /**
+     * Get the bounding box of a set of coordinates
+     * 
+     * @param array $points Array of Coordindate objects
+     * 
+     * @return stdClass
+     */
+    private function _getBounds($points)
+    {
+        return new \tabs\api\core\Bounds($points);
     }
 
     /**
@@ -963,11 +968,7 @@ class SearchHelper
             pow(($x1 - $x2), 2) + pow(($y1 - $y2), 2)
         ) >> (21 - $zoom);
     }
-
-
-    // --------------------- Private Functions -------------------------- //
-
-
+    
     /**
      * Creates a the search parameters
      *
@@ -1052,3 +1053,35 @@ class SearchHelper
         return array_reverse($arr, true);
     }
 }
+
+
+
+/**class Mercator
+{
+    public static $offset = 268435456;
+    public static $radius = 85445659.44705395; // $offset / pi();
+    
+    static function LonToX($lon) {
+        return round(self::$offset + self::$radius * $lon * pi() / 180);        
+    }
+
+    static function LatToY($lat) {
+        return round(self::$offset - self::$radius * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180))) / 2);
+    }
+
+    static function XToLon($x) {
+        return ((round($x) - self::$offset) / self::$radius) * 180/ pi(); 
+    }
+
+    static function YToLat($y) {
+        return (pi() / 2 - 2 * atan(exp((round($y) - self::$offset) / self::$radius))) * 180 / pi(); 
+    }
+
+    static function adjustLonByPixels($lon, $delta, $zoom) {
+        return self::XToLon(self::LonToX($lon) + ($delta << (21 - $zoom)));
+    }
+
+    static function adjustLatByPixels($lat, $delta, $zoom) {
+        return self::YToLat(self::LatToY($lat) + ($delta << (21 - $zoom)));
+    }
+}*/
