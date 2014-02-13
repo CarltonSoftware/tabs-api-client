@@ -920,10 +920,14 @@ class SearchHelper
         $lat = $center->getLat();
         $long = $center->getLong();
         
-        $north = \tabs\api\core\Mercator::adjustLatByPixels($lat, $delta_y * -1, $zoom);
-        $south = \tabs\api\core\Mercator::adjustLatByPixels($lat, $delta_y, $zoom);
-        $west = \tabs\api\core\Mercator::adjustLonByPixels($long, $delta_x * -1, $zoom);
-        $east = \tabs\api\core\Mercator::adjustLonByPixels($long, $delta_x, $zoom);
+        $north = \tabs\api\core\Mercator::adjustLatByPixels(
+            $lat, $delta_y * -1, $zoom);
+        $south = \tabs\api\core\Mercator::adjustLatByPixels(
+            $lat, $delta_y, $zoom);
+        $west = \tabs\api\core\Mercator::adjustLonByPixels(
+            $long, $delta_x * -1, $zoom);
+        $east = \tabs\api\core\Mercator::adjustLonByPixels(
+            $long, $delta_x, $zoom);
         
         return new \tabs\api\core\Bounds(
             array(
@@ -1066,7 +1070,12 @@ class SearchHelper
     }
 
     static function LatToY($lat) {
-        return round(self::$offset - self::$radius * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180))) / 2);
+        return round(
+            self::$offset 
+            - self::$radius 
+            * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180)))
+             / 2
+        );
     }
 
     static function XToLon($x) {
@@ -1074,7 +1083,8 @@ class SearchHelper
     }
 
     static function YToLat($y) {
-        return (pi() / 2 - 2 * atan(exp((round($y) - self::$offset) / self::$radius))) * 180 / pi(); 
+        return (pi() / 2 - 2 * atan(exp((round($y) 
+        - self::$offset) / self::$radius))) * 180 / pi(); 
     }
 
     static function adjustLonByPixels($lon, $delta, $zoom) {

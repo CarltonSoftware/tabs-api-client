@@ -158,15 +158,23 @@ class Bounds extends \tabs\api\core\Base
     public function getCenter()
     {
         return new \tabs\api\core\Coordinates(
-            ($this->getSouthWest()->getLong() + (($this->getNorthEast()->getLong() - $this->getSouthWest()->getLong()) / 2)),
-            ($this->getSouthWest()->getLat() + (($this->getNorthEast()->getLat() - $this->getSouthWest()->getLat()) / 2))
+            (
+                $this->getSouthWest()->getLong()
+                + (($this->getNorthEast()->getLong()
+                - $this->getSouthWest()->getLong()) / 2)
+            ),
+            (
+                $this->getSouthWest()->getLat()
+                + (($this->getNorthEast()->getLat()
+                - $this->getSouthWest()->getLat()) / 2)
+            )
         );
     }
     
     /**
      * Check to see if a bounds fits inside this bounds
      * 
-     * @param \tabs\api\core\Bounds $bounds Boounds object
+     * @param \tabs\api\core\Bounds $bounds Bounds object
      * 
      * @return boolean
      */
@@ -184,7 +192,7 @@ class Bounds extends \tabs\api\core\Base
     /**
      * Check if point is in the bounds or not
      * 
-     * @param \tabs\api\core\Coordinates $point
+     * @param \tabs\api\core\Coordinates $point Coodinate to test
      * 
      * @return boolean
      */
