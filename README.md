@@ -1,25 +1,37 @@
-tabs-api-client
-===============
+# Tabs API Client
 
 [![Build Status](http://api-dev.nocc.co.uk:8080/buildStatus/icon?job=tabs-api-client)](http://api-dev.nocc.co.uk:8080/job/tabs-api-client/)
 
-Namespaced version of the tocc api client
+## Getting Started
+To get started with this project you can either clone the repo into your project or alternatively install it via composer.
 
+### Installing via git
+1. Navigate to the directory you wish to add the project.
+2. Clone the repo either via [ssh](git@github.com:CarltonSoftware/tabs-api-client.git), [svn](https://github.com/CarltonSoftware/tabs-api-client) or [zip](https://github.com/CarltonSoftware/tabs-api-client/archive/master.zip).
+3. If you're not familiar with git, please see this [helpful guide](http://git-scm.com/book/en/Getting-Started-Git-Basics).
 
-Change Log:
+### Installing via composer
+1. Create a composer.json where you want to install the project
+2. Add the following:
 
-5/8/2013, v.1 - Initial Release
+```
+{
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:CarltonSoftware/tabs-api-client.git"
+		}
+	],
+	"require": {
+		"carltonsoftware/tabs-api-client": "dev-master"	
+	}
+}
+```
+3: Download composer and install the repo:
 
-7/8/2013, v.1.1 - Imported examples from old client
+```
+curl -sS https://getcomposer.org/installer | php
+./composer.phar install
+```
 
-8/8/2013, v.1.3 - Added fetchAll function to property search.  ApiClient has the facility to perform concurrent connections.
-
-9/8/2013, v.1.4 - Payment/Booking fixes
-
-13/8/2013, v1.5 - Property searching for all properties now requests data concurrently.
-
-20/8/2013, v1.51 - Added set accessors to Enquiry/Booking objects so that pricing properties can be updated on the fly. For example calling $booking->setSecurityDeposit(0) will set the amount of the SD to zero.  Added test to confirm this.
-
-03/09/2013, v1.52 - Added getNumberOfNights accessor to pricing object
-
-08/11/2013, Added getAllDescriptions accessor to property object
+For more information about composer, please see the [composer quick start guide](https://getcomposer.org/doc/00-intro.md).
