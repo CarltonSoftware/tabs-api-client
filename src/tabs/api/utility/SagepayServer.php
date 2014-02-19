@@ -32,10 +32,14 @@ namespace tabs\api\utility;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk 
- * @link      http://www.sagepay.com/sites/default/files/pdf/user_guides/new_sagepayserverprotocolandintegrationguidelinesv3_0.pdf
- * @link      http://www.sagepay.com/sites/default/files/downloads/sagepaysharedprotocols_0.pdf
- * @link      http://www.sagepay.com/sites/default/files/downloads/customtemplates_2.zip
- * @link      http://www.sagepay.com/sites/default/files/pdf/user_guides/token_system_integration_guideline_251111.pdf
+ * @link      http://www.sagepay.com/sites/default/files/pdf/user_guides/
+ *              new_sagepayserverprotocolandintegrationguidelinesv3_0.pdf
+ * @link      http://www.sagepay.com/sites/default/files/
+ *              downloads/sagepaysharedprotocols_0.pdf
+ * @link      http://www.sagepay.com/sites/default/files/
+ *              downloads/customtemplates_2.zip
+ * @link      http://www.sagepay.com/sites/default/files/pdf/user_guides/
+ *              token_system_integration_guideline_251111.pdf
  */
 class SagepayServer
 {
@@ -479,11 +483,14 @@ class SagepayServer
         switch ($this->mode)
         {
         case 'Live':
-            return 'https://live.sagepay.com/gateway/service/vspserver-register.vsp';
         case 'Test':
-            return 'https://test.sagepay.com/gateway/service/vspserver-register.vsp';
+            return sprintf(
+                'https://%s.sagepay.com/gateway/service/vspserver-register.vsp',
+                strtolower($this->mode)
+            );
         default:
-            return 'https://test.sagepay.com/Simulator/VSPServerGateway.asp?Service=VendorRegisterTx';
+            return 'https://test.sagepay.com/Simulator/'
+            . 'VSPServerGateway.asp?Service=VendorRegisterTx';
         }
     }
     
