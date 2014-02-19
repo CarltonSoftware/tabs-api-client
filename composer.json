@@ -13,6 +13,8 @@
         "squizlabs/php_codesniffer": "dev-master"
     },
     "autoload": {
-        "classmap": ["tabs"]
+        "psr-0": {
+            "tabs\\api\\": "src/"
+        }
     }
 }
