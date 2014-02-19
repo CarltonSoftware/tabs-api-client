@@ -19,10 +19,7 @@
     </testsuites>
     <filter>
         <whitelist>
-            <directory>../src</directory>
-            <exclude>
-                <directory>../helpers</directory>
-            </exclude>
+            <directory>../src/tabs/api</directory>
         </whitelist>
     </filter>
     <logging>
