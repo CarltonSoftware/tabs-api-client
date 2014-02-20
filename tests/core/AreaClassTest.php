@@ -10,7 +10,7 @@ require_once $file;
 class AreaClassTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Test a new coordinate object
+     * Test a new area object
      * 
      * @return void 
      */
