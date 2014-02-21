@@ -118,7 +118,7 @@ class ApiUser extends \tabs\api\core\Base
     public static function getUser($key)
     {
         foreach (self::getUsers() as $user) {
-            if  ($key == $user->getKey()) {
+            if ($key == $user->getKey()) {
                 return $user;
             }
         }
