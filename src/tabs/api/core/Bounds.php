@@ -43,28 +43,28 @@ class Bounds extends \tabs\api\core\Base
      * 
      * @var integer
      */
-    protected $minLong;
+    protected $minLong = 0;
     
     /**
      * Minimum latitude
      * 
      * @var integer
      */
-    protected $minLat;
+    protected $minLat = 0;
     
     /**
      * Maximum longitude
      * 
      * @var integer
      */
-    protected $maxLong;
+    protected $maxLong = 0;
     
     /**
      * Maximum latitude
      * 
      * @var integer
      */
-    protected $maxLat;
+    protected $maxLat = 0;
     
     
     // ------------------ Public Functions --------------------- //
