@@ -201,12 +201,7 @@ class Owner Extends \tabs\api\core\Person
             )
         );
             
-        if ($ownerRequest) {
-            return $ownerRequest->status;
-        }
-
-        // Could not authenticate
-        return false;
+        return $ownerRequest->status;
     }
     
     /**
@@ -387,7 +382,6 @@ class Owner Extends \tabs\api\core\Person
                 null, 
                 "Invalid Owner Pack request, owner brandcode not set"
             );
-            return false;
         }
         
         // Owner Pack Details
@@ -419,10 +413,12 @@ class Owner Extends \tabs\api\core\Person
         if ($conf && $conf->status == 204) {
             return true;
         } else {
+            // @codeCoverageIgnoreStart
             throw new \tabs\api\client\ApiException(
                 $conf, 
                 'Invalid owner pack request'
             );
+            // @codeCoverageIgnoreEnd
         }
     }
     
