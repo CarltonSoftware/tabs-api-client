@@ -222,10 +222,13 @@ class Customer Extends \tabs\api\core\Person
         if ($conf && $conf->status == 204) {
             return true;
         } else {
+            // Ignoring
+            // @codeCoverageIgnoreStart
             throw new \tabs\api\client\ApiException(
                 $conf, 
                 'Invalid brochure request'
             );
+            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -272,10 +275,13 @@ class Customer Extends \tabs\api\core\Person
         if ($conf && $conf->status == 204) {
             return true;
         } else {
+            // Ignoring
+            // @codeCoverageIgnoreStart
             throw new \tabs\api\client\ApiException(
                 $conf, 
                 'Invalid newsletter request'
             );
+            // @codeCoverageIgnoreEnd
         }
     }
     
