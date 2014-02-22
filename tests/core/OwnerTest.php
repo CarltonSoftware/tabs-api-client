@@ -68,13 +68,32 @@ class OwnerTest extends ApiClientClassTest
     }
     
     /**
+     * Test owner pack requests
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return null 
+     */
+    public function testInvalidOwnerPackRequest()
+    {
+        $owner = \tabs\api\core\Owner::factory("Mr", "Bloggs");
+        
+        // Perform brochure request
+        $owner->requestOwnerPack(
+            "The Avenue, Wroxham, Norfolk",
+            "5 bedroom detached house, overlooks the river", 
+            false
+        );
+    }
+    
+    /**
      * Test owner objects
      * 
      * @return null 
      */
     public function testCreateOwner()
     {
-        $owner = \tabs\api\core\Owner::create('JOHNS1');
+        $owner = $this->_getOwner();
        
         $this->assertEquals("JOHNS1", $owner->getReference());
         $this->assertEquals("ZZ", $owner->getBrandCode());
@@ -106,6 +125,7 @@ class OwnerTest extends ApiClientClassTest
         $this->assertEquals("S & S John", $owner->getBankAccountName());
         $this->assertEquals("", $owner->getBankAccountNumber());
         $this->assertEquals("", $owner->getBankAccountSortCode());
+        $this->assertEquals("", $owner->getBankSortCode());
         $this->assertEquals("", $owner->getBankName());
         $this->assertEquals("", $owner->getBankAddress()->getAddr1());
         $this->assertEquals("", $owner->getBankAddress()->getAddr2());
@@ -129,6 +149,14 @@ class OwnerTest extends ApiClientClassTest
         $this->assertEquals(
             "204", 
             \tabs\api\core\Owner::authenticate("JOHNS1", "34dd8f85")
+        );
+        $this->assertEquals(
+            "401", 
+            \tabs\api\core\Owner::authenticate("JOHNS1", "XXXXX")
+        );
+        $this->assertEquals(
+            "404", 
+            \tabs\api\core\Owner::authenticate("XXXXX", "XXXXX")
         );
     }
     
@@ -168,11 +196,16 @@ class OwnerTest extends ApiClientClassTest
      */
     public function testUpdateOwnerPassword()
     {
-        //$this->assertTrue(
-        //    $this->_getOwner()->updatePassword('34dd8f85')
-        //);
+        $this->assertTrue(
+            $this->_getOwner()->updatePassword('34dd8f85')
+        );
     }
     
+    /**
+     * Get the owner from the test api
+     * 
+     * @return \tabs\api\core\Owner
+     */
     private function _getOwner()
     {
         return \tabs\api\core\Owner::create('JOHNS1');

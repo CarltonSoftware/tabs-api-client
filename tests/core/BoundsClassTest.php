@@ -52,6 +52,30 @@ class BoundsClassTest extends PHPUnit_Framework_TestCase
                 new tabs\api\core\Coordinates(53, 1)
             )
         );
+        $this->assertFalse(
+            $bounds->containsBounds(
+                new tabs\api\core\Bounds(
+                    array(
+                        new tabs\api\core\Coordinates(52.5, -1),
+                        new tabs\api\core\Coordinates(52.5, -0.99),
+                        new tabs\api\core\Coordinates(52.5, -0.98),
+                        new tabs\api\core\Coordinates(52.5, -0.97)
+                    )
+                )
+            )
+        );
+        $this->assertTrue(
+            $bounds->containsBounds(
+                new tabs\api\core\Bounds(
+                    array(
+                        new tabs\api\core\Coordinates(52.5, 1),
+                        new tabs\api\core\Coordinates(52.5, 0.99),
+                        new tabs\api\core\Coordinates(52.5, 0.98),
+                        new tabs\api\core\Coordinates(52.5, 0.97)
+                    )
+                )
+            )
+        );
     }
 
 

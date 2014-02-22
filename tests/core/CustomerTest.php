@@ -98,6 +98,88 @@ class CustomerTest extends ApiClientClassTest
      */
     public function testBrochureRequest()
     {
+        $customer = $this->_getCustomer();
+        
+        // Perform brochure request
+        $this->assertTrue($customer->requestBrochure());
+    }
+    
+    /**
+     * Throw an api exception if brandcode is not set
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return null 
+     */
+    public function testInvalidBrochureRequest()
+    {
+        // Create a new customer
+        $customer = $this->_getCustomer();
+        $customer->setBrandCode('');
+        $customer->requestBrochure();
+    }
+    
+    /**
+     * Test newsletter request
+     * 
+     * @return null 
+     */
+    public function testNewsletterRequest()
+    {
+        $customer = \tabs\api\core\Customer::factory("Mr", "Bloggs");
+        
+        // Set customer details
+        $customer->setFirstName("Joe");
+        $customer->setEmail("support@carltonsoftware.co.uk");
+        $customer->setSource("GOO");
+        $customer->setBrandCode('SS');
+        $this->assertTrue($customer->requestNewsletter());
+    }
+    
+    /**
+     * Throw an api exception if brandcode is not set
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return null 
+     */
+    public function testInvalidNewsletterRequest()
+    {
+        // Create a new customer
+        $customer = $this->_getCustomer();
+        $customer->setBrandCode('');
+        $customer->requestNewsletter();
+    }
+    
+    /**
+     * Test the update array which is supplied to the update endpoint
+     * 
+     * @return void
+     */
+    public function testUpdateArray()
+    {
+        // Create a new customer
+        $customer = $this->_getCustomer();
+        $array = $customer->toUpdateArray();
+        
+        $this->assertTrue(isset($array['fax']));
+        $this->assertTrue(isset($array['postConfirmations']));
+        $this->assertTrue(isset($array['emailConfirmations']));
+        $this->assertTrue(isset($array['noEmail']));
+        $this->assertTrue(isset($array['onEmailList']));
+        
+        $this->assertFalse(isset($array['emailOptIn']));
+        $this->assertFalse(isset($array['which']));
+        $this->assertFalse(isset($array['source']));
+    }
+    
+    /**
+     * Return a customer object
+     * 
+     * @return \tabs\api\core\Customer
+     */
+    private function _getCustomer()
+    {
         $customer = \tabs\api\core\Customer::factory("Mr", "Bloggs");
         
         // Set customer details
@@ -116,24 +198,6 @@ class CustomerTest extends ApiClientClassTest
         $customer->setSource("GOO");
         $customer->setBrandCode("SL");
         
-        // Perform brochure request
-        $this->assertTrue($customer->requestBrochure());
-    }
-    
-    /**
-     * Test newsletter request
-     * 
-     * @return null 
-     */
-    public function testNewsletterRequest()
-    {
-        $customer = \tabs\api\core\Customer::factory("Mr", "Bloggs");
-        
-        // Set customer details
-        $customer->setFirstName("Joe");
-        $customer->setEmail("support@carltonsoftware.co.uk");
-        $customer->setSource("GOO");
-        $customer->setBrandCode('SS');
-        $this->assertTrue($customer->requestNewsletter());
+        return $customer;
     }
 }
