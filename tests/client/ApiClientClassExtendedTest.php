@@ -29,14 +29,14 @@ class ApiClientClassExtendedTest extends ApiClientClassTest
             count($api->getRoutes())
         );
         $this->assertEquals(
-            'cottage', 
+            'b1610f08dc200ef1', 
             $api->getSecret()
         );
         
         $params = $api->getHmacParams(array('foo' => 'bar'));
         $this->assertEquals(3, count($params));
         $this->assertEquals(
-            '8f48ad6a17e08df9f3b9acb9be177fbfbfb111b0e099c339561186fea835cf3c', 
+            'b1c7f382146d7fa30d2f5806b738a6c0049f26016814cd51c023299404698535', 
             $params['hash']
         );
         $api->setApiKey('');

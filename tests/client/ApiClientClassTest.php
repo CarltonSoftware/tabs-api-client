@@ -17,8 +17,8 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
     {
         \tabs\api\client\ApiClient::factory(
             'http://zz.api.carltonsoftware.co.uk/',
-            'mouse',
-            'cottage'
+            'carltonsoftware',
+            'b1610f08dc200ef1'
         );
     }
     

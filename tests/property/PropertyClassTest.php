@@ -308,7 +308,7 @@ class PropertyClassTest extends ApiClientClassTest
         );
 
         $this->assertEquals(
-            'sk6eio0--v541-1.jpg?APIKEY=mouse&hash=4f64c897c40d1edebbf9dc294575a1baf8bd991f1c1aa81a96de538c2eb8fdaa',
+            'sk6eio0--v541-1.jpg?APIKEY=carltonsoftware&hash=273fdf82d825109d5d67f97d18903a5abaa8c49c4463feeaf919f8b4a5b074a6',
             $image->getFilename()
         );
 

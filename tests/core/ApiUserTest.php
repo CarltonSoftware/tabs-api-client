@@ -15,14 +15,15 @@ class ApiUserTest extends ApiClientClassTest
      */
     public function testApiUsers()
     {
-        //$users = \tabs\api\core\ApiUser::getUsers();
-        //$this->assertEquals(3, count($users));
+        $users = \tabs\api\core\ApiUser::getUsers();
+        $this->assertEquals(4, count($users));
     }
     
     /**
      * Test creating a user for the api
      * 
      * @return void
+     */
     public function testCreateKey()
     {
         $user = new tabs\api\core\ApiUser();
@@ -32,7 +33,6 @@ class ApiUserTest extends ApiClientClassTest
         $this->assertEquals(2, count($user->getRoles()));
         $this->assertTrue(strlen($user->getSecret()) > 0);
     }
-     */
     
     /**
      * Test creating a user for the api
@@ -40,6 +40,7 @@ class ApiUserTest extends ApiClientClassTest
      * @expectedException \tabs\api\client\ApiException
      * 
      * @return void
+     */
     public function testCreateKeyException()
     {
         $user = new tabs\api\core\ApiUser();
@@ -47,18 +48,17 @@ class ApiUserTest extends ApiClientClassTest
         $user->setEmail('invalidemailadddress');
         $user->create();
     }
-     */
     
     /**
      * Test removing a user
      * 
      * @return void
+     */
     public function testDeleteKey()
     {
         $user = tabs\api\core\ApiUser::getUser('testuser');
         $user->delete();
     }
-     */
     
     /**
      * Test removing a user
@@ -66,11 +66,11 @@ class ApiUserTest extends ApiClientClassTest
      * @expectedException \tabs\api\client\ApiException
      * 
      * @return void
+     */
     public function testDeleteKeyException()
     {
         $user = new tabs\api\core\ApiUser();
         $user->setKey('unknownuser');
         $user->delete();
     }
-     */
 }
