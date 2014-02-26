@@ -175,11 +175,13 @@ class SagepayServer
      * @param float $cCCharge Credit card charge in decimal format.  E.g, 1.5%
      * will be 1.5 or 2% will be 2.
      * 
-     * @return void
+     * @return \tabs\api\utility\SagepayServer
      */
     public function setCcCharge($cCCharge)
     {
         $this->ccCharge = $cCCharge;
+        
+        return $this;
     }
     
     /**
@@ -245,7 +247,6 @@ class SagepayServer
         }
     }
     
-    
     /**
      * Removes a token
      * 
@@ -267,7 +268,6 @@ class SagepayServer
         return $this->_sendRequest($data);
     }
     
-    
     /**
      * Toggles LOW / NORMAL profile
      * LOW is used for embedding the payment form into an iFrame
@@ -275,18 +275,30 @@ class SagepayServer
      * 
      * @param boolean $lowprofile true to use LOW, or false to use HIGH
      * 
-     * @return void
+     * @return \tabs\api\utility\SagepayServer
      */
     public function setLowProfile($lowprofile)
     {
         $this->lowprofile = $lowprofile;
+        
+        return $this;
     }
     
-    
+    /**
+     * Set the version of the sagepay system you want to use
+     * 
+     * @param string $protocolVersion Sagepay system protocol number
+     * 
+     * @return \tabs\api\utility\SagepayServer
+     */
+    public function setProtocol($protocolVersion)
+    {
+        $this->protocolVersion = $protocolVersion;
+        
+        return $this;
+    }
     
     // ----- PRIVATE FUNCTIONS ----- //
-    
-    
     
     /**
      * Registers a transation with the Sagepay Server interface
