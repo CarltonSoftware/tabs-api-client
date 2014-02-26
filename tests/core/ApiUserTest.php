@@ -16,7 +16,7 @@ class ApiUserTest extends ApiClientClassTest
     public function testApiUsers()
     {
         $users = \tabs\api\core\ApiUser::getUsers();
-        $this->assertEquals(4, count($users));
+        $this->assertTrue(count($users) > 0);
     }
     
     /**
