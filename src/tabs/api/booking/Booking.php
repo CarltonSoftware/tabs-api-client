@@ -679,7 +679,7 @@ class Booking extends \tabs\api\booking\Enquiry
     }
 
     /**
-     * Adds an extra from the object
+     * Retrieves all available extras from the booking
      *
      * @return array
      */
@@ -689,23 +689,23 @@ class Booking extends \tabs\api\booking\Enquiry
         $extraResponse = \tabs\api\client\ApiClient::getApi()->options(
             "/booking/{$this->getBookingId()}/extra"
         );
+            
+        return $this->_getExtrasFromResponse($extraResponse);
+    }
 
-        // Available extras array
-        $extras = array();
-
-        if ($extraResponse && $extraResponse->status == 200) {
-            foreach ($extraResponse->response as $extraResp) {
-                $extra = \tabs\api\pricing\Extra::factory(
-                    $extraResp->code,
-                    $extraResp
-                );
-                if ($extra) {
-                    array_push($extras, $extra);
-                }
-            }
-        }
-
-        return $extras;
+    /**
+     * Retrieves all available optional extras from the booking
+     *
+     * @return array
+     */
+    public function getOptionalExtras()
+    {
+        // Create extra object
+        $extraResponse = \tabs\api\client\ApiClient::getApi()->options(
+            "/booking/{$this->getBookingId()}/optionalextra"
+        );
+            
+        return $this->_getExtrasFromResponse($extraResponse);
     }
 
     /**
@@ -1135,6 +1135,33 @@ class Booking extends \tabs\api\booking\Enquiry
         }
     }
     // ------------------ Private Functions --------------------- //
+    
+    /**
+     * Create an array of extras from a given json response
+     * 
+     * @param stdClass $extraResponse Json Response
+     * 
+     * @return array
+     */
+    private function _getExtrasFromResponse($extraResponse)
+    {
+        // Available extras array
+        $extras = array();
+
+        if ($extraResponse && $extraResponse->status == 200) {
+            foreach ($extraResponse->response as $extraResp) {
+                $extra = \tabs\api\pricing\Extra::factory(
+                    $extraResp->code,
+                    $extraResp
+                );
+                if ($extra) {
+                    array_push($extras, $extra);
+                }
+            }
+        }
+        
+        return $extras;
+    }
 
 
     /**
