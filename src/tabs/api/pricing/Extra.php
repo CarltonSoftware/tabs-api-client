@@ -31,12 +31,14 @@ namespace tabs\api\pricing;
  * @method string getType()
  * @method string getQuantity()
  * @method string getPrice()
+ * @method string getMaxLimit()
  * 
  * @method void setCode(string $code)
  * @method void setDescription(string $description)
  * @method void setType(string $type)
  * @method void setQuantity(integer $quantity)
  * @method void setPrice(float $price)
+ * @method void setMaxLimit(integer $maxLimit)
  */
 class Extra extends \tabs\api\core\Base
 {
@@ -75,6 +77,13 @@ class Extra extends \tabs\api\core\Base
      */
     protected $price = 0;
     
+    /**
+     * Maxiumum amount of extras allowed
+     * 
+     * @var float 
+     */
+    protected $maxLimit = 1;
+    
     // ------------------ Static Functions --------------------- //
     
     /**
@@ -98,13 +107,22 @@ class Extra extends \tabs\api\core\Base
                 $quantity = $node->quantity;
             }
             
-            return new \tabs\api\pricing\Extra(
+            // Create extra
+            $extra = new \tabs\api\pricing\Extra(
                 $extraCode, 
                 $node->description, 
                 $node->price, 
                 $quantity, 
                 $node->type
             );
+            
+            // Check for maxLimit property.  This is here as
+            // the OPTIONS optionalextras request has a maxlimit property
+            if (property_exists($node, 'maxLimit')) {
+                $extra->setMaxLimit($node->maxLimit);
+            }
+            
+            return $extra;
         }
         
         return false;
@@ -160,7 +178,8 @@ class Extra extends \tabs\api\core\Base
             'type' => $this->getType(),
             'quantity' => $this->getQuantity(),
             'price' => $this->getPrice(),
-            'total' => $this->getTotalPrice()
+            'total' => $this->getTotalPrice(),
+            'maxLimit' => $this->getMaxLimit()
         );
     }
     
