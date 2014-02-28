@@ -79,9 +79,9 @@ class ExtraClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $extra->getQuantity());
         $this->assertEquals(20, $extra->getTotalPrice());
         $this->assertEquals('compulsory', $extra->getType());
-        $this->assertEquals(6, count($extra->toArray()));
+        $this->assertEquals(7, count($extra->toArray()));
         $this->assertEquals(
-            '{"code":"BKFE","description":"Booking Fee","type":"compulsory","quantity":1,"price":20,"total":20}', 
+            '{"code":"BKFE","description":"Booking Fee","type":"compulsory","quantity":1,"price":20,"total":20,"maxLimit":1}', 
             $extra->toJson()
         );
     }
