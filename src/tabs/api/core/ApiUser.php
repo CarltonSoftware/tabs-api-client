@@ -155,14 +155,22 @@ class ApiUser extends \tabs\api\core\Base
      */
     public function create()
     {
+        // Data to post
+        $data = array(
+            'key' => $this->getKey(),
+            'email' => $this->getEmail()
+        );
+        
+        // Add secret to data if set
+        if (strlen($this->getSecret()) > 0) {
+            $data['secret'] = $this->getSecret();
+        }
+        
         $conf = \tabs\api\client\ApiClient::getApi()->post(
             '/api/key',
             array(
                 'data' => json_encode(
-                    array(
-                        'key' => $this->getKey(),
-                        'email' => $this->getEmail()
-                    )
+                    $data
                 )
             )
         );
