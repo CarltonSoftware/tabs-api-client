@@ -109,7 +109,7 @@ class ApiUser extends \tabs\api\core\Base
     }
     
     /**
-     * Requst a user from the api
+     * Request a user from the api
      * 
      * @param string $key User name
      * 
@@ -149,7 +149,7 @@ class ApiUser extends \tabs\api\core\Base
     }
     
     /**
-     * Attempt to delete a api user
+     * Attempt to create an api user
      * 
      * @return boolean
      */
