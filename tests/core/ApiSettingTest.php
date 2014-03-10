@@ -32,32 +32,6 @@ class ApiSettingTest extends ApiClientClassTest
         $setting->setValue('bar');
         $this->assertTrue($setting->create());
         $this->assertEquals('foo_ZZ', $setting->getIndex());
-    }
-    
-    /**
-     * Test creating another setting
-     * 
-     * @expectedException \tabs\api\client\ApiException
-     * 
-     * @return void
-     */
-    public function testCreateSettingException()
-    {
-        $setting = new \tabs\api\core\ApiSetting();
-        $setting->setBrandcode('ZZ');
-        $setting->setName('foo');
-        $setting->setValue('bar');
-        $setting->create();
-    }
-    
-    /**
-     * Test removing a setting
-     * 
-     * @return void
-     */
-    public function testDeleteSetting()
-    {
-        $setting = tabs\api\core\ApiSetting::getSetting('foo', 'ZZ');
         $setting->delete();
     }
     
@@ -68,7 +42,7 @@ class ApiSettingTest extends ApiClientClassTest
      * 
      * @return void
      */
-    public function testDeleteSettingException()
+    public function testUnknownSettingException()
     {
         tabs\api\core\ApiSetting::getSetting('unknown', 'ZZ');
     }
