@@ -97,6 +97,9 @@ class ApiSetting extends \tabs\api\core\Base
     /**
      * Return an api setting
      * 
+     * @param string $name      Setting name
+     * @param string $brandcode Setting brandcode
+     * 
      * @throws \tabs\api\client\ApiException
      * 
      * @return array

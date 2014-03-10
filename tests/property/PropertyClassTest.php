@@ -308,7 +308,7 @@ class PropertyClassTest extends ApiClientClassTest
         );
 
         $this->assertEquals(
-            'sk6eio0--v541-1.jpg?APIKEY=carltonsoftware&hash=273fdf82d825109d5d67f97d18903a5abaa8c49c4463feeaf919f8b4a5b074a6',
+            'sk6eio0--v541-1.jpg?APIKEY=apiclienttest&hash=9c5d609f0c781977603cd809b148136308a1f568dfdb2e632e1046783bec12e9',
             $image->getFilename()
         );
 
@@ -336,14 +336,24 @@ class PropertyClassTest extends ApiClientClassTest
 
         $this->assertEquals(
             sprintf(
-                '<img src="%s" alt="%s" title="%s" width="%d" height="%d" />',
+                '<img src="%s" alt="%s" title="%s" width="%d" height="%d">',
                 $image->createImageSrc(),
                 $image->getAlt(),
                 $image->getTitle(),
                 100,
                 100
             ),
-            $image->createImageTag('square', 100, 100, true)
+            $image->createImageTag()
+        );
+
+        $this->assertEquals(
+            $image->getTitle(),
+            'v541-1'
+        );
+
+        $this->assertEquals(
+            $image->getAlt(),
+            ''
         );
 
         $this->assertTrue(is_array($image->toArray()));
@@ -365,6 +375,10 @@ breaks');
         $this->assertEquals(
             'This is a test title with a couple of line breaks',
             $newImg->getAlt()
+        );
+        $this->assertEquals(
+            6,
+            count($newImg->toArray())
         );
     }
 
