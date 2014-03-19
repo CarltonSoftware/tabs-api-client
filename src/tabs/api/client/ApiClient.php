@@ -359,7 +359,7 @@ class ApiClient
      */
     public function getHmacQuery($params = array())
     {
-        return http_build_query(
+        return $this->_getHttpQuery(
             $this->getHmacParams($params)
         );
     }
@@ -624,7 +624,7 @@ class ApiClient
     {
         // Add get params if neccessary
         if (count($params) > 0) {
-            $urlPath .= "?" . http_build_query($params);
+            $urlPath .= "?" . $this->_getHttpQuery($params);
         }
 
         // Find the curl path to use
@@ -660,7 +660,7 @@ class ApiClient
         curl_setopt(
             $this->resource,
             CURLOPT_POSTFIELDS,
-            is_array($params) ? http_build_query($params) : $params
+            is_array($params) ? $this->_getHttpQuery($params) : $params
         );
 
         //Set the header
@@ -705,7 +705,7 @@ class ApiClient
         curl_setopt(
             $this->resource,
             CURLOPT_POSTFIELDS,
-            is_array($params) ? http_build_query($params) : $params
+            is_array($params) ? $this->_getHttpQuery($params) : $params
         );
 
         //Set the header
@@ -733,7 +733,7 @@ class ApiClient
     {
         // Add get params if neccessary
         if (count($params) > 0) {
-            $urlPath .= "?" . http_build_query($params);
+            $urlPath .= "?" . $this->_getHttpQuery($params);
         }
 
         // Find the curl path to use
@@ -755,7 +755,7 @@ class ApiClient
     {
         // Add get params if neccessary
         if (count($params) > 0) {
-            $urlPath .= "?" . http_build_query($params);
+            $urlPath .= "?" . $this->_getHttpQuery($params);
         }
 
         // Find the curl path to use
@@ -785,5 +785,17 @@ class ApiClient
 
         // Get resource
         $this->resource = curl_init($urlPath);
+    }
+    
+    /**
+     * Encode an array of parameters into a string
+     * 
+     * @param array $params Parameters to encode
+     * 
+     * @return string
+     */
+    private function _getHttpQuery($params)
+    {
+        return http_build_query($params, null, '&');
     }
 }
