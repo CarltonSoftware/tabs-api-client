@@ -137,8 +137,8 @@ class SearchHelperTest extends ApiClientClassTest
 
         // Array should contain wp_page, wp_pageSize, wp_orderBy and wp_filter
         $this->assertEquals(4, count($searchHelper->getReservedKeys()));
-
-        $key = array_shift($searchHelper->getReservedKeys());
+        $keys = $searchHelper->getReservedKeys();
+        $key = array_shift($keys);
         $this->assertEquals('wp_page', $key);
         $this->assertEquals('/', $searchHelper->getBaseUrl());
 
