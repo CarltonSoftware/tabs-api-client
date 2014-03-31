@@ -1408,20 +1408,22 @@ class Property extends \tabs\api\core\Base
      * Get the date range prices for a specific year
      *
      * @param string $year Year of price ranges you wish to request
+     * @param string $type The type of pricing. '7D' or 'SB'
      *
      * @return array Array of daterangeprice objects.  The properties of each
      *               object are fromDate, toDate, dateRangeName, priceBand,
      *               price
      */
-    public function getDateRangePrices($year)
+    public function getDateRangePrices($year, $type = '7D')
     {
         $datePriceRanges = array();
         $datePriceRangeObj = \tabs\api\client\ApiClient::getApi()->get(
             sprintf(
-                '/property/%s_%s/daterangeprice/%s',
+                '/property/%s_%s/daterangeprice/%s/%s',
                 $this->getPropref(),
                 $this->getBrandcode(),
-                $year
+                $year,
+                $type
             )
         );
 
