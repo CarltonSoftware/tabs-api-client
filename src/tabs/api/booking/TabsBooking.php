@@ -411,14 +411,4 @@ class TabsBooking extends \tabs\api\core\Base
         );
     }
 
-    /**
-     * Get the owner object
-     *
-     * @return \tabs\api\core\Owner
-     */
-    public function getOwner()
-    {
-        return \tabs\api\core\Owner::create($this->getOwnerCode());
-    }
-
 }

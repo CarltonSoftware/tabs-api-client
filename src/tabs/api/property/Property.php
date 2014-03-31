@@ -1732,4 +1732,15 @@ class Property extends \tabs\api\core\Base
             return false;
         }
     }
+
+    /**
+     * Get the owner object
+     *
+     * @return \tabs\api\core\Owner
+     */
+    public function getOwner()
+    {
+        return \tabs\api\core\Owner::create($this->getOwnerCode());
+    }
+
 }
