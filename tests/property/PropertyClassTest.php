@@ -51,6 +51,7 @@ class PropertyClassTest extends ApiClientClassTest
         $this->assertEquals(3, $this->property->getRating());
         $this->assertFalse($this->property->getAttribute('XXXXXX'));
         $this->assertTrue(is_object($this->property->getAttribute('< Coast')));
+        $this->assertTrue('V541P', $this->property->getOwnerCode());
 
         // Calendar url
         $this->assertEquals(

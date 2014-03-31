@@ -44,6 +44,7 @@ namespace tabs\api\property;
  * @method \tabs\api\property\PropertyBrand|Array getBrands()
  * @method \tabs\api\property\SpecialOffer|Array  getSpecialOffers()
  * @method \tabs\api\core\Coordinates             getCoordinates()
+ * @method string                                 getOwnerCode()
  *
  * @method void setAccommodates(integer $accommodates)
  * @method void setAccommodationDescription(string $description)
@@ -269,6 +270,13 @@ class Property extends \tabs\api\core\Base
      */
     protected $shortBreak;
 
+    /**
+     * The owner of the property
+     *
+     * @var string
+     */
+    protected $ownerCode;
+
     // ------------------ Static Functions  --------------------- //
 
 
@@ -437,7 +445,7 @@ class Property extends \tabs\api\core\Base
                 );
                 foreach ($brandData as $key => $val) {
 
-                    // Set the descriptions, mapping the API field to the 
+                    // Set the descriptions, mapping the API field to the
                     // descriptionttype within tabs
                     if ($key == "teaser") {
                         $brand->setDescription('TABSAVAIL', $val);
@@ -699,7 +707,7 @@ class Property extends \tabs\api\core\Base
      * Gets a description from a brand
      *
      * @param string $name      The name of the description to be returned
-     * @param string $brandcode The brand to get the description from. Defaults 
+     * @param string $brandcode The brand to get the description from. Defaults
      * to the accounting brand
      *
      * @return The description from $brand called $name
@@ -714,7 +722,7 @@ class Property extends \tabs\api\core\Base
         //Lookup the description
         if (isset($this->brands[$brandcode])) {
             if (!$this->brands[$brandcode]->hasDescription($name)) {
-                //The description called $name is not populated, try loading it 
+                //The description called $name is not populated, try loading it
                 //from the /property/<ref>/description endpoint
                 $this->_loadAdditionalDescriptions($brandcode);
             }
@@ -726,7 +734,7 @@ class Property extends \tabs\api\core\Base
 
 
     /**
-     * Loads additional property descriptions from 
+     * Loads additional property descriptions from
      * the /property/<ref>/description endpoint
      *
      * @param string $brandcode The brandcode to load descriptions for
@@ -746,7 +754,7 @@ class Property extends \tabs\api\core\Base
         if ($descriptionsObj && $descriptionsObj->status == 200) {
             foreach ($descriptionsObj->response as $description) {
                 $this->brands[$brandcode]->setDescription(
-                    $description->descriptiontype, 
+                    $description->descriptiontype,
                     $description->description
                 );
             }
@@ -1030,7 +1038,7 @@ class Property extends \tabs\api\core\Base
 
                 if ($date >= $startOfMonth && $date <= $endOfMonth) {
 
-                    // Find previous day and next day to add pre and post 
+                    // Find previous day and next day to add pre and post
                     // booking classes
                     $beforeBooking  = $this->_checkNextDayIsBooked($date);
                     $afterBooking = $this->_checkPreviousDayIsBooked($date);
@@ -1458,7 +1466,7 @@ class Property extends \tabs\api\core\Base
     /**
      * Gets all the descriptions of the property
      *
-     * @param string $brandcode The brand to get the description from. 
+     * @param string $brandcode The brand to get the description from.
      * Defaults to the accounting brand
      *
      * @return array Array of descriptiontype and descriptions
