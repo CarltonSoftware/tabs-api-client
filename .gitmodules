@@ -1,0 +1,3 @@
+[submodule "tabs-api-client-example-docs"]
+	path = tabs-api-client-example-docs
+	url = git@github.com:CarltonSoftware/tabs-api-client-example-docs.git
