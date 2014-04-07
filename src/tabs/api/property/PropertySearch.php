@@ -26,11 +26,13 @@ namespace tabs\api\property;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  *
- * @method integer                             getPageSize()
- * @method integer                             getPage()
- * @method \tabs\api\property\Property | Array getProperties()
- * @method string                              getFilter()
- * @method string                              getSearchId()
+ * @method integer getPageSize()   Returns pageSize
+ * @method integer getPage()       Returns current page
+ * @method array   getProperties() Returns an array of property objects or 
+ * if 1, returns a singular property object
+ * @method string  getFilter()     Returns the filter string used in that 
+ * particular property search query
+ * @method string  getSearchId()   Returns the searchId
  *
  * @method void setPageSize(integer $pageSize)
  * @method void setPage(integer $page)
@@ -457,7 +459,7 @@ class PropertySearch extends \tabs\api\core\Base
     /**
      * Add a property to a property search object from a given api response
      *
-     * @param \tabs\api\property\PropertySearch &$propertySearch PropSearch
+     * @param \tabs\api\property\PropertySearch $propertySearch  PropSearch
      * object passed by reference
      * @param object                            $propertyData    Api response data
      * @param integer                           $page            Page number
@@ -495,8 +497,8 @@ class PropertySearch extends \tabs\api\core\Base
     /**
      * Set the short break rule exceptions for a property
      *
-     * @param object   $response  JSON Response object
-     * @param Property &$property Created property object
+     * @param object   $response JSON Response object
+     * @param Property $property Created property object
      *
      * @return void
      */

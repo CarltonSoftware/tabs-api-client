@@ -195,7 +195,7 @@ class Address extends \tabs\api\core\Base
      *
      * @param string $GAPIKey Google API key
      *
-     * @return type
+     * @return array
      */
     public function geoCode($GAPIKey)
     {

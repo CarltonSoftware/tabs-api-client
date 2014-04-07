@@ -26,19 +26,19 @@ namespace tabs\api\pricing;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  * 
- * @method string getCode()
- * @method string getDescription()
- * @method string getType()
- * @method string getQuantity()
- * @method string getPrice()
- * @method string getMaxLimit()
+ * @method string getCode()        Return the extra code
+ * @method string getDescription() Return the extra description
+ * @method string getType()        Return the type of extra
+ * @method string getQuantity()    Return the quantity of extras
+ * @method string getPrice()       Return the price of extra
+ * @method string getMaxLimit()    Returns the maxLimit of the extra
  * 
- * @method void setCode(string $code)
- * @method void setDescription(string $description)
- * @method void setType(string $type)
- * @method void setQuantity(integer $quantity)
- * @method void setPrice(float $price)
- * @method void setMaxLimit(integer $maxLimit)
+ * @method void setCode(string $code)               Set the ExtraCode
+ * @method void setDescription(string $description) Set the Extra Description
+ * @method void setType(string $type)               Set the Extra type
+ * @method void setQuantity(integer $quantity)      Set the Extra quantity
+ * @method void setPrice(float $price)              Set the Extra Price
+ * @method void setMaxLimit(integer $maxLimit)      Set the Extra MaxLimit
  */
 class Extra extends \tabs\api\core\Base
 {

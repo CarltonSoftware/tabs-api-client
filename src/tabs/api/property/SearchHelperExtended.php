@@ -513,7 +513,7 @@ class SearchHelperExtended extends \tabs\api\property\SearchHelper
     /**
      * Add attributes to an element string
      *
-     * @param string &$element   The element reference
+     * @param string $element    The element reference
      * @param array  $attributes Attributes array
      *
      * @return void

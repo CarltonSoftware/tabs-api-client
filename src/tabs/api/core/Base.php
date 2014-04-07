@@ -35,7 +35,7 @@ abstract class Base
     /**
      * Helper function foor setting object properties
      * 
-     * @param object &$obj       Generic object passed by reference
+     * @param object $obj        Generic object passed by reference
      * @param object $node       Node object to iterate through
      * @param array  $exceptions Properties to ignore
      * 
@@ -57,7 +57,7 @@ abstract class Base
      * Helper function, traverses a multi dimension node and calls
      * and objects accessors
      * 
-     * @param object &$object        Object whos accessors are to be called
+     * @param object $object         Object whos accessors are to be called
      * @param object $node           Node to be traversed
      * @param string $nodePrefix     Any string required to prefix 
      * the node key with
@@ -66,7 +66,7 @@ abstract class Base
      * @return void
      */
     public static function flattenNode(
-        &$object, 
+        $object, 
         $node, 
         $nodePrefix = '',
         $nodePrefixKeys = array()
@@ -162,13 +162,13 @@ abstract class Base
     /**
      * Generic setter
      * 
-     * @param object &$obj     Generic object to set properties
+     * @param object $obj      Generic object to set properties
      * @param string $property Property of object to set
      * @param mixed  $value    Value of property
      * 
      * @return void
      */
-    protected function setObjectProperty(&$obj, $property, $value)
+    protected function setObjectProperty($obj, $property, $value)
     {
         switch (strtolower(gettype($obj->$property))) {
         case 'array':
