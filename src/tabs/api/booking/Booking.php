@@ -161,6 +161,12 @@ class Booking extends \tabs\api\booking\Enquiry
             'infants' => $infants,
             'pets' => $pets,
         );
+        
+        // Add User Agent
+        $userAgent = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT');
+        if ($userAgent) {
+            $bookingJson['userdata'] = $userAgent;
+        }
 
         // Create booking object
         $bookingData = \tabs\api\client\ApiClient::getApi()->post(
