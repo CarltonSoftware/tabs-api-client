@@ -29,9 +29,13 @@ namespace tabs\api\utility;
  * @method string getCode()        Return the attribute code
  * @method string getLabel()       Return the attribute label
  * @method string getType()        Return the attribute type
+ * @method string getBrand()       Return the attribute brand
+ * @method string getGroup()       Return the attribute group
  * @method void   setCode($code)   Set the code
  * @method void   setLabel($label) Set the attribute label
  * @method void   setType($type)   Set the attribute type
+ * @method void   setBrand($brand) Set the attribute brand
+ * @method void   setGroup($group) Set the attribute group
  */
 class ResourceAttribute extends \tabs\api\core\Base
 {
@@ -61,12 +65,12 @@ class ResourceAttribute extends \tabs\api\core\Base
      * 
      * @var string 
      */
-    protected $brandcode = '';
+    protected $brand = '';
     
     /**
      * Attribute Group
      * 
      * @var string 
      */
-    protected $groupname = '';
+    protected $group = '';
 }
