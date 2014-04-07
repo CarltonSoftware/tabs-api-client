@@ -460,9 +460,7 @@ breaks');
             $this->assertEquals('TABSAVAIL', $descriptions[0]['descriptiontype']);
             $this->assertEquals('TABSSHORT', $descriptions[1]['descriptiontype']);
             $this->assertEquals('TABSLONG', $descriptions[2]['descriptiontype']);
-            $this->assertEquals('ACCSTA', $descriptions[3]['descriptiontype']);
         }
-
     }
 
 
