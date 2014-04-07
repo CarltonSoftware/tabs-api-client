@@ -4,7 +4,7 @@
  * Tabs Rest API Tabs Booking object.
  *
  * PHP Version 5.3
- * 
+ *
  * @category  API_Client
  * @package   Tabs
  * @author    Alex Wyett <alex@wyett.co.uk>
@@ -25,7 +25,7 @@ namespace tabs\api\booking;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
- * 
+ *
  * @method integer getAdults()
  * @method float   getBalanceAmount()
  * @method integer getBalanceDueDate()
@@ -48,7 +48,7 @@ namespace tabs\api\booking;
  * @method string  getSurname()
  * @method integer getToDate()
  * @method float   getTotalPrice()
- * 
+ *
  * @method void setAdults(integer $adults)
  * @method void setBalanceAmount(float $amount)
  * @method void setBookingFee(float $bookingFee)
@@ -72,165 +72,165 @@ class TabsBooking extends \tabs\api\core\Base
 {
     /**
      * Property Ref
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $propertyRef = '';
-    
+
     /**
      * Property Brandcode
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $brandCode = '';
-    
+
     /**
      * Booking Ref
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $bookingRef = '';
-    
+
     /**
      * From Date
-     * 
-     * @var timestamp 
+     *
+     * @var timestamp
      */
     protected $fromDate;
-    
+
     /**
      * To Date
-     * 
-     * @var timestamp 
+     *
+     * @var timestamp
      */
     protected $toDate;
-    
+
     /**
      * Status
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $status = '';
-    
+
     /**
      * Customer Suname
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $surname = '';
-    
+
     /**
      * Customer Reference
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $cusref = '';
-    
+
     /**
      * Party Details
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $partyDetails = '';
-    
+
     /**
      * Adults
-     * 
+     *
      * @var integer
      */
     protected $adults = 0;
-    
+
     /**
      * Children
-     * 
+     *
      * @var integer
      */
     protected $children = 0;
-    
+
     /**
      * Infants
-     * 
+     *
      * @var integer
      */
     protected $infants = 0;
-    
+
     /**
      * Commision due to owner
-     * 
+     *
      * @var float
      */
     protected $commissionDueToOwner = 0;
-    
+
     /**
      * Commision due paid owner
-     * 
+     *
      * @var float
      */
     protected $commissionPaidToOwner = 0;
-    
+
     /**
      * Commision outstanding
-     * 
+     *
      * @var float
      */
     protected $commissionOutstandingToOwner = 0;
-    
+
     /**
      * Total Price
-     * 
+     *
      * @var float
      */
     protected $totalPrice = 0;
-    
+
     /**
      * Booking Fee
-     * 
+     *
      * @var float
      */
     protected $bookingFee = 0;
-    
+
     /**
      * Balance Due Date
-     * 
+     *
      * @var timestamp
      */
     protected $balanceDueDate;
-    
+
     /**
      * Balance Due Amount
-     * 
+     *
      * @var float
      */
     protected $balanceAmount;
-    
+
     /**
      * Security Deposit Due Date
-     * 
+     *
      * @var timestamp
      */
     protected $securityDepositDueDate;
-    
+
     /**
      * Security Deposit Due Amount
-     * 
+     *
      * @var float
      */
     protected $securityDepositAmount = 0;
-    
+
     /**
      * Security Deposit Due Paid
-     * 
+     *
      * @var float
      */
     protected $securityDepositPaid = 0;
-    
+
     // ------------------ Static Functions --------------------- //
-    
+
     /**
      * Create an Tabs Booking from booking reference
-     * 
+     *
      * @param string $bookRef Tabs Booking Reference
-     * 
+     *
      * @return \tabs\api\booking\TabsBooking
      */
     public static function getBooking($bookRef)
@@ -239,8 +239,8 @@ class TabsBooking extends \tabs\api\core\Base
         $bookingCheck = \tabs\api\client\ApiClient::getApi()->get(
             "/tabsbooking/{$bookRef}"
         );
-        if ($bookingCheck 
-            && $bookingCheck->status == 200 
+        if ($bookingCheck
+            && $bookingCheck->status == 200
             && $bookingCheck->response != ''
         ) {
             return self::createFromNode(
@@ -248,38 +248,38 @@ class TabsBooking extends \tabs\api\core\Base
             );
         } else {
             throw new \tabs\api\client\ApiException(
-                $bookingCheck, 
+                $bookingCheck,
                 "Booking not found"
             );
         }
     }
-    
+
     /**
      * Create an Tabs Booking object from a node
-     * 
+     *
      * @param object $node JSON response object
-     * 
+     *
      * @return \tabs\api\booking\TabsBooking
      */
     public static function createFromNode($node)
     {
         $booking = new \tabs\api\booking\TabsBooking();
         parent::flattenNode(
-            $booking, 
-            $node, 
-            '', 
+            $booking,
+            $node,
+            '',
             array('commission', 'balance', 'securityDeposit')
         );
         return $booking;
     }
-    
+
     // ------------------ Public Functions --------------------- //
 
     /**
      * Set booking fromdate
-     * 
+     *
      * @param string $fromDate Booking fromdate
-     * 
+     *
      * @return void
      */
     public function setFromDate($fromDate)
@@ -292,9 +292,9 @@ class TabsBooking extends \tabs\api\core\Base
 
     /**
      * Set booking todate
-     * 
+     *
      * @param string $toDate Booking todate
-     * 
+     *
      * @return void
      */
     public function setToDate($toDate)
@@ -307,9 +307,9 @@ class TabsBooking extends \tabs\api\core\Base
 
     /**
      * Set balance due date
-     * 
+     *
      * @param timestamp $balanceDueDate Balance due date
-     * 
+     *
      * @return void
      */
     public function setBalanceDueDate($balanceDueDate)
@@ -319,24 +319,24 @@ class TabsBooking extends \tabs\api\core\Base
         }
         $this->balanceDueDate = $balanceDueDate;
     }
-    
+
     /**
      * Return booking balance amount including the security deposit
-     * 
+     *
      * @return float
      */
     public function getBalanceAmountWithSecurityDeposit()
     {
         return $this->getBalanceAmount()
-                + ($this->getSecurityDepositAmount() - 
+                + ($this->getSecurityDepositAmount() -
                 $this->getSecurityDepositPaid());
     }
 
     /**
      * Set sec dep due date
-     * 
+     *
      * @param timestamp $securityDepositDueDate Sec dep due date
-     * 
+     *
      * @return void
      */
     public function setSecurityDepositDueDate($securityDepositDueDate)
@@ -346,12 +346,12 @@ class TabsBooking extends \tabs\api\core\Base
         }
         $this->securityDepositDueDate = $securityDepositDueDate;
     }
-    
+
     /**
      * Add a balance payment to this booking
-     * 
+     *
      * @param \tabs\api\booking\Payment $payment Tabs API Payment Object
-     * 
+     *
      * @return boolean
      */
     public function addPayment(\tabs\api\booking\Payment $payment)
@@ -380,34 +380,35 @@ class TabsBooking extends \tabs\api\core\Base
             return true;
         } else {
             throw new \tabs\api\client\ApiException(
-                $conf, 
+                $conf,
                 "Invalid confirmation request " . $conf->status
             );
         }
 
         return false;
     }
-    
+
     /**
      * Get the customer object
-     * 
+     *
      * @return \tabs\api\core\Customer
      */
     public function getCustomer()
     {
         return \tabs\api\core\Customer::create($this->getCusref());
     }
-    
+
     /**
      * Get the property object
-     * 
+     *
      * @return \tabs\api\property\Property
      */
     public function getProperty()
     {
         return \tabs\api\property\Property::getProperty(
-            $this->getPropertyRef(), 
+            $this->getPropertyRef(),
             $this->getBrandCode()
         );
     }
+
 }
