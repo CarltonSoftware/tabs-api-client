@@ -56,6 +56,8 @@ class Attribute extends \tabs\api\core\Base
      * 
      * @param string $name  Name of Attribute
      * @param mixed  $value Attribute Value
+     * 
+     * @return void
      */
     public function __construct($name, $value)
     {

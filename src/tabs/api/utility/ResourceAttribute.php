@@ -55,4 +55,18 @@ class ResourceAttribute extends \tabs\api\core\Base
      * @var string 
      */
     protected $type = '';
+    
+    /**
+     * Attribute Brandcode
+     * 
+     * @var string 
+     */
+    protected $brandcode = '';
+    
+    /**
+     * Attribute Group
+     * 
+     * @var string 
+     */
+    protected $groupname = '';
 }
