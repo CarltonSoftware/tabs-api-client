@@ -35,3 +35,12 @@ curl -sS https://getcomposer.org/installer | php
 ```
 
 For more information about composer, please see the [composer quick start guide](https://getcomposer.org/doc/00-intro.md).
+
+4: Regenerating documentation
+
+```
+// cd into root of api client folder
+git summodule init
+git submodule update
+phpdoc -d ./src/ -t ./tabs-api-client-example-docs/docs
+```
