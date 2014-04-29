@@ -44,3 +44,6 @@ git summodule init
 git submodule update
 phpdoc -d ./src/ -t ./tabs-api-client-example-docs/docs
 ```
+
+### Downloading a version
+We would recommend a downloading the latest release which can be found in the [releases view](https://github.com/CarltonSoftware/tabs-api-client/releases).
