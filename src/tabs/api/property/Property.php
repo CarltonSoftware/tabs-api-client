@@ -1094,7 +1094,7 @@ class Property extends \tabs\api\core\Base
                             $class .= " highlightend ";
                         }
                     }
-                    if ($date < time()) {
+                    if ($date < mktime(0, 0, 0, date('m'), date('d'), date('Y'))) {
                         $class .= " past ";
                     }
 
