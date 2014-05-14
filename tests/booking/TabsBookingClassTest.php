@@ -56,6 +56,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         
         // Price
         $this->assertEquals(770.10, $booking->getTotalPrice());
+        $this->assertEquals(256.70, $booking->getDepositPrice());
         $this->assertEquals(25.00, $booking->getBookingFee());
         
         // Balance
