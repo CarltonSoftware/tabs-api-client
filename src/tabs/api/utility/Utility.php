@@ -491,6 +491,24 @@ class Utility extends \tabs\api\core\Base
         }
         return $propCount;
     }
+    
+    /**
+     * Return an array of api brands.  This function requires admin privileges.
+     * 
+     * @return array
+     */
+    public static function getAllBrands()
+    {
+        $resource = \tabs\api\client\ApiClient::getApi()->get('/api/view');
+        if ($resource->status == 200) {
+            return json_decode($resource->body, true);
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $resource,
+                'Unable to fetch brands'
+            );
+        }
+    }
 
     // ------------------ Private Functions --------------------- //
     
