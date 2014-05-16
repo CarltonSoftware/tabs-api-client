@@ -168,15 +168,17 @@ class OwnerTest extends ApiClientClassTest
     public function testCreateOwnerBooking()
     {
         $property = $this->getFirstAvailableProperty();
-        $owner = $property->getOwner();
-        $this->assertTrue(
-            $owner->setOwnerBooking(
-                $property->getPropertyRef(),
-                $this->getNextSaturday(),
-                $this->getNextSaturdayPlusOneWeek(),
-                'Test booking created by the tabs-api-client.'
-            )
-        );
+        if ($property) {
+            $owner = $property->getOwner();
+            $this->assertTrue(
+                $owner->setOwnerBooking(
+                    $property->getPropertyRef(),
+                    $this->getNextSaturday(),
+                    $this->getNextSaturdayPlusOneWeek(),
+                    'Test booking created by the tabs-api-client.'
+                )
+            );
+        }
     }
     
     /**

@@ -52,8 +52,9 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
             array(
                 'fromDate' => date(
                     'd-m-Y', 
-                    $this->getNextSaturdayPlusOneWeek()
+                    $this->getNextSaturday()
                 ),
+                'toDate' => $this->getNextSaturdayPlusOneWeek(),
                 'pageSize' => 1
             )
         );
