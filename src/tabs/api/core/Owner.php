@@ -425,16 +425,23 @@ class Owner Extends \tabs\api\core\Person
     /**
      * Creates an owner bookings via an api call
      * 
-     * @param string    $propRef  Propety Reference
-     * @param timestamp $fromDate Start date
-     * @param timestamp $toDate   End date of the owner booking
-     * @param string    $note     Any notes the owner wishes to pass to the
-     *                            booking office
+     * @param string    $propRef          Propety Reference
+     * @param timestamp $fromDate         Start date
+     * @param timestamp $toDate           End date of the owner booking
+     * @param string    $note             Any notes the owner wishes to pass to
+     *                                    the booking office
+     * @param string    $ownerBookingType Owner booking type. Leave blank for 
+     *                                    normal owner bookings
      * 
      * @return void
      */
-    public function setOwnerBooking($propRef, $fromDate, $toDate, $note = '')
-    {
+    public function setOwnerBooking(
+        $propRef,
+        $fromDate,
+        $toDate,
+        $note = '',
+        $ownerBookingType = ''
+    ) {
         // Sanitise data
         $property = $this->getPropertyByPropRef($propRef);
         if (!$property) {
@@ -458,7 +465,8 @@ class Owner Extends \tabs\api\core\Person
             'brandCode' => $this->getBrandCode(),
             'fromDate' => date("Y-m-d", $fromDate),
             'toDate' => date("Y-m-d", $toDate),
-            'note' => $note
+            'note' => $note,
+            'ownerBookingType' => $ownerBookingType
         );
 
         // Call brochure request end point
