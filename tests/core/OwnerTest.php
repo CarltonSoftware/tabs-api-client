@@ -167,14 +167,16 @@ class OwnerTest extends ApiClientClassTest
      */
     public function testCreateOwnerBooking()
     {
-//        $this->assertTrue(
-//            $this->_getOwner()->setOwnerBooking(
-//                "mousecott", 
-//                strtotime("2012-07-01"), 
-//                strtotime("2012-07-08"), 
-//                "Staying their ourselves"
-//            )
-//        );
+        $property = $this->getFirstAvailableProperty();
+        $owner = $property->getOwner();
+        $this->assertTrue(
+            $owner->setOwnerBooking(
+                $property->getPropertyRef(),
+                $this->getNextSaturday(),
+                $this->getNextSaturdayPlusOneWeek(),
+                'Test booking created by the tabs-api-client.'
+            )
+        );
     }
     
     /**
