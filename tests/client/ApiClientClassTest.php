@@ -29,16 +29,26 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
      */
     public function getFirstAvailablePropertyWithPricing()
     {
-        if ($properties = $this->_getAvailableProperties()) {
+        if ($properties = $this->_getAvailableProperties(50)) {
             foreach ($properties as $property) {
                 if ($property->getBrand()->getSearchPrice()) {
-                    return array_pop($properties);
+                    try {
+                        $enquiry = \tabs\api\booking\Enquiry::create(
+                            $property->getPropref(),
+                            $property->getBrandcode(),
+                            $this->getNextSaturday(),
+                            $this->getNextSaturdayPlusOneWeek(),
+                            1
+                        );
+                        return $property;
+                    } catch (Exception $ex) {
+
+                    }
                 }
             }
-            return false;
-        } else {
-            return false;
         }
+        
+        return false;
     }
     
     /**
@@ -48,18 +58,9 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
      */
     public function getFirstAvailableProperty()
     {
-        $searchHelper = $this->_getSearchHelper(
-            array(
-                'fromDate' => date(
-                    'd-m-Y', 
-                    $this->getNextSaturday()
-                ),
-                'toDate' => $this->getNextSaturdayPlusOneWeek(),
-                'pageSize' => 1
-            )
-        );
+        $properties = $this->_getAvailableProperties(1);
         
-        if ($properties = $searchHelper->getProperties()) {
+        if (is_array($properties)) {
             return array_pop($properties);
         } else {
             return false;
@@ -91,17 +92,21 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
      * 
      * @return boolean
      */
-    private function _getAvailableProperties()
+    private function _getAvailableProperties($pageSize = 10)
     {
         // Create a new search helper object
         $searchHelper = $this->_getSearchHelper(
             array(
                 'fromDate' => date(
                     'd-m-Y', 
+                    $this->getNextSaturday()
+                ),
+                'toDate' =>  date(
+                    'd-m-Y', 
                     $this->getNextSaturdayPlusOneWeek()
-                )
-            ),
-            true
+                ),
+                'pageSize' => $pageSize
+            )
         );
         
         if ($properties = $searchHelper->getProperties()) {
