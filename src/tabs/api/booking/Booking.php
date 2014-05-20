@@ -330,6 +330,30 @@ class Booking extends \tabs\api\booking\Enquiry
     // ------------------ Public Functions --------------------- //
 
     /**
+     * Save a new instance of the booking
+     * 
+     * @return \tabs\api\booking\Booking
+     */
+    public function save()
+    {
+        $booking = self::create(
+            $this->getPropertyRef(),
+            $this->getBrandcode(),
+            $this->getFromDate(),
+            $this->getToDate(),
+            $this->getAdults(),
+            $this->getChildren(),
+            $this->getInfants()
+        );
+        
+        // Set fields which are returned by the api
+        $this->setPricing($booking->getPricing());
+        $this->setBookingId($booking->getBookingId());
+        
+        return $this;
+    }
+    
+    /**
      * Function used to check if a customer has been set or not
      *
      * @return boolean
