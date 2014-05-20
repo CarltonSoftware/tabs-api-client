@@ -1,13 +1,14 @@
 <?php
 
-$file = dirname(__FILE__)
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . 'tabs'
-    . DIRECTORY_SEPARATOR . 'autoload.php';
+$file = dirname(__FILE__) 
+    . DIRECTORY_SEPARATOR . '..' 
+    . DIRECTORY_SEPARATOR . '..' 
+    . DIRECTORY_SEPARATOR . 'tests' 
+    . DIRECTORY_SEPARATOR . 'client' 
+    . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
-class BookingTest extends PHPUnit_Framework_TestCase
+class BookingTest extends ApiClientClassTest
 {
     /**
      * Run on each test
@@ -16,8 +17,7 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
-        \tabs\api\client\ApiClient::getApi()->setTestMode(true);
+        self::setUpBeforeClass();
     }
 
     /**
@@ -63,52 +63,20 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testNewBooking()
     {
-        $booking = \tabs\api\booking\Booking::create(
-            "mousecott",
-            "SS",
-            strtotime("2012-07-01"),
-            strtotime("2012-07-08"),
-            2,
-            1,
-            0,
-            1
-        );
-
-        $this->_testBookingObject($booking);
-        $this->assertTrue($booking->addPetExtra(1));
-        $this->assertTrue($booking->hasPetExtra());
-        $this->assertTrue($booking->getWeeksToNow() < 0);
-        $this->assertTrue(is_array($booking->toArray()));
-        $this->assertTrue(is_string($booking->toJson()));
-        $this->assertTrue(is_object($booking->getProperty()));
-
-        $otherBooking = new \tabs\api\booking\Booking();
-        $this->assertEquals(0, $otherBooking->getDepositAmount());
-        $this->assertEquals(0, $otherBooking->getAmountPaid());
-        $this->assertFalse($otherBooking->hasPetExtra());
-    }
-
-    /**
-     * Test the removal of a pricing property
-     *
-     * @return void
-     */
-    public function testRemoveAllExtras()
-    {
-        $booking = $this->_getTestBooking();
-        $this->assertEquals(45, $booking->getExtrasTotal());
-        $booking->removeAllExtras();
-        $this->assertEquals(0, $booking->getExtrasTotal());
-    }
-
-    /**
-     * Test creating a new booking
-     *
-     * @return null
-     */
-    public function testExistingBooking()
-    {
-        $this->_testBookingObject($this->_getTestBooking());
+        $booking = new \tabs\api\booking\Booking();
+        $this->assertEquals(0, $booking->getDepositAmount());
+        $this->assertEquals(0, $booking->getAmountPaid());
+        $this->assertFalse($booking->hasPetExtra());
+        
+        $property = $this->getFirstAvailablePropertyWithPricing();
+        if ($property) {
+            $booking->setPropertyRef($property->getPropref());
+            $booking->setFromDate($this->getNextSaturday());
+            $booking->setToDate($this->getNextSaturdayPlusOneWeek());
+            $booking->setAdults(1);
+            
+            $booking->save();
+        }
     }
 
     /**
@@ -133,9 +101,10 @@ class BookingTest extends PHPUnit_Framework_TestCase
      */
     public function testInvalidSetCustomer()
     {
-        $booking = $this->_getTestBooking();
+        $booking = new \tabs\api\booking\Booking();
         $customer = $this->_getCustomer();
         \tabs\api\client\ApiClient::factory('http://bad.url/');
+        $booking->setBookingId('xyz');
         $booking->setCustomer($customer);
     }
 
@@ -157,18 +126,6 @@ class BookingTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('infant', $infant->getType());
         $this->assertTrue(is_array($infant->toArray()));
         $this->assertTrue(is_array($infant->toArray(false)));
-
-        $booking = $this->_getTestBooking();
-
-        // Add to Booking
-        $booking->setPartyMember($joe);
-        $booking->setPartyMember($ann);
-        $booking->setPartyMember($hayley);
-
-        // Check for true response
-        $this->assertTrue($booking->setPartyDetails());
-        $this->assertTrue($booking->clearPartyMembers());
-        $this->assertEquals(0, count($booking->getPartyDetails()));
     }
 
     /**
@@ -191,77 +148,10 @@ class BookingTest extends PHPUnit_Framework_TestCase
      *
      * @return null
      */
-    public function testBookingAddPetExtra()
-    {
-        $booking = $this->_getTestBooking();
-        $this->assertTrue($booking->addNewExtra("PET", 1));
-        $this->assertTrue($booking->addNewExtra("PET", 1, 20));
-    }
-
-    /**
-     * Test invalid request
-     *
-     * @expectedException \tabs\api\client\ApiException
-     *
-     * @return void
-     */
-    public function testInvalidSetExtra()
-    {
-        $booking = $this->_getTestBooking();
-        $booking->addNewExtra('XXX', 99);
-    }
-
-    /**
-     * Test adding party members to the booking
-     *
-     * @return null
-     */
-    public function testBookingRemovePetExtra()
-    {
-        $booking = $this->_getTestBooking();
-
-        $this->assertTrue($booking->removeExtra("PET"));
-    }
-
-    /**
-     * Test adding party members to the booking
-     *
-     * @return null
-     */
     public function testBookingRemoveInvalidExtra()
     {
-        $booking = $this->_getTestBooking();
+        $booking = new \tabs\api\booking\Booking();
         $this->assertFalse($booking->removeExtra('XXX'));
-    }
-
-    /**
-     * Test options request for current booking
-     *
-     * @return void
-     */
-    public function testBookingGetAvailableExtras()
-    {
-        $booking = $this->_getTestBooking();
-        $extras = $booking->getAvailableExtras();
-        $this->assertEquals(2, count($extras));
-
-        $extra = array_shift($extras);
-        $this->assertEquals('COT', $extra->getCode());
-    }
-
-    /**
-     * Test adding party members to the booking
-     *
-     * @return null
-     */
-    public function testBookingConfirm()
-    {
-        $booking = $this->_getTestBooking();
-
-        $this->assertTrue($booking->confirmBooking());
-        // Get the new booking reference and test if confirmed
-        $this->assertTrue($booking->isConfirmed());
-        $this->assertEquals("W12345", $booking->getWNumber());
     }
 
     /**
@@ -275,290 +165,6 @@ class BookingTest extends PHPUnit_Framework_TestCase
     {
         $booking = new \tabs\api\booking\Booking();
         $booking->confirmBooking();
-    }
-
-    /**
-     * Test adding a booking note
-     *
-     * @return null
-     */
-    public function testBookingAddNote()
-    {
-        $booking = $this->_getTestBooking();
-        $note = $booking->setNote("Customer will be arriving around 4pm");
-        $this->assertEquals(39, $note);
-        $this->assertEquals(3, count($booking->getNotes()));
-        $this->assertTrue($booking->noteExists(39));
-    }
-
-    /**
-     * Test invalid request
-     *
-     * @expectedException \tabs\api\client\ApiException
-     *
-     * @return void
-     */
-    public function testInvalidBookingNote()
-    {
-        $booking = new \tabs\api\booking\Booking();
-        $booking->setNote('Bla bla');
-    }
-
-    /**
-     * Test invalid request
-     *
-     * @expectedException \tabs\api\client\ApiException
-     *
-     * @return void
-     */
-    public function testInvalidBookingUpdateNote()
-    {
-        $booking = new \tabs\api\booking\Booking();
-        $booking->updateNote(1, 'Bla bla');
-    }
-
-    /**
-     * Test invalid request
-     *
-     * @expectedException \tabs\api\client\ApiException
-     *
-     * @return void
-     */
-    public function testInvalidBookingDeleteNote()
-    {
-        $booking = new \tabs\api\booking\Booking();
-        $booking->deleteNote(1);
-    }
-
-    /**
-     * Test updating a booking note
-     *
-     * @return null
-     */
-    public function testBookingUpdateNote()
-    {
-        $booking = $this->_getTestBooking();
-        $note = $booking->updateNote(39, "Customer will now be arriving around 5pm");
-        $this->assertTrue($note);
-        $this->assertEquals(3, count($booking->getNotes()));
-    }
-
-    /**
-     * Test removing a booking note
-     *
-     * @return null
-     */
-    public function testBookingRemoveNote()
-    {
-        $booking = $this->_getTestBooking();
-        $note = $booking->deleteNote(39);
-        $this->assertTrue($note);
-        $this->assertEquals(2, count($booking->getNotes()));
-    }
-
-    /**
-     * Test getting a booking note
-     *
-     * @return null
-     */
-    public function testBookingGetNote()
-    {
-        $booking = $this->_getTestBooking();
-        $note = $booking->getNote(39);
-        $this->assertFalse($note);
-
-        $note = $booking->setNote("Customer will be arriving around 4pm");
-        $note = $booking->getNote(39);
-        $this->assertEquals('public', $note->visible);
-    }
-
-    /**
-     * Test adding a payment to a booking
-     *
-     * @return null
-     */
-    public function testBookingPayment()
-    {
-        $payment = $this->_getPayment();
-
-        $booking = $this->_getTestBooking();
-        $this->assertTrue(
-            $booking->addNewPayment($payment)
-        );
-    }
-
-    /**
-     * Test the sagepay processing function
-     *
-     * @return void
-     */
-    public function testSagePayProcess()
-    {
-        $booking = $this->_getTestBooking();
-        $payment = $booking->processSagepayResponse($this->_getSagePayResponse());
-        $this->assertEquals(
-            'tabs\api\booking\Payment',
-            get_class($payment)
-        );
-    }
-
-    /**
-     * Test the sagepay processing function with a card charge
-     *
-     * @return void
-     */
-    public function testSagePayProcessWithCC()
-    {
-        // TODO: Once tests are converted over to test api rather than static
-        // api.
-        //        $response = $this->_getSagePayResponse();
-        //
-        //        // Add a 4 pound surcharge onto the response array
-        //        $response['Surcharge'] = 4;
-        //
-        //        $booking = $this->_getTestBooking();
-        //        $payment = $booking->processSagepayResponse($response);
-        //        $extras = $booking->getExtras();
-        //        $this->assertTrue(isset($extras['CCC']));
-    }
-
-    /**
-     * Test adding a payment to a booking
-     * $array
-     * @expectedException \tabs\api\client\ApiException
-     *
-     * @return null
-     */
-    public function testInvalidBookingPayment()
-    {
-        $payment = $this->_getPayment();
-
-        $booking = new \tabs\api\booking\Booking();
-        $this->assertTrue(
-            $booking->addNewPayment($payment)
-        );
-    }
-
-    /**
-     * Test retrieving a booking
-     *
-     * @return null
-     */
-    public function testGetBookingPayment()
-    {
-        $booking = $this->_getTestBooking();
-        $payment = \tabs\api\booking\Payment::getPayment(
-            $booking->getBookingId(),
-            "12abcde3456fghi"
-        );
-
-        $this->assertEquals($payment->getAmount(), 123.45);
-        $booking->addNewPayment($payment);
-        $this->assertEquals(123.45, $booking->getAmountPaid());
-
-    }
-
-
-    /**
-     * Add voucher test
-     *
-     * @return void
-     */
-    public function testBookingAddVoucher()
-    {
-        $booking = $this->_getTestBooking();
-        $this->assertTrue($booking->addPromotion('PROMO001'));
-    }
-
-
-    /**
-     * Remove voucher test
-     *
-     * @return void
-     */
-    public function testBookingRemoveVoucher()
-    {
-        $booking = $this->_getTestBooking();
-        $this->assertTrue($booking->removePromotion('PROMO001'));
-    }
-
-    /**
-     * Test the removal of a pricing property
-     *
-     * @return void
-     */
-    public function testRemoveSd()
-    {
-        $booking = $this->_getTestBooking();
-        $this->assertEquals(100, $booking->getSecurityDeposit());
-        $booking->setSecurityDeposit(0);
-        $this->assertEquals(0, $booking->getSecurityDeposit());
-    }
-
-
-    /**
-     * Test a booking object
-     *
-     * @param Booking $booking Booking object
-     *
-     * @return void
-     */
-    private function _testBookingObject($booking)
-    {
-        // Test data
-        $this->assertEquals("c70175835bda68846e", $booking->getBookingId());
-        $this->assertEquals("mousecott", $booking->getPropertyRef());
-        $this->assertEquals("mousecott", $booking->getProperty()->getPropref());
-        $this->assertEquals("SS", $booking->getBrandCode());
-        $this->assertEquals("2012-07-01", date("Y-m-d", $booking->getFromDate()));
-        $this->assertEquals("2012-07-08", date("Y-m-d", $booking->getToDate()));
-        $this->assertEquals(2, $booking->getAdults());
-        $this->assertEquals(1, $booking->getChildren());
-        $this->assertEquals(0, $booking->getInfants());
-        $this->assertEquals(3, $booking->getPartySize());
-        $this->assertEquals(7, $booking->getNumberOfNights());
-        $this->assertEquals(2, $booking->getPets());
-        $this->assertEquals(true, $booking->isAvailable());
-        $this->assertEquals('', $booking->getWNumber());
-
-        // Check price
-        $this->assertEquals(168.45, $booking->getOutstandingBalance());
-        $this->assertEquals(123.45, $booking->getBasicPrice());
-        $this->assertEquals(168.45, $booking->getTotalPrice());
-        $this->assertEquals(100.00, $booking->getSecurityDeposit());
-        $this->assertEquals(100.00, $booking->getDepositAmount());
-        $this->assertEquals(100.00, $booking->getPayableAmount());
-        $this->assertEquals(268.45, $booking->getPayableAmount(true));
-
-        // Check Extras
-        $this->assertEquals(2, count($booking->getAllExtras()));
-
-        // Check One Extra - BKFE
-        $bkfe = $booking->getExtraDetail("BKFE");
-        $this->assertEquals(25.00, $bkfe->getTotalPrice());
-        $this->assertEquals(1, $bkfe->getQuantity());
-        $this->assertEquals(25.00, $bkfe->getPrice());
-        $this->assertEquals("compulsory", $bkfe->getType());
-        $this->assertEquals("Booking Fee", $bkfe->getDescription());
-
-        // Check for pet extra
-        $this->assertTrue($booking->hasPetExtra());
-
-        // Check for payments
-        $this->assertFalse($booking->hasPayment(''));
-    }
-
-
-    /**
-     * Return a test booking object
-     *
-     * @return \tabs\api\booking\Booking
-     */
-    private function _getTestBooking()
-    {
-        return \tabs\api\booking\Booking::createBookingFromId(
-            "c70175835bda68846e"
-        );
     }
 
     /**
@@ -628,54 +234,4 @@ class BookingTest extends PHPUnit_Framework_TestCase
             "VPSSignature" => "d6782b2c213fa212a"
         );
     }
-
-    /**
-     * Test getting a tabs booking
-     *
-     * @return null
-     */
-    public function testGetTabsBooking()
-    {
-        $booking = $this->_getTestBooking();
-        $tabsbooking = $booking->getTabsBooking();
-        $this->assertEquals("mousecott", $tabsbooking->getPropertyRef());
-        $this->assertEquals("mousecott", $tabsbooking->getProperty()->getPropref());
-        $this->assertEquals("SS", $tabsbooking->getBrandCode());
-        $this->assertEquals(299463, $tabsbooking->getBookingRef());
-        $this->assertEquals("2013-07-27", date("Y-m-d", $tabsbooking->getFromDate()));
-        $this->assertEquals("2013-08-03", date("Y-m-d", $tabsbooking->getToDate()));
-        $this->assertEquals("D", $tabsbooking->getStatus());
-        $this->assertEquals("COTJ033", $tabsbooking->getCusref());
-        $this->assertEquals("Cottenden", $tabsbooking->getSurname());
-        $this->assertEquals("Cottenden", $tabsbooking->getCustomer()->getSurname());
-
-        // Party Details
-        $this->assertEquals(
-            "Mr J Cottenden, Ms A Griffiths",
-            $tabsbooking->getPartyDetails()
-        );
-        $this->assertEquals(2, $tabsbooking->getAdults());
-        $this->assertEquals(0, $tabsbooking->getChildren());
-        $this->assertEquals(0, $tabsbooking->getInfants());
-
-        // Commission
-        $this->assertEquals(563.26, $tabsbooking->getCommissionDueToOwner());
-        $this->assertEquals(0.00, $tabsbooking->getCommissionPaidToOwner());
-        $this->assertEquals(563.26, $tabsbooking->getCommissionOutstandingToOwner());
-
-        // Price
-        $this->assertEquals(770.10, $tabsbooking->getTotalPrice());
-        $this->assertEquals(25.00, $tabsbooking->getBookingFee());
-
-        // Balance
-        $this->assertEquals("2013-10-19", date("Y-m-d", $tabsbooking->getBalanceDueDate()));
-        $this->assertEquals(510.00, $tabsbooking->getBalanceAmount());
-
-        // Security Deposit
-        $this->assertEquals("01-01", date("m-d", $tabsbooking->getSecurityDepositDueDate()));
-        $this->assertEquals(0, $tabsbooking->getSecurityDepositAmount());
-        $this->assertEquals(0, $tabsbooking->getSecurityDepositPaid());
-        $this->assertEquals(510.00, $tabsbooking->getBalanceAmountWithSecurityDeposit());
-    }
-
 }
