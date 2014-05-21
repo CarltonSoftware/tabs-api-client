@@ -24,7 +24,7 @@ class SearchHelperTest extends ApiClientClassTest
         );
         $searchHelper->setSearchPrefix('prefix');
         $this->assertEquals('prefix', $searchHelper->getSearchPrefix());
-
+        
         // Page will return 1 if search hasnt been performed yet
         $this->assertEquals(1, $searchHelper->getPage());
 
@@ -45,6 +45,21 @@ class SearchHelperTest extends ApiClientClassTest
 
         // Properties will be empty
         $this->assertEquals(0, count($searchHelper->getProperties()));
+    }
+    /**
+     * Test a new search helper object and the short break filter getter/setter
+     *
+     * @return void
+     */
+    public function testShortBreakFilter()
+    {
+        $searchHelper = new \tabs\api\property\SearchHelper();
+        
+        $this->assertEquals('', $searchHelper->getSbFilter());
+        
+        // Set the sb filter and test
+        $searchHelper->setSbFilter('1111000');
+        $this->assertEquals('1111000', $searchHelper->getSbFilter());
     }
 
     /**

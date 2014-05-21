@@ -459,11 +459,11 @@ class PropertySearch extends \tabs\api\core\Base
     /**
      * Add a property to a property search object from a given api response
      *
-     * @param \tabs\api\property\PropertySearch $propertySearch  PropSearch
+     * @param \tabs\api\property\PropertySearch $propertySearch PropSearch
      * object passed by reference
-     * @param object                            $propertyData    Api response data
-     * @param integer                           $page            Page number
-     * @param integer                           $pageSize        Page size
+     * @param object                            $propertyData   Api response data
+     * @param integer                           $page           Page number
+     * @param integer                           $pageSize       Page size
      *
      * @return void
      */

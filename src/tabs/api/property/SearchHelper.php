@@ -1085,7 +1085,7 @@ class SearchHelper
      * HTTP Query function
      * 
      * @param array   $params    Array of params to encode
-     * @param boolean $httpQuery  Set to true if you wish to output as a string
+     * @param boolean $httpQuery Set to true if you wish to output as a string
      * 
      * @return string
      */

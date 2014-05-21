@@ -499,6 +499,8 @@ class Utility extends \tabs\api\core\Base
      */
     public static function getAllBrands()
     {
+        // @codeCoverageIgnoreStart
+        // Unable to unit test as test client would require admin privs.
         $resource = \tabs\api\client\ApiClient::getApi()->get('/api/view');
         if ($resource->status == 200) {
             return json_decode($resource->body, true);
@@ -508,6 +510,7 @@ class Utility extends \tabs\api\core\Base
                 'Unable to fetch brands'
             );
         }
+        // @codeCoverageIgnoreEnd
     }
 
     // ------------------ Private Functions --------------------- //

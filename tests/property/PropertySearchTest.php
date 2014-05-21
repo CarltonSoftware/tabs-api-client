@@ -247,12 +247,16 @@ class PropertySearchTest extends ApiClientClassTest
 
     /**
      * Test the property search end point
+     * 
+     * @param mixed $numProps Number of properties to search for
      *
      * @expectedException \tabs\api\client\ApiException
      * 
+     * @dataProvider providerInvalidPropertySearch
+     * 
      * @return void
      */
-    public function testPropertySearchException()
+    public function testPropertySearchException($numProps)
     {
         \tabs\api\client\ApiClient::getApi()->setUrlRoute(
             'http://xxx.api.carltonsoftware.co.uk/'
@@ -260,7 +264,30 @@ class PropertySearchTest extends ApiClientClassTest
         $propSearch = \tabs\api\property\PropertySearch::factory(
             '',
             1,
-            9999
+            $numProps
+        );
+    }
+    
+    /**
+     * Invalid property search request provider
+     * 
+     * @return array
+     */
+    public function providerInvalidPropertySearch()
+    {
+        return array(
+            array(
+                '',
+                9999
+            ),
+            array(
+                '',
+                1
+            ),
+            array(
+                'invalidfiler=blablabla',
+                1
+            )
         );
     }
 }
