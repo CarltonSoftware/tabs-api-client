@@ -167,7 +167,7 @@ class OwnerTest extends ApiClientClassTest
      */
     public function testCreateOwnerBooking()
     {
-        $property = $this->getFirstAvailableProperty();
+        $property = $this->getFirstAvailablePropertyWithPricing();
         if ($property) {
             $owner = $property->getOwner();
             $this->assertTrue(

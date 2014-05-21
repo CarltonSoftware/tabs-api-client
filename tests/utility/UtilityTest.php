@@ -76,7 +76,7 @@ class UtilityTest extends ApiClientClassTest
         $areas = \tabs\api\utility\Utility::getAreasAndLocations();
 
         // Test
-        $this->assertEquals(6, count($areas));
+        $this->assertEquals(7, count($areas));
 
         // Get last area
         $area = array_pop($areas);
@@ -115,7 +115,7 @@ class UtilityTest extends ApiClientClassTest
         $areas = \tabs\api\utility\Utility::getAreasAndLocations(0, true);
 
         // Test
-        $this->assertEquals(6, count($areas));
+        $this->assertEquals(7, count($areas));
     }
 
     /**
@@ -163,7 +163,7 @@ class UtilityTest extends ApiClientClassTest
         $areas = \tabs\api\utility\Utility::getAreas();
 
         // Test
-        $this->assertEquals(6, count($areas));
+        $this->assertEquals(7, count($areas));
 
         $foundArea = \tabs\api\utility\Utility::findAreaFromSlug('pembrokeshire-west-wales');
         $this->assertTrue(get_class($foundArea) == 'tabs\api\core\Area');
