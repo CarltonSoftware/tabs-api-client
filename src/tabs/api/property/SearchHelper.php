@@ -666,7 +666,7 @@ class SearchHelper
     /**
      * Get the merged array of initial parameters
      *
-     * @param boolean $httpQuery Set to tru if you wish to output as a string
+     * @param boolean $httpQuery Set to true if you wish to output as a string
      * 
      * @return array
      */
@@ -1084,7 +1084,8 @@ class SearchHelper
     /**
      * HTTP Query function
      * 
-     * @param array $params Array of params to encode
+     * @param array   $params    Array of params to encode
+     * @param boolean $httpQuery  Set to true if you wish to output as a string
      * 
      * @return string
      */

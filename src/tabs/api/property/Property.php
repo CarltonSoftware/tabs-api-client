@@ -1475,25 +1475,23 @@ class Property extends \tabs\api\core\Base
      */
     public function getAllDescriptions($brandcode = '')
     {
-
-        //If no brandcode is set use the accounting brandcode
+        // If no brandcode is set use the accounting brandcode
         if ($brandcode == '') {
             $brandcode = $this->getAccountingBrand();
         }
 
         if (isset($this->brands[$brandcode])) {
             $this->_loadAdditionalDescriptions($brandcode);
+            $brand = $this->brands[$brandcode];
             $descriptions = array();
 
-            foreach ($this->brands[$brandcode]->getDescriptions() as $descriptionType => $description) {
+            foreach ($brand->getDescriptions() as $dType => $desc) {
                 $descriptions[] = array(
-                    'descriptiontype'  => $descriptionType,
-                    'description'      => $description
+                    'descriptiontype'  => $dType,
+                    'description'      => $desc
                 );
             }
         }
-
-
 
         return $descriptions;
     }
