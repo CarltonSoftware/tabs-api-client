@@ -347,10 +347,9 @@ class Booking extends \tabs\api\booking\Enquiry
         );
         
         // Set fields which are returned by the api
-        $this->setPricing($booking->getPricing());
         $this->setBookingId($booking->getBookingId());
         
-        return $this;
+        return $this->_setBookingData();
     }
     
     /**
@@ -529,7 +528,7 @@ class Booking extends \tabs\api\booking\Enquiry
      * @param \tabs\api\core\Customer $customer     Customer Object
      * @param boolean                 $saveCustomer if true, sends a customer
      *
-     * @return void
+     * @return \tabs\api\booking\Booking
      *
      * @throws Exception
      */
@@ -556,6 +555,8 @@ class Booking extends \tabs\api\booking\Enquiry
                 );
             }
         }
+        
+        return $this;
     }
 
     /**
@@ -570,6 +571,8 @@ class Booking extends \tabs\api\booking\Enquiry
     public function setPartyMember(\tabs\api\booking\PartyDetail $partyMember)
     {
         array_push($this->partyDetails, $partyMember);
+        
+        return $this;
     }
 
     /**
@@ -661,7 +664,7 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @throws \tabs\api\client\ApiException
      *
-     * @return boolean
+     * @return \tabs\api\booking\Booking
      */
     public function removeExtra($extraCode)
     {
@@ -674,16 +677,14 @@ class Booking extends \tabs\api\booking\Enquiry
             );
 
             // Return true if 204 header found
-            if ($extra) {
+            if ($extra && $extra->status == 204) {
 
                 // Update the current object
-                $this->_setBookingData();
-
-                return ($extra->status == 204);
+                return $this->_setBookingData();
             }
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
 
@@ -705,7 +706,7 @@ class Booking extends \tabs\api\booking\Enquiry
         }
 
         // Update the current object
-        $this->_setBookingData();
+        return $this->_setBookingData();
     }
 
     /**
@@ -832,7 +833,7 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @param \tabs\api\booking\Payment $payment API Payment Object
      *
-     * @return boolean | string
+     * @return \tabs\api\booking\Booking
      *
      * @throws ApiException
      */
@@ -858,9 +859,7 @@ class Booking extends \tabs\api\booking\Enquiry
             $this->addPayment($payment);
 
             // Update the current object
-            $this->_setBookingData();
-
-            return true;
+            return $this->_setBookingData();
         } else {
             throw new \tabs\api\client\ApiException(
                 $conf,
@@ -911,7 +910,7 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @param string $promoCode Promotion code
      *
-     * @return boolean
+     * @return \tabs\api\booking\Booking
      */
     public function addPromotion($promoCode)
     {
@@ -926,9 +925,7 @@ class Booking extends \tabs\api\booking\Enquiry
         if ($conf && $conf->status == 204) {
 
             // Update the current object
-            $this->_setBookingData();
-
-            return true;
+            return $this->_setBookingData();
         } else {
             throw new \tabs\api\client\ApiException(
                 $conf,
@@ -942,7 +939,7 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @param string $promoCode Promotion code
      *
-     * @return boolean
+     * @return \tabs\api\booking\Booking
      */
     public function removePromotion($promoCode)
     {
@@ -957,9 +954,7 @@ class Booking extends \tabs\api\booking\Enquiry
         if ($conf && $conf->status == 204) {
 
             // Update the current object
-            $this->_setBookingData();
-
-            return true;
+            return $this->_setBookingData();
         } else {
             throw new \tabs\api\client\ApiException(
                 $conf,
@@ -1199,7 +1194,7 @@ class Booking extends \tabs\api\booking\Enquiry
      * looks for all getters and attempts to use the setter equivilent to
      * update the current objects booking record.
      *
-     * @return void
+     * @return \tabs\api\booking\Booking
      */
     private function _setBookingData()
     {
@@ -1216,5 +1211,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 $this->$setter($booking->$getter());
             }
         }
+        
+        return $this;
     }
 }
