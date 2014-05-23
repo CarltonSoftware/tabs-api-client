@@ -146,7 +146,7 @@ class UtilityTest extends ApiClientClassTest
         // Test
         $this->assertEquals("BOB", $sourcecode->getCode());
         $this->assertEquals("Best of Britain, Holland", $sourcecode->getDescription());
-        $this->assertEquals("", $sourcecode->getCategory());
+        $this->assertEquals('Agent', $sourcecode->getCategory());
 
         $this->assertFalse(\tabs\api\utility\Utility::getSourceCode('BLA'));
 

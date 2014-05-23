@@ -75,8 +75,109 @@ class BookingTest extends ApiClientClassTest
             $booking->setToDate($this->getNextSaturdayPlusOneWeek());
             $booking->setAdults(1);
             
-            $booking->save();
+            try {
+                $anotherBookingInstance = $booking->save();
+                $this->assertTrue($anotherBookingInstance === $booking);
+            } catch (Exception $ex) {
+
+            }
         }
+    }
+
+    /**
+     * Test the booking object accessors
+     *
+     * @return null
+     */
+    public function testBookingAccessors()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->setBookingId('7a28845cdbb08b8575ed0c4f58ac2f06');
+        $this->assertEquals('7a28845cdbb08b8575ed0c4f58ac2f06', $booking->getBookingId());
+        
+        // Set booking number
+        $booking->setWnumber('W12345');
+        
+        // Booking is not confirmed, return blank string
+        $this->assertEquals('', $booking->getWnumber());
+        $booking->setConfirmation(true);
+        
+        // Booking now confirmed, should give number now
+        $this->assertEquals('W12345', $booking->getWnumber());
+        
+        $this->assertTrue($booking->isConfirmed());
+        
+        $booking->setAdults(2);
+        $this->assertEquals(2, $booking->getAdults());
+        $this->assertEquals(2, $booking->getPartySize());
+        
+        $booking->setChildren(1);
+        $this->assertEquals(1, $booking->getChildren());
+        $this->assertEquals(3, $booking->getPartySize());
+        
+        $booking->setInfants(1);
+        $this->assertEquals(1, $booking->getInfants());
+        $this->assertEquals(4, $booking->getPartySize());
+    }
+
+    /**
+     * Test adding a booking note
+     *
+     * @return void
+     */
+    public function testAddUpdateDeleteBookingNote()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->setBookingId('7a28845cdbb08b8575ed0c4f58ac2f06');
+        
+        $this->assertFalse($booking->noteExists(0));
+        
+        $noteId = $booking->setNote('Test note from the api client');
+        $this->assertTrue(($noteId > 0));
+        $this->assertTrue($booking->noteExists($noteId));
+        $this->assertTrue($booking->updateNote($noteId, 'Updating note'));
+        $this->assertTrue(is_object($booking->getNote($noteId)));
+        $booking->deleteNote($noteId);
+        $this->assertFalse($booking->getNote($noteId));
+    }
+
+    /**
+     * Test invalid booking note insert
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return void
+     */
+    public function testInvalidBookingNoteAdd()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->setNote('bla bla bla');
+    }
+
+    /**
+     * Test invalid booking note update
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return void
+     */
+    public function testInvalidBookingNoteUpdate()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->updateNote(12309128132, 'bla bla bla');
+    }
+
+    /**
+     * Test invalid booking note delete
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return void
+     */
+    public function testInvalidBookingNoteDelete()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->deleteNote(12309128132);
     }
 
     /**
@@ -88,8 +189,9 @@ class BookingTest extends ApiClientClassTest
     {
         $customer = $this->_getCustomer();
         $otherBooking = new \tabs\api\booking\Booking();
-        $otherBooking->setCustomer($customer);
+        $booking = $otherBooking->setCustomer($customer);
         $this->assertTrue($otherBooking->hasCustomer());
+        $this->assertTrue(($otherBooking === $booking));
     }
 
     /**
