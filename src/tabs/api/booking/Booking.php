@@ -302,6 +302,9 @@ class Booking extends \tabs\api\booking\Enquiry
                 $notes = array();
                 foreach ($bookingData->notes as $note) {
                     $tempNote = array();
+                    if (isset($note->id)) {
+                        $tempNote['id'] = $note->id;
+                    }
                     $tempNote['message'] = $note->message;
                     $tempNote['visibility'] = $note->visibility;
                     array_push($notes, $tempNote);
