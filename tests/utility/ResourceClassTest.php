@@ -35,6 +35,12 @@ class ResourceClassTest extends PHPUnit_Framework_TestCase
         $attribute->setType('boolean');        
         $this->resource->addAttribute($attribute);
         
+        $extra = new \tabs\api\utility\ResourceExtra();
+        $extra->setCode('BKFE');
+        $extra->setLabel('Booking Fee');
+        $extra->setType('compulsory');        
+        $this->resource->addExtra($extra);
+        
         $brand = new \tabs\api\utility\ResourceBrand('NO');
         $brand->setName('Norfolk Country Cottages')
             ->setAddress('Market Place, Reepham')
@@ -84,6 +90,21 @@ class ResourceClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('ATTR01', $attr->getCode());
         $this->assertEquals('Close to Coast', $attr->getLabel());
         $this->assertEquals('boolean', $attr->getType());
+    }
+    
+    /**
+     * Test resource extra
+     * 
+     * @return void
+     */
+    public function testResourceExtra()
+    {
+        $attributes = $this->resource->getExtras();
+        $attr = array_pop($attributes);
+        
+        $this->assertEquals('BKFE', $attr->getCode());
+        $this->assertEquals('Booking Fee', $attr->getLabel());
+        $this->assertEquals('compulsory', $attr->getType());
     }
     
     /**
