@@ -99,6 +99,14 @@ class ApiClient
      * @var tabs\api\client\HMAC
      */
     public $hmacHelper;
+    
+    /**
+     * The raw response from the last curl request.  Added so it is possible to
+     * track exact responses from the API while debugging.
+     * 
+     * @var string
+     */
+    public $lastrequest;
 
     /**
      * Create a new Api Connection for use within the tabs php client
@@ -511,7 +519,8 @@ class ApiClient
         $this->_setCurlOpt($follow);
 
         // Commit the curl request and return the response
-        return curl_exec($this->resource);
+        $this->lastrequest = curl_exec($this->resource);
+        return $this->lastrequest;
     }
 
     /**
