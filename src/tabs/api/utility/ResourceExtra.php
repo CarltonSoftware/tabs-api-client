@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tabs Rest API Resource Attribute object.
+ * Tabs Rest API Resource Extra object.
  *
  * PHP Version 5.3
  * 
@@ -16,7 +16,7 @@
 namespace tabs\api\utility;
 
 /**
- * Tabs Rest API Resource Attribute object.
+ * Tabs Rest API Resource Extra object.
  *
  * @category  API_Client
  * @package   Tabs
@@ -26,24 +26,33 @@ namespace tabs\api\utility;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  * 
- * @method string getBrand()       Return the attribute brand
- * @method string getGroup()       Return the attribute group
- * @method void   setBrand($brand) Set the attribute brand
- * @method void   setGroup($group) Set the attribute group
+ * @method string getCode()        Return the Extra code
+ * @method string getLabel()       Return the Extra label
+ * @method string getType()        Return the Extra type
+ * @method void   setCode($code)   Set the Extra code
+ * @method void   setLabel($label) Set the Extra label
+ * @method void   setType($type)   Set the Extra type
  */
-class ResourceAttribute extends \tabs\api\utility\ResourceExtra
+class ResourceExtra extends \tabs\api\core\Base
 {
     /**
-     * Attribute Brandcode
+     * Extra code
      * 
      * @var string 
      */
-    protected $brand = '';
+    protected $code = '';
     
     /**
-     * Attribute Group
+     * Label
      * 
      * @var string 
      */
-    protected $group = '';
+    protected $label = '';
+    
+    /**
+     * Extra Type
+     * 
+     * @var string 
+     */
+    protected $type = '';
 }
