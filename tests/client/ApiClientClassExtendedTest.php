@@ -45,6 +45,8 @@ class ApiClientClassExtendedTest extends ApiClientClassTest
             'foo=bar', 
             $api->getHmacQuery(array('foo' => 'bar'))
         );
+        
+        $this->assertTrue(is_string($api->getLastResponse()));
     }
     
     /**
