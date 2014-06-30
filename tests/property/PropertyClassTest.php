@@ -40,6 +40,7 @@ class PropertyClassTest extends ApiClientClassTest
         $this->assertEquals("Cottage 363", $this->property->getName());
         $this->assertEquals('Cottage 363 (V541)', (string) $this->property);
         $this->assertEquals(7, $this->property->getAccommodates());
+        $this->assertEquals('7', $this->property->getAccommodationDescription());
         $this->assertEquals(7, $this->property->getSleeps());
         $this->assertFalse($this->property->hasPets());
         $this->assertTrue(is_object($this->property->getBrand()));

@@ -104,6 +104,11 @@ class PropertySearchTest extends ApiClientClassTest
         $this->assertTrue(
             is_array($propSearch->getProperties())
         );
+
+        // Check that the facet method is returning an object
+        $this->assertTrue(
+            is_object($propSearch->getFacets())
+        );
     }
 
 
@@ -266,6 +271,23 @@ class PropertySearchTest extends ApiClientClassTest
             1,
             $numProps
         );
+    }
+
+    /**
+     * Test that the facet method returns an exception if there is no api
+     * connection
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testPropertySearchFacetException()
+    {
+        \tabs\api\client\ApiClient::getApi()->setUrlRoute(
+            'http://xxx.api.carltonsoftware.co.uk/'
+        );
+        $propSearch = new \tabs\api\property\PropertySearch(10, 1, 10);
+        $propSearch->getFacets();
     }
     
     /**

@@ -228,6 +228,17 @@ class BookingTest extends ApiClientClassTest
         $this->assertEquals('infant', $infant->getType());
         $this->assertTrue(is_array($infant->toArray()));
         $this->assertTrue(is_array($infant->toArray(false)));
+        
+        $booking = \tabs\api\booking\Booking::createBookingFromId(
+            '7a28845cdbb08b8575ed0c4f58ac2f06'
+        );
+        
+        $this->assertTrue($booking->clearPartyMembers());
+        
+        $booking->setPartyMember($joe)
+                ->setPartyMember($ann)
+                ->setPartyMember($hayley)
+                ->setPartyDetails();
     }
 
     /**
