@@ -186,6 +186,13 @@ class Property extends \tabs\api\core\Base
     protected $accommodates = 0;
 
     /**
+     * Accomodation Description
+     *
+     * @var string
+     */
+    protected $accommodationDescription = '';
+
+    /**
      * The number of stars (typically Visit England, Visit Wales, etc) that have
      * been awarded to this property
      *
