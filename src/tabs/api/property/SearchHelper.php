@@ -129,7 +129,7 @@ class SearchHelper
         $baseUrl = ''
     ) {
         // Merge two supplied arrays together and set as variable
-        $this->setInitialParams(array_merge($searchParams, $landingPageParams));
+        $this->setInitialParams($searchParams, $landingPageParams);
 
         // Set the base url of the search which is used for pagination.
         $this->baseUrl = $baseUrl;
@@ -469,11 +469,7 @@ class SearchHelper
      */
     public function getSearchParams($httpQuery = false)
     {
-        if ($httpQuery) {
-            return http_build_query($this->searchParams);
-        } else {
-            return $this->searchParams;
-        }
+        return $this->_httpQuery($this->searchParams, $httpQuery);
     }
 
     /**
@@ -651,23 +647,32 @@ class SearchHelper
     /**
      * Set the initial filter parameters
      *
-     * @param array $array Merged array of dymanic and fixed search parameters
-     *
-     * @return void
+     * @return \tabs\api\property\SearchHelper
      */
-    public function setInitialParams(array $array)
+    public function setInitialParams()
     {
-        $this->initialParams = $array;
+        $args = func_get_args();
+        $this->initialParams = array();
+        foreach ($args as $param) {
+            $this->initialParams = array_merge(
+                $this->initialParams,
+                $this->_getSearchParam($param)
+            );
+        }
+        
+        return $this;
     }
 
     /**
      * Get the merged array of initial parameters
      *
+     * @param boolean $httpQuery Set to true if you wish to output as a string
+     * 
      * @return array
      */
-    public function getInitialParams()
+    public function getInitialParams($httpQuery = false)
     {
-        return $this->initialParams;
+        return $this->_httpQuery($this->initialParams, $httpQuery);
     }
 
     /**
@@ -941,6 +946,25 @@ class SearchHelper
     // --------------------- Private Functions -------------------------- //
     
     /**
+     * Search parameter interpretation function
+     * 
+     * @param mixed $param A string or array of parameters
+     * 
+     * @return array
+     */
+    private function _getSearchParam($param)
+    {
+        if (is_array($param)) {
+            return $param;
+        } else {
+            // Interpret query string
+            $values = array();
+            parse_str($param, $values);
+            return $values;
+        }
+    }
+    
+    /**
      * Get the bounding box of a set of coordinates
      * 
      * @param array $points Array of Coordindate objects
@@ -1055,6 +1079,23 @@ class SearchHelper
         $arr = array_reverse($array, true);
         $arr[$key] = $val;
         return array_reverse($arr, true);
+    }
+    
+    /**
+     * HTTP Query function
+     * 
+     * @param array   $params    Array of params to encode
+     * @param boolean $httpQuery Set to true if you wish to output as a string
+     * 
+     * @return string
+     */
+    private function _httpQuery($params, $httpQuery = false)
+    {
+        if ($httpQuery) {
+            return http_build_query($params, null, '&');
+        } else {
+            return $params;
+        }
     }
 }
 

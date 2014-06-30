@@ -104,6 +104,11 @@ class PropertySearchTest extends ApiClientClassTest
         $this->assertTrue(
             is_array($propSearch->getProperties())
         );
+
+        // Check that the facet method is returning an object
+        $this->assertTrue(
+            is_object($propSearch->getFacets())
+        );
     }
 
 
@@ -247,12 +252,16 @@ class PropertySearchTest extends ApiClientClassTest
 
     /**
      * Test the property search end point
+     * 
+     * @param mixed $numProps Number of properties to search for
      *
      * @expectedException \tabs\api\client\ApiException
      * 
+     * @dataProvider providerInvalidPropertySearch
+     * 
      * @return void
      */
-    public function testPropertySearchException()
+    public function testPropertySearchException($numProps)
     {
         \tabs\api\client\ApiClient::getApi()->setUrlRoute(
             'http://xxx.api.carltonsoftware.co.uk/'
@@ -260,7 +269,47 @@ class PropertySearchTest extends ApiClientClassTest
         $propSearch = \tabs\api\property\PropertySearch::factory(
             '',
             1,
-            9999
+            $numProps
+        );
+    }
+
+    /**
+     * Test that the facet method returns an exception if there is no api
+     * connection
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testPropertySearchFacetException()
+    {
+        \tabs\api\client\ApiClient::getApi()->setUrlRoute(
+            'http://xxx.api.carltonsoftware.co.uk/'
+        );
+        $propSearch = new \tabs\api\property\PropertySearch(10, 1, 10);
+        $propSearch->getFacets();
+    }
+    
+    /**
+     * Invalid property search request provider
+     * 
+     * @return array
+     */
+    public function providerInvalidPropertySearch()
+    {
+        return array(
+            array(
+                '',
+                9999
+            ),
+            array(
+                '',
+                1
+            ),
+            array(
+                'invalidfiler=blablabla',
+                1
+            )
         );
     }
 }

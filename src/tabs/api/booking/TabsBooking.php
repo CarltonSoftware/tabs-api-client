@@ -37,6 +37,7 @@ namespace tabs\api\booking;
  * @method float   getCommissionOutstandingToOwner()
  * @method float   getCommissionPaidToOwner()
  * @method string  getCusref()
+ * @method float   getDepositPrice()
  * @method integer getInfants()
  * @method integer getFromDate()
  * @method string  getPartyDetails()
@@ -59,6 +60,7 @@ namespace tabs\api\booking;
  * @method void setCommissionOutstandingToOwner(float $commOutstanding)
  * @method void setCommissionPaidToOwner(float $commPaid)
  * @method void setCusref(string $cusref)
+ * @method void setDepositPrice(float $depositPrice)
  * @method void setInfants(integer $infants)
  * @method void setPartyDetails(string $partyDetails)
  * @method void setPropertyRef(string $propertyRef)
@@ -181,6 +183,13 @@ class TabsBooking extends \tabs\api\core\Base
      * @var float
      */
     protected $totalPrice = 0;
+
+    /**
+     * Deposit Price
+     *
+     * @var float
+     */
+    protected $depositPrice = 0;
 
     /**
      * Booking Fee

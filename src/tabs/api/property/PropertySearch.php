@@ -459,11 +459,11 @@ class PropertySearch extends \tabs\api\core\Base
     /**
      * Add a property to a property search object from a given api response
      *
-     * @param \tabs\api\property\PropertySearch $propertySearch  PropSearch
+     * @param \tabs\api\property\PropertySearch $propertySearch PropSearch
      * object passed by reference
-     * @param object                            $propertyData    Api response data
-     * @param integer                           $page            Page number
-     * @param integer                           $pageSize        Page size
+     * @param object                            $propertyData   Api response data
+     * @param integer                           $page           Page number
+     * @param integer                           $pageSize       Page size
      *
      * @return void
      */
@@ -726,6 +726,31 @@ class PropertySearch extends \tabs\api\core\Base
             );
         } else {
             return "All";
+        }
+    }
+    
+    /**
+     * Get a count of all of the property attributes/properties for a particular
+     * filter
+     * 
+     * @return stdClass
+     */
+    public function getFacets()
+    {
+        $propertyFacet = \tabs\api\client\ApiClient::getApi()->get(
+            '/property/facet',
+            array(
+                'filter' => $this->getFilter()
+            )
+        );
+
+        if ($propertyFacet && $propertyFacet->status == 200) {
+            return $propertyFacet->response;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $propertyFacet,
+                'Could not fetch property facet'
+            );
         }
     }
 }

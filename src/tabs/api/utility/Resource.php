@@ -35,6 +35,7 @@ namespace tabs\api\utility;
  * @method array   getBrands()                  Return each brand included 
  * in the api
  * @method array   getAttributes()              Return api attributes
+ * @method array   getExtras()                  Return api extras
  * @method array   getSearchTerms()             Return api search terms
  * 
  * @method void setApiVersion($version)             Set api version (deprecated)
@@ -45,6 +46,7 @@ namespace tabs\api\utility;
  * @method void setBrands(array $brands)            Set each brand included 
  * in the api
  * @method void setAttributes(array $attributes)    Set api attributes
+ * @method void setExtras(array $extras)            Set api extras
  */
 class Resource extends \tabs\api\core\Base
 {
@@ -91,6 +93,13 @@ class Resource extends \tabs\api\core\Base
     protected $attributes = array();
     
     /**
+     * Extras array indexed by extracode
+     * 
+     * @var array
+     */
+    protected $extras = array();
+    
+    /**
      * Search Terms array indexed by search term
      * 
      * @var array
@@ -125,6 +134,20 @@ class Resource extends \tabs\api\core\Base
         \tabs\api\utility\ResourceAttribute $attribute
     ) {
         $this->attributes[$attribute->getCode()] = $attribute;
+    }
+    
+    /**
+     * Add an extra to the resource
+     * 
+     * @param \tabs\api\utility\ResourceExtra $extra 
+     * API Resource Extra Object
+     * 
+     * @return void
+     */
+    public function addExtra(
+        \tabs\api\utility\ResourceExtra $extra
+    ) {
+        $this->extras[$extra->getCode()] = $extra;
     }
     
     /**

@@ -453,10 +453,19 @@ class Utility extends \tabs\api\core\Base
                 // Add attributes to resource
                 if ($key == 'constants' && property_exists($val, 'attributes')) {
                     foreach ($val->attributes as $attr) {
-                        $attribute = self::
-                                _createResourceAttribute($attr);
+                        $attribute = self::_createResourceAttribute($attr);
                         if ($attribute) {
                             $resource->addAttribute($attribute);
+                        }
+                    }
+                }
+
+                // Add extras to resource
+                if ($key == 'constants' && property_exists($val, 'extras')) {
+                    foreach ($val->extras as $ext) {
+                        $extra = self::_createResourceExtra($ext);
+                        if ($extra) {
+                            $resource->addExtra($extra);
                         }
                     }
                 }
@@ -490,6 +499,27 @@ class Utility extends \tabs\api\core\Base
             $propCount = $apiInfo->getTotalNumberOfProperties();
         }
         return $propCount;
+    }
+    
+    /**
+     * Return an array of api brands.  This function requires admin privileges.
+     * 
+     * @return array
+     */
+    public static function getAllBrands()
+    {
+        // @codeCoverageIgnoreStart
+        // Unable to unit test as test client would require admin privs.
+        $resource = \tabs\api\client\ApiClient::getApi()->get('/api/view');
+        if ($resource->status == 200) {
+            return json_decode($resource->body, true);
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $resource,
+                'Unable to fetch brands'
+            );
+        }
+        // @codeCoverageIgnoreEnd
     }
 
     // ------------------ Private Functions --------------------- //
@@ -535,5 +565,19 @@ class Utility extends \tabs\api\core\Base
         $attr = new \tabs\api\utility\ResourceAttribute();
         self::setObjectProperties($attr, $node);
         return $attr;
+    }
+    
+    /**
+     * Create a ResourceBrand object from a node
+     * 
+     * @param object $node JSON object
+     * 
+     * @return \tabs\api\utility\ResourceExtra
+     */
+    private static function _createResourceExtra($node)
+    {
+        $extra = new \tabs\api\utility\ResourceExtra();
+        self::setObjectProperties($extra, $node);
+        return $extra;
     }
 }

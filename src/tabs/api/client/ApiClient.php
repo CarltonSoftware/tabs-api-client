@@ -48,7 +48,7 @@ class ApiClient
      *
      * @var string
      */
-    protected $contentType = "application/json";
+    protected $contentType = 'application/json';
 
     /**
      * Local route string
@@ -99,6 +99,14 @@ class ApiClient
      * @var tabs\api\client\HMAC
      */
     public $hmacHelper;
+    
+    /**
+     * The raw response from the last curl request.  Added so it is possible to
+     * track exact responses from the API while debugging.
+     * 
+     * @var string
+     */
+    protected $lastResponse;
 
     /**
      * Create a new Api Connection for use within the tabs php client
@@ -164,6 +172,18 @@ class ApiClient
     // ------------------ Public Functions ----------------------//
 
     /**
+     * Sets the API key.
+     *
+     * @param string $apiKey The API key to use.
+     *
+     * @return void
+     */
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
+    }
+    
+    /**
      * Sets the api url
      *
      * @param string $urlRoute Route of the API
@@ -174,17 +194,17 @@ class ApiClient
     {
         $this->urlRoute = trim($urlRoute, "/");
     }
-
+    
     /**
-     * Sets the API key.
+     * Sets the last curl response
      *
-     * @param string $apiKey The API key to use.
+     * @param string $lastResponse Last curl response
      *
      * @return void
      */
-    public function setApiKey($apiKey)
+    public function setLastResponse($lastResponse)
     {
-        $this->apiKey = $apiKey;
+        $this->lastResponse = $lastResponse;
     }
 
     /**
@@ -197,6 +217,18 @@ class ApiClient
     public function setSecret($secret)
     {
         $this->secret = $secret;
+    }
+
+    /**
+     * Sets the api test mode
+     *
+     * @param boolean $bool true to set test mode
+     *
+     * @return void
+     */
+    public function setTestMode($bool)
+    {
+        $this->testMode = $bool;
     }
 
     /**
@@ -217,18 +249,6 @@ class ApiClient
     public function getApiKey()
     {
         return $this->apiKey;
-    }
-
-    /**
-     * Sets the api test mode
-     *
-     * @param boolean $bool true to set test mode
-     *
-     * @return void
-     */
-    public function setTestMode($bool)
-    {
-        $this->testMode = $bool;
     }
 
     /**
@@ -363,7 +383,16 @@ class ApiClient
             $this->getHmacParams($params)
         );
     }
-
+    
+    /**
+     * Fetch the last curl response
+     * 
+     * @return string
+     */
+    public function getLastResponse()
+    {
+        return $this->lastResponse;
+    }
 
     // ------------------ Private Functions ---------------------//
 
@@ -511,7 +540,9 @@ class ApiClient
         $this->_setCurlOpt($follow);
 
         // Commit the curl request and return the response
-        return curl_exec($this->resource);
+        $this->setLastResponse(curl_exec($this->resource));
+        
+        return $this->getLastResponse();
     }
 
     /**

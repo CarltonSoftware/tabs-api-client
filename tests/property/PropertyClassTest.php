@@ -40,6 +40,7 @@ class PropertyClassTest extends ApiClientClassTest
         $this->assertEquals("Cottage 363", $this->property->getName());
         $this->assertEquals('Cottage 363 (V541)', (string) $this->property);
         $this->assertEquals(7, $this->property->getAccommodates());
+        $this->assertEquals('7', $this->property->getAccommodationDescription());
         $this->assertEquals(7, $this->property->getSleeps());
         $this->assertFalse($this->property->hasPets());
         $this->assertTrue(is_object($this->property->getBrand()));
@@ -473,6 +474,62 @@ breaks');
     {
         $description = $this->property->getDescription('DOESNOTEXIST');
         $this->assertEquals('', $description);
+    }
+    
+    /**
+     * Test the changeover day number calculation
+     * 
+     * @param string $changeDay      Changeover Day
+     * @param string $expectedNumber Expected Number
+     * 
+     * @dataProvider providerChangeOverDayNum
+     * 
+     * @return void
+     */
+    public function testChangeOverDayNum($changeDay, $expectedNumber)
+    {
+        $prop = new \tabs\api\property\Property();
+        $prop->setChangeOverDay($changeDay);
+        $this->assertEquals($expectedNumber, $prop->getChangeDayNum());
+    }
+    
+    /**
+     * Data provider for changeover day number
+     * 
+     * @return array
+     */
+    public function providerChangeOverDayNum()
+    {
+        return array(
+            array(
+                'Monday',
+                1
+            ),
+            array(
+                'Tuesday',
+                2
+            ),
+            array(
+                'Wednesday',
+                3
+            ),
+            array(
+                'Thursday',
+                4
+            ),
+            array(
+                'Friday',
+                5
+            ),
+            array(
+                'Saturday',
+                6
+            ),
+            array(
+                'Sunday',
+                0
+            )
+        );
     }
 
     /**

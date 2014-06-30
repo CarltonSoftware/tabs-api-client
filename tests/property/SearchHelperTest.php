@@ -24,7 +24,7 @@ class SearchHelperTest extends ApiClientClassTest
         );
         $searchHelper->setSearchPrefix('prefix');
         $this->assertEquals('prefix', $searchHelper->getSearchPrefix());
-
+        
         // Page will return 1 if search hasnt been performed yet
         $this->assertEquals(1, $searchHelper->getPage());
 
@@ -45,6 +45,21 @@ class SearchHelperTest extends ApiClientClassTest
 
         // Properties will be empty
         $this->assertEquals(0, count($searchHelper->getProperties()));
+    }
+    /**
+     * Test a new search helper object and the short break filter getter/setter
+     *
+     * @return void
+     */
+    public function testShortBreakFilter()
+    {
+        $searchHelper = new \tabs\api\property\SearchHelper();
+        
+        $this->assertEquals('', $searchHelper->getSbFilter());
+        
+        // Set the sb filter and test
+        $searchHelper->setSbFilter('1111000');
+        $this->assertEquals('1111000', $searchHelper->getSbFilter());
     }
 
     /**
@@ -68,7 +83,7 @@ class SearchHelperTest extends ApiClientClassTest
         $properties = $searchHelper->search('1234');
 
         // Test total found
-        $this->assertEquals(32, $searchHelper->getTotal());
+        $this->assertEquals(33, $searchHelper->getTotal());
 
         // Array should contain page, pageSize, orderBy and filter
         $this->assertEquals(4, count($searchHelper->getReservedKeys()));
@@ -100,7 +115,7 @@ class SearchHelperTest extends ApiClientClassTest
         );
 
         // Search info will simple info
-        $this->assertEquals('1 to 10 of 32', $searchHelper->getSearchInfo());
+        $this->assertEquals('1 to 10 of 33', $searchHelper->getSearchInfo());
 
         // test search id
         $this->assertEquals('1234', $searchHelper->getSearchId());
@@ -151,7 +166,46 @@ class SearchHelperTest extends ApiClientClassTest
 
         // test search label
         $this->assertEquals('Properties', $searchHelper->getLabel());
-
-
+    }
+    
+    /**
+     * Test the setInitialParams function
+     * 
+     * @dataProvider providerSearchHelperInitalParams
+     *
+     * @return void
+     */
+    public function testSearchHelperInitialParams(
+        $params,
+        $expectedHttpQuery,
+        $arrayCount
+    ) {
+        $searchHelper = new \tabs\api\property\SearchHelper();
+        $searchHelper->setInitialParams($params);
+        
+        $this->assertEquals($expectedHttpQuery, $searchHelper->getInitialParams(true));
+        $this->assertEquals(true, is_array($searchHelper->getInitialParams()));
+        $this->assertEquals($arrayCount, count($searchHelper->getInitialParams()));
+    }
+    
+    /**
+     * Provider for the initial params test function
+     * 
+     * @return array
+     */
+    public function providerSearchHelperInitalParams()
+    {
+        return array(
+            array(
+                array('pets' => 'true'),
+                'pets=true',
+                1
+            ),
+            array(
+                'pets=true&bedrooms=1',
+                'pets=true&bedrooms=1',
+                2
+            )
+        );
     }
 }

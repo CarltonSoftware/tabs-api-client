@@ -186,6 +186,13 @@ class Property extends \tabs\api\core\Base
     protected $accommodates = 0;
 
     /**
+     * Accomodation Description
+     *
+     * @var string
+     */
+    protected $accommodationDescription = '';
+
+    /**
      * The number of stars (typically Visit England, Visit Wales, etc) that have
      * been awarded to this property
      *
@@ -586,22 +593,16 @@ class Property extends \tabs\api\core\Base
         switch (strtolower($this->getChangeOverDay())) {
         case 'monday':
             return 1;
-            break;
         case 'tuesday':
             return 2;
-            break;
         case 'wednesday':
             return 3;
-            break;
         case 'thursday':
             return 4;
-            break;
         case 'friday':
             return 5;
-            break;
         case 'sunday':
             return 0;
-            break;
         default:
             return 6; // Saturday
         }
@@ -1094,7 +1095,7 @@ class Property extends \tabs\api\core\Base
                             $class .= " highlightend ";
                         }
                     }
-                    if ($date < time()) {
+                    if ($date < mktime(0, 0, 0, date('m'), date('d'), date('Y'))) {
                         $class .= " past ";
                     }
 
@@ -1475,25 +1476,23 @@ class Property extends \tabs\api\core\Base
      */
     public function getAllDescriptions($brandcode = '')
     {
-
-        //If no brandcode is set use the accounting brandcode
+        // If no brandcode is set use the accounting brandcode
         if ($brandcode == '') {
             $brandcode = $this->getAccountingBrand();
         }
 
         if (isset($this->brands[$brandcode])) {
             $this->_loadAdditionalDescriptions($brandcode);
+            $brand = $this->brands[$brandcode];
             $descriptions = array();
 
-            foreach ($this->brands[$brandcode]->getDescriptions() as $descriptionType => $description) {
+            foreach ($brand->getDescriptions() as $dType => $desc) {
                 $descriptions[] = array(
-                    'descriptiontype'  => $descriptionType,
-                    'description'      => $description
+                    'descriptiontype'  => $dType,
+                    'description'      => $desc
                 );
             }
         }
-
-
 
         return $descriptions;
     }
