@@ -36,5 +36,12 @@ class AreaClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($area->getLocations()));
         $this->assertEquals('test-location', $location->getSlug());
         $this->assertTrue(is_array($area->toArray()));
+        $this->assertFalse($area->getPromoted());
+        $this->assertFalse($location->getPromoted());
+        $this->assertFalse($location->isPromoted());
+        
+        $location->setPromoted(true);
+        $this->assertTrue($location->getPromoted());
+        $this->assertTrue($location->isPromoted());
     }
 }

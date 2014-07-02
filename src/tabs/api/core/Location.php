@@ -33,6 +33,7 @@ namespace tabs\api\core;
  * @method string                     getAreaCode()    Get the areacode
  * @method \tabs\api\core\Coordinates getCoordinates() Return Coordinates object
  * @method float                      getRadius()
+ * @method boolean                    getPromoted()
  * 
  * @method void setCode(string $code)               Set the location code
  * @method void setName(string $name)               Set the location name
@@ -41,6 +42,7 @@ namespace tabs\api\core;
  * @method void setAreaCode(string $areaCode)       Set the areacode
  * @method void setCoordinates(\tabs\api\core\Coordinates $coords) Set the areacode
  * @method void setRadius(float $radius)            Set the location radius
+ * @method void setPromoted(boolean $promoted)      Set the promoted field
  */
 class Location extends \tabs\api\core\Base
 {
@@ -92,6 +94,13 @@ class Location extends \tabs\api\core\Base
      * @var float
      */
     protected $radius = 5;
+    
+    /**
+     * Promoted boolean.
+     * 
+     * @var boolean
+     */
+    protected $promoted = false;
     
     // ------------------ Public Functions --------------------- //
     
@@ -145,6 +154,16 @@ class Location extends \tabs\api\core\Base
     }
     
     /**
+     * Return the promoted state
+     * 
+     * @return boolean
+     */
+    public function isPromoted()
+    {
+        return $this->getPromoted();
+    }
+    
+    /**
      * Exports address to an array
      * 
      * @return array
@@ -157,7 +176,8 @@ class Location extends \tabs\api\core\Base
             'description' => $this->getDescription(),
             'brandcode' => $this->getBrandcode(),
             'long' => $this->getCoordinates()->getLong(),
-            'lat' => $this->getCoordinates()->getLat()
+            'lat' => $this->getCoordinates()->getLat(),
+            'promoted' => $this->isPromoted()
         );
     }
 }
