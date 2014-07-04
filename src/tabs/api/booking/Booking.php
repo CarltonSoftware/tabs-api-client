@@ -1183,7 +1183,7 @@ class Booking extends \tabs\api\booking\Enquiry
                     $extraResp
                 );
                 if ($extra) {
-                    array_push($extras, $extra);
+                    $extras[$extra->getCode()] = $extra;
                 }
             }
         }
