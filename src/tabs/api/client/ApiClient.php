@@ -123,7 +123,7 @@ class ApiClient
         $apiKey = '',
         $secret = ''
     ) {
-        self::$api = new ApiClient($apiUrl, $apiKey, $secret);
+        self::$api = new static($apiUrl, $apiKey, $secret);
         return self::$api;
     }
 
@@ -465,7 +465,7 @@ class ApiClient
      *
      * @return boolean or result
      */
-    private function _doRequest($apiFunc, $urlPath, $params)
+    protected function _doRequest($apiFunc, $urlPath, $params)
     {
         if (method_exists($this, $apiFunc)) {
             // Get parameters with hmac hash

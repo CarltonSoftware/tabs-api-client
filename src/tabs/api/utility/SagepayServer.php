@@ -439,7 +439,7 @@ class SagepayServer
      * 
      * @return string
      */
-    private function _doPost($url, $data)
+    protected function _doPost($url, $data)
     {
         // Set a one-minute timeout for this script
         set_time_limit(60);
