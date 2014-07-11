@@ -112,12 +112,23 @@ class BookingAdmin extends \tabs\api\core\Pagination
     }
     
     /**
-     * Retrieve a list of bookings
+     * Return the bookings array
      * 
-     * @return \tabs\api\booking\BookingAdmin
-     * @throws \tabs\api\client\ApiException
+     * @return array
      */
     public function getBookings()
+    {
+        return $this->bookings;
+    }
+    
+    /**
+     * Retrieve a list of bookings
+     * 
+     * @throws \tabs\api\client\ApiException
+     * 
+     * @return \tabs\api\booking\BookingAdmin
+     */
+    public function requestBookings()
     {
         $bookingsReq = \tabs\api\client\ApiClient::getApi()->get(
             '/booking',
