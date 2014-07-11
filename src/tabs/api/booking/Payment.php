@@ -361,6 +361,20 @@ class Payment extends \tabs\api\core\Base
         return json_encode($this->toArray());
     }
     
+    /**
+     * Payment ref
+     * 
+     * @param string $id The payment reference
+     * 
+     * @return \tabs\api\booking\Payment
+     */
+    public function setId($id)
+    {
+        $this->setPaymentReference($id);
+        
+        return $this;
+    }
+    
 
     /**
      * Output a callback acknowledgement response for sagepay
