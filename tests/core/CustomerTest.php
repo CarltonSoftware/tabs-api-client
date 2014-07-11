@@ -9,7 +9,17 @@ $file = dirname(__FILE__)
 require_once $file;
 
 class CustomerTest extends ApiClientClassTest
-{    
+{
+    /**
+     * Run on each test
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        self::setUpBeforeClass();
+    }
+    
     /**
      * Api Exception object by requesting an invalid customer
      * 
@@ -171,6 +181,37 @@ class CustomerTest extends ApiClientClassTest
         $this->assertFalse(isset($array['emailOptIn']));
         $this->assertFalse(isset($array['which']));
         $this->assertFalse(isset($array['source']));
+    }
+    
+    /**
+     * Test customer booking request
+     * 
+     * @return void
+     */
+    public function testCustomerGetBookings()
+    {
+        $customer = tabs\api\core\Customer::create('ROCA001');
+        $bookings = $customer->getBookings();
+        
+        // Should be an array of oabs booking objects
+        $this->assertEquals(
+            'tabs\api\booking\TabsBooking',
+            get_class($bookings[0])
+        );
+    }
+    
+    /**
+     * Test customer booking request
+     * 
+     * @expectedException \tabs\api\client\ApiException
+     * 
+     * @return void
+     */
+    public function testCustomerGetBookingsInvalid()
+    {
+        $customer = tabs\api\core\Customer::create('ROCA001');
+        \tabs\api\client\ApiClient::factory('http://bad.url/');
+        $bookings = $customer->getBookings();
     }
     
     /**
