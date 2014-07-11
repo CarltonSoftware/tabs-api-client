@@ -34,6 +34,8 @@ namespace tabs\api\booking;
  * @method \tabs\api\boking\PartyDetail|Array   getPartyDetails()
  * @method stdClass|Array                       getNotes()
  * @method \tabs\api\boking\Payment|Array       getPayments()
+ * @method timestamp                            getCreated()
+ * @method string                               getUseragent()
  *
  * @method void setBookingId(string $bookingId)
  * @method void setAdults(integer $adults)
@@ -42,6 +44,7 @@ namespace tabs\api\booking;
  * @method void setWNumber(string $wNumber)
  * @method void setNotes(array $notes)
  * @method void setConfirmation(boolean $confirmation)
+ * @method void setUseragent(string $useragent)
  */
 class Booking extends \tabs\api\booking\Enquiry
 {
@@ -121,6 +124,20 @@ class Booking extends \tabs\api\booking\Enquiry
      * @var integer
      */
     private $_secondsInAWeek = 604800;
+    
+    /**
+     * Created date timestamp
+     * 
+     * @var timestamp
+     */
+    protected $created;
+    
+    /**
+     * User agent string
+     * 
+     * @var string
+     */
+    protected $useragent = '';
 
     // ------------------ Static Functions --------------------- //
 
@@ -178,7 +195,7 @@ class Booking extends \tabs\api\booking\Enquiry
 
         if ($bookingData->status == 201) {
             // Create a new booking object
-            return self::_addBookingData($bookingData->response);
+            return self::factory($bookingData->response);
         } else {
             throw new \tabs\api\client\ApiException(
                 $bookingData,
@@ -201,8 +218,9 @@ class Booking extends \tabs\api\booking\Enquiry
         $bookingCheck = \tabs\api\client\ApiClient::getApi()->get(
             "/booking/{$bookingId}"
         );
+            
         if ($bookingCheck && $bookingCheck->status == 200) {
-            return self::_addBookingData($bookingCheck->response, false);
+            return self::factory($bookingCheck->response, false);
         } else {
             throw new \tabs\api\client\ApiException(
                 $bookingCheck,
@@ -220,7 +238,7 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @return \tabs\api\booking\Booking
      */
-    private static function _addBookingData($bookingData, $saveCustomer = true)
+    public static function factory($bookingData, $saveCustomer = true)
     {
         // New booking object
         $booking = new \tabs\api\booking\Booking();
@@ -270,16 +288,24 @@ class Booking extends \tabs\api\booking\Enquiry
         ) {
             if (is_array($bookingData->payments)) {
                 foreach ($bookingData->payments as $paymentObj) {
-                    $paymentId = explode('/', $paymentObj);
-                    $paymentId = array_pop($paymentId);
-                    if (strlen($paymentId) > 0) {
-                        $payment = \tabs\api\booking\Payment::getPayment(
-                            $booking->getBookingId(),
-                            $paymentId
-                        );
-                        if ($payment) {
-                            $booking->addPayment($payment);
+                    $payment = false;
+                    if (is_string($paymentObj)) {
+                        $paymentId = explode('/', $paymentObj);
+                        $paymentId = array_pop($paymentId);
+                        if (strlen($paymentId) > 0) {
+                            $payment = \tabs\api\booking\Payment::getPayment(
+                                $booking->getBookingId(),
+                                $paymentId
+                            );
                         }
+                    } else {
+                        $payment = new \tabs\api\booking\Payment();
+                        $payment->setObjectProperties($payment, $paymentObj);
+                    }
+                    
+                    
+                    if ($payment) {
+                        $booking->addPayment($payment);
                     }
                 }
             }
@@ -1162,6 +1188,21 @@ class Booking extends \tabs\api\booking\Enquiry
             );
         }
     }
+    
+    /**
+     * Set the created date
+     * 
+     * @param timestamp $created Created date
+     * 
+     * @return \tabs\api\booking\Booking
+     */
+    public function setCreated($created)
+    {
+        $this->setTimeStamp($created, 'created');
+        
+        return $this;
+    }
+    
     // ------------------ Private Functions --------------------- //
     
     /**
