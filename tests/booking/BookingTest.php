@@ -118,6 +118,37 @@ class BookingTest extends ApiClientClassTest
         $booking->setInfants(1);
         $this->assertEquals(1, $booking->getInfants());
         $this->assertEquals(4, $booking->getPartySize());
+        
+        $booking->setCreated(strtotime('today'));
+        $this->assertEquals(strtotime('today'), $booking->getCreated());
+        
+        $booking->setUseragent('foo');
+        $this->assertEquals('foo', $booking->getUseragent());
+    }
+    
+    /**
+     * Test the valid booking filters array
+     * 
+     * @return void
+     */
+    public function testBookingFilters()
+    {
+        $filters = \tabs\api\booking\BookingAdmin::getBookingFilters();
+        
+        $this->assertTrue(in_array('fromdate', $filters));
+    }
+
+    /**
+     * Test the valid booking filters array
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return null
+     */
+    public function testInvalidBookingFilters()
+    {
+        \tabs\api\client\ApiClient::factory('http://bad.url/');
+        $filters = \tabs\api\booking\BookingAdmin::getBookingFilters();
     }
 
     /**
