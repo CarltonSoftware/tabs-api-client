@@ -522,7 +522,7 @@ class ApiClient
         curl_setopt(
             $this->resource,
             CURLOPT_USERAGENT,
-            'TABS ApiClient (http://github.com/CarltonSoftware/tocc-api-client)'
+            'TABS ApiClient (http://github.com/CarltonSoftware/tabs-api-client)'
         );
     }
 
