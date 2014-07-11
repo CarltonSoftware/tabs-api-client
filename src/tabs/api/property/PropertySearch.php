@@ -26,20 +26,16 @@ namespace tabs\api\property;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  *
- * @method integer getPageSize()   Returns pageSize
- * @method integer getPage()       Returns current page
  * @method array   getProperties() Returns an array of property objects or 
  * if 1, returns a singular property object
  * @method string  getFilter()     Returns the filter string used in that 
  * particular property search query
  * @method string  getSearchId()   Returns the searchId
  *
- * @method void setPageSize(integer $pageSize)
- * @method void setPage(integer $page)
  * @method void setFilter(string $filter)
  * @method void setSearchId(string $searchId)
  */
-class PropertySearch extends \tabs\api\core\Base
+class PropertySearch extends \tabs\api\core\Pagination
 {
     /**
      * Max request page size
@@ -47,27 +43,6 @@ class PropertySearch extends \tabs\api\core\Base
      * @var integer
      */
     private static $_maxPageSize = 200;
-
-    /**
-     * Number of results of the current page
-     *
-     * @var integer
-     */
-    protected $pageSize = 0;
-
-    /**
-     * Total number of results
-     *
-     * @var integer
-     */
-    protected $totalResults = 0;
-
-    /**
-     * Current page
-     *
-     * @var integer
-     */
-    protected $page = 1;
 
     /**
      * Properties in current search
@@ -531,20 +506,10 @@ class PropertySearch extends \tabs\api\core\Base
      */
     public function __construct($totalResults, $page, $pageSize, $searchId = '')
     {
-        $this->totalResults = $totalResults;
-        $this->page = $page;
-        $this->pageSize = $pageSize;
+        $this->setTotal($totalResults);
+        $this->setPage($page);
+        $this->setPageSize($pageSize);
         $this->searchId = $searchId;
-    }
-
-    /**
-     * Return the current page of the search
-     *
-     * @return integer
-     */
-    public function getMaxPages()
-    {
-        return ceil($this->getTotal() / $this->getPageSize());
     }
 
     /**
@@ -571,16 +536,6 @@ class PropertySearch extends \tabs\api\core\Base
     }
 
     /**
-     * Get the total amount of properties
-     *
-     * @return integer
-     */
-    public function getTotal()
-    {
-        return $this->totalResults;
-    }
-
-    /**
      * Get the current order
      *
      * @return string
@@ -588,35 +543,6 @@ class PropertySearch extends \tabs\api\core\Base
     public function getOrder()
     {
         return $this->orderBy;
-    }
-
-    /**
-     * Get the start of the property selection
-     *
-     * @return int
-     */
-    public function getStart()
-    {
-        if ($this->getPage() <= 1) {
-            return 1;
-        } else {
-            return (($this->getPage()-1) * $this->getPageSize()) + 1;
-        }
-    }
-
-    /**
-     * Get the end of the pages property selection
-     *
-     * @return int
-     */
-    public function getEnd()
-    {
-        $end = (($this->getStart()-1) + $this->getPageSize());
-        if ($end > $this->getTotal()) {
-            return $this->getTotal();
-        } else {
-            return $end;
-        }
     }
 
     /**
@@ -661,6 +587,18 @@ class PropertySearch extends \tabs\api\core\Base
         $this->properties[$property->getId()] = $property;
         $this->count++;
     }
+    
+    /**
+     * Set the total (legacy function)
+     * 
+     * @param integer $totalResults Total number of properties found
+     * 
+     * @return \tabs\api\property\PropertySearch
+     */
+    public function setTotalResults($totalResults)
+    {
+        return $this->setTotal($totalResults);
+    }
 
     /**
      * Sets the label variables
@@ -703,11 +641,7 @@ class PropertySearch extends \tabs\api\core\Base
      */
     public function getPagination()
     {
-        if ($this->getMaxPages() > 1) {
-            return range(1, $this->getMaxPages());
-        } else {
-            return array(1);
-        }
+        return $this->getRange();
     }
 
     /**
