@@ -57,7 +57,7 @@ class BookingAdmin extends \tabs\api\core\Pagination
         $admin->setFilters($filters)
             ->setPage($page)
             ->setPageSize($pageSize)
-            ->getBookings();
+            ->requestBookings();
         
         return $admin;
     }
