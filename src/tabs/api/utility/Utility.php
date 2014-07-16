@@ -56,8 +56,8 @@ class Utility extends \tabs\api\core\Base
     /**
      * Static method to overload the current static methods
      * 
-     * @param type $name
-     * @param type $arguments
+     * @param string $name      Method name
+     * @param array  $arguments Method params
      * 
      * @return mixed
      */

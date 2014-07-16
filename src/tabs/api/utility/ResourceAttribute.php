@@ -30,8 +30,6 @@ namespace tabs\api\utility;
  * @method string getGroup()       Return the attribute group
  * @method void   setBrand($brand) Set the attribute brand
  * @method void   setGroup($group) Set the attribute group
- * 
- * @deprecated
  */
 class ResourceAttribute extends \tabs\api\core\Attribute
 {
