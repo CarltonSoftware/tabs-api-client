@@ -91,7 +91,7 @@ class Utility extends \tabs\api\core\Base
      * 
      * @return void
      */
-    public function resetCache()
+    public static function resetCache()
     {
         self::$cache = array();
     }
