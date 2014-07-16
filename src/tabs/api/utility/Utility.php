@@ -26,24 +26,267 @@ namespace tabs\api\utility;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
+ * 
+ * @method array getCountries()
+ *      Return an array of country objects
+ * @method \tabs\api\core\Country getCountry(string $countryCode) 
+ *      Return an individual country object
+ * @method array getAreasAndLocations(integer $limit, boolean $random = false)
+ *      Return an array of area objects
+ * @method array getAllLocations()
+ *      Return an array of location objects.  This will include all locations
+ *      even ones without a property association
+ * @method array getSourceCodes()
+ *      Return an array of source code objects.
+ * @method \tabs\api\utility\Resource getApiInformation()
+ *      Return information about the api.  This includes extras, searchTerms
+ *      and attributes.
  */
 class Utility extends \tabs\api\core\Base
 {
     /**
-     * Fetched area/location array
+     * Static cache
      *
      * @var array
      */
-    static $areas = array();
+    static $cache = array();
 
     // ------------------ Public Functions --------------------- //
+    
+    /**
+     * Static method to overload the current static methods
+     * 
+     * @param type $name
+     * @param type $arguments
+     * 
+     * @return mixed
+     */
+    public static function __callStatic($name, $arguments)
+    {
+        $reflection = new \ReflectionClass(get_called_class());
+        foreach ($reflection->getMethods() as $method) {
+            if ($method->getName() == '_' . $name) {
+                $hash = md5($name . implode($arguments));
+                if (array_key_exists($hash, self::$cache)) {
+                    return self::$cache[$hash];
+                } else {
+                    $data = call_user_func_array(
+                        __NAMESPACE__ . '\Utility::_' . $name,
+                        $arguments
+                    );
+                    self::$cache[$hash] = $data;
+                    return self::$cache[$hash];
+                }
+            }
+        }
+        
+        throw new \tabs\api\client\ApiException(
+            null,
+            'Utility method does not exist'
+        );
+    }
+    
+    /**
+     * Reset the cache of the class
+     * 
+     * @return void
+     */
+    public function resetCache()
+    {
+        self::$cache = array();
+    }
+    
+    /**
+     * Return a simple array of countries
+     * 
+     * @return array
+     */
+    public static function getCountriesBasic()
+    {
+        $countriesSimple = array();
+        foreach (self::getCountries() as $country) {
+            $countriesSimple[$country->getAlpha2()] = $country->getCountry();
+        }
+        return $countriesSimple;
+    }
+    
+    /**
+     * Return a simple array of areas
+     * 
+     * @return \tabs\api\core\Area|Array
+     */
+    public static function getAreas()
+    {
+        $areas = array();
+        foreach (self::getAreasAndLocations() as $area) {
+            $areas[$area->getCode()] = $area->getName();
+        }
+        return $areas;
+    }
+    
+    /**
+     * Return a simple array of locations
+     * 
+     * @return \tabs\api\core\Location|Array
+     */
+    public static function getLocations()
+    {
+        $locations = array();
+        foreach (self::getAreasAndLocations() as $area) {
+            $locs = $area->getLocations();
+            if (count($locs) > 0) {
+                foreach ($locs as $location) {
+                    $locations[$location->getCode()] = $location->getName();
+                }
+            }
+        }
+        return $locations;
+    }
+
+    /**
+     * Find an areacode from a slug
+     *
+     * @param string $slug Area slug (Alpha, dashes only)
+     *
+     * @return \tabs\api\core\Area
+     */
+    public static function findAreaFromSlug($slug)
+    {
+        foreach (self::getAreasAndLocations() as $area) {
+            if ($slug == $area->getSlug()) {
+                return $area;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Find an areacode from a slug
+     *
+     * @param string $slug Location slug (Alpha, dashes only)
+     *
+     * @return \tabs\api\core\Location
+     */
+    public static function findLocationFromSlug($slug)
+    {
+        foreach (self::getAreasAndLocations() as $area) {
+            foreach ($area->getLocations() as $location) {
+                if ($slug == $location->getSlug()) {
+                    return $location;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Return a simple array of sourcecodes
+     * 
+     * @return array
+     */
+    public static function getSourceCodesBasic()
+    {
+        $sourcesSimple = array();
+        foreach (self::getSourceCodes() as $source) {
+            $sourcesSimple[$source->getCode()] = $source->getDescription();
+        }
+        return $sourcesSimple;
+    }
+    
+    /**
+     * Returns an array of source code objects
+     * 
+     * @param string $sourceCode Tabs SourceCode
+     * 
+     * @return \tabs\api\core\Source | boolean 
+     */
+    public static function getSourceCode($sourceCode)
+    {
+        foreach (self::getSourceCodes() as $source) {
+            if ($source->getCode() == $sourceCode) {
+                return $source;
+            }
+        }
+        
+        // Return false if error or not found
+        return false;
+    }
+    
+    /**
+     * Unsubscribes an email from the tabs mailing list
+     * 
+     * @param string $emailAddress   Email address to unsubscribe
+     * @param string $newsletterType Newsletter to unsubscribe from
+     * 
+     * @throws ApiException
+     * 
+     * @return boolean
+     */
+    public static function unsubscribe($emailAddress, $newsletterType = 'default')
+    {
+        // Unsubscribe end point
+        $unsubscribe = \tabs\api\client\ApiClient::getApi()->delete(
+            sprintf(
+                '/newsletter/%s/%s',
+                $newsletterType,
+                $emailAddress
+            )
+        );
+        
+        if ($unsubscribe->status == 204) {
+            return true;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $unsubscribe, 
+                'Error Unsubscribing Customer'
+            );
+        }
+    }
+    
+    /**
+     * Retrieve the number of properties in the api
+     * 
+     * @return integer 
+     */
+    public static function getNumberOfProperties()
+    {
+        $propCount = 0;
+        $apiInfo = self::getApiInformation();
+        if ($apiInfo) {
+            $propCount = $apiInfo->getTotalNumberOfProperties();
+        }
+        return $propCount;
+    }
+    
+    /**
+     * Return an array of api brands.  This function requires admin privileges.
+     * 
+     * @return array
+     */
+    public static function getAllBrands()
+    {
+        // @codeCoverageIgnoreStart
+        // Unable to unit test as test client would require admin privs.
+        $resource = \tabs\api\client\ApiClient::getApi()->get('/api/view');
+        if ($resource->status == 200) {
+            return json_decode($resource->body, true);
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $resource,
+                'Unable to fetch brands'
+            );
+        }
+        // @codeCoverageIgnoreEnd
+    }
+
+    // ------------------ Private Functions --------------------- //
 
     /**
      * Gets all countries in the utility bundle
      *
      * @return array
      */
-    public static function getCountries()
+    private static function _getCountries()
     {
         // Array of countries to be returned
         $countries = array();
@@ -68,21 +311,6 @@ class Utility extends \tabs\api\core\Base
 
         return $countries;
     }
-    
-    /**
-     * Return a simple array of countries
-     * 
-     * @return array
-     */
-    public static function getCountriesBasic()
-    {
-        $countries = self::getCountries();
-        $countriesSimple = array();
-        foreach ($countries as $country) {
-            $countriesSimple[$country->getAlpha2()] = $country->getCountry();
-        }
-        return $countriesSimple;
-    }
 
     /**
      * Gets the country from a supplied alpha2 code
@@ -93,7 +321,7 @@ class Utility extends \tabs\api\core\Base
      *
      * @throws Exception
      */
-    public static function getCountry($alpha2)
+    private static function _getCountry($alpha2)
     {
         // Get all countries
         $ctry = \tabs\api\client\ApiClient::getApi()->get(
@@ -114,47 +342,7 @@ class Utility extends \tabs\api\core\Base
             );
         }
     }
-
-    /**
-     * Lookup addresses based on a give postcode.
-     * Spaces in the postcode will be removed.
-     *
-     * @param string $postcode Postcode to query
-     *
-     * @return array
-     * 
-     * @deprecated
-     */
-    /**public static function postcodeLookUp($postcode)
-    {
-        // Remove spaces
-        $postcode = str_replace(' ', '', trim($postcode));
-
-        // Address object array
-        $addresses = array();
-
-        // Check for addresses
-        $resp = \tabs\api\client\ApiClient::getApi()->get(
-            "/utility/postcode/{$postcode}"
-        );
-        if ($resp->status == 200 && is_array($resp->response)) {
-            foreach ($resp->response as $addr) {
-                array_push(
-                    $addresses, 
-                    \tabs\api\core\Address::createFromNode($addr)
-                );
-            }
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $resp, 
-                'Error fetching postcode'
-            );
-        }
-
-        return $addresses;
-    }*/
-
-
+    
     /**
      * Gets all areas and locations
      * 
@@ -163,7 +351,7 @@ class Utility extends \tabs\api\core\Base
      *
      * @return \tabs\api\core\Area|Array
      */
-    public static function getAreasAndLocations($limit = 0, $random = false)
+    private static function _getAreasAndLocations($limit = 0, $random = false)
     {
         // Array of countries to be returned
         $areas = array();
@@ -216,26 +404,6 @@ class Utility extends \tabs\api\core\Base
             $areas = array_slice($areas, 0, $limit);
         }
 
-        // Save the array for iteration
-        self::$areas = $areas;
-
-        return $areas;
-    }
-    
-    /**
-     * Return a simple array of areas
-     * 
-     * @return \tabs\api\core\Area|Array
-     */
-    public static function getAreas()
-    {
-        if (count(self::$areas) == 0) {
-            self::getAreasAndLocations();
-        }
-        $areas = array();
-        foreach (self::$areas as $area) {
-            $areas[$area->getCode()] = $area->getName();
-        }
         return $areas;
     }
     
@@ -244,29 +412,7 @@ class Utility extends \tabs\api\core\Base
      * 
      * @return \tabs\api\core\Location|Array
      */
-    public static function getLocations()
-    {
-        if (count(self::$areas) == 0) {
-            self::getAreasAndLocations();
-        }
-        $locations = array();
-        foreach (self::$areas as $area) {
-            $locs = $area->getLocations();
-            if (count($locs) > 0) {
-                foreach ($locs as $location) {
-                    $locations[$location->getCode()] = $location->getName();
-                }
-            }
-        }
-        return $locations;
-    }
-    
-    /**
-     * Return a simple array of locations
-     * 
-     * @return \tabs\api\core\Location|Array
-     */
-    public static function getAllLocations()
+    private static function _getAllLocations()
     {
         $locations = array();
         $locs = \tabs\api\client\ApiClient::getApi()->get('/utility/location');
@@ -286,49 +432,13 @@ class Utility extends \tabs\api\core\Base
         }
         return $locations;
     }
-
-    /**
-     * Find an areacode from a slug
-     *
-     * @param string $slug Area slug (Alpha, dashes only)
-     *
-     * @return \tabs\api\core\Area
-     */
-    public static function findAreaFromSlug($slug)
-    {
-        foreach (self::$areas as $area) {
-            if ($slug == $area->getSlug()) {
-                return $area;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find an areacode from a slug
-     *
-     * @param string $slug Location slug (Alpha, dashes only)
-     *
-     * @return \tabs\api\core\Location
-     */
-    public static function findLocationFromSlug($slug)
-    {
-        foreach (self::$areas as $area) {
-            foreach ($area->getLocations() as $location) {
-                if ($slug == $location->getSlug()) {
-                    return $location;
-                }
-            }
-        }
-        return false;
-    }
     
     /**
      * Returns an array of source code objects
      * 
      * @return \tabs\api\core\Source|Array 
      */
-    public static function getSourceCodes()
+    private static function _getSourceCodes()
     {
         // Get all Source Codes
         $sourceCodes = array();
@@ -347,77 +457,11 @@ class Utility extends \tabs\api\core\Base
     }
     
     /**
-     * Return a simple array of sourcecodes
-     * 
-     * @return array
-     */
-    public static function getSourceCodesBasic()
-    {
-        $sources = self::getSourceCodes();
-        $sourcesSimple = array();
-        foreach ($sources as $source) {
-            $sourcesSimple[$source->getCode()] = $source->getDescription();
-        }
-        return $sourcesSimple;
-    }
-    
-    /**
-     * Returns an array of source code objects
-     * 
-     * @param string $sourceCode Tabs SourceCode
-     * 
-     * @return \tabs\api\core\Source | boolean 
-     */
-    public static function getSourceCode($sourceCode)
-    {
-        $sourceCodes = self::getSourceCodes();
-        foreach ($sourceCodes as $source) {
-            if ($source->getCode() == $sourceCode) {
-                return $source;
-            }
-        }
-        
-        // Return false if error or not found
-        return false;
-    }
-    
-    /**
-     * Unsubscribes an email from the tabs mailing list
-     * 
-     * @param string $emailAddress   Email address to unsubscribe
-     * @param string $newsletterType Newsletter to unsubscribe from
-     * 
-     * @throws ApiException
-     * 
-     * @return boolean
-     */
-    public static function unsubscribe($emailAddress, $newsletterType = 'default')
-    {
-        // Unsubscribe end point
-        $unsubscribe = \tabs\api\client\ApiClient::getApi()->delete(
-            sprintf(
-                '/newsletter/%s/%s',
-                $newsletterType,
-                $emailAddress
-            )
-        );
-        
-        if ($unsubscribe->status == 204) {
-            return true;
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $unsubscribe, 
-                'Error Unsubscribing Customer'
-            );
-        }
-    }
-    
-    /**
      * Request and return the API resource information
      * 
      * @return \tabs\api\utility\Resource 
      */
-    public static function getApiInformation()
+    private static function _getApiInformation()
     {
         $resources = \tabs\api\client\ApiClient::getApi()->get('/');
         $resource = new \tabs\api\utility\Resource();
@@ -474,7 +518,10 @@ class Utility extends \tabs\api\core\Base
                 if ($key == 'constants' && property_exists($val, 'searchTerms')) {
                     foreach ($val->searchTerms as $searchType => $searchTerms) {
                         foreach ($searchTerms as $term) {
-                            $strm = new \tabs\api\utility\SearchTerm();
+                            $strm = new \tabs\api\utility\SearchTerm(
+                                $term->label,
+                                ''
+                            );
                             parent::setObjectProperties($strm, $term);
                             $strm->setSearchType($searchType);
                             $resource->addSearchTerm($strm);
@@ -485,44 +532,6 @@ class Utility extends \tabs\api\core\Base
         }
         return $resource;
     }
-    
-    /**
-     * Retrieve the number of properties in the api
-     * 
-     * @return integer 
-     */
-    public static function getNumberOfProperties()
-    {
-        $propCount = 0;
-        $apiInfo = self::getApiInformation();
-        if ($apiInfo) {
-            $propCount = $apiInfo->getTotalNumberOfProperties();
-        }
-        return $propCount;
-    }
-    
-    /**
-     * Return an array of api brands.  This function requires admin privileges.
-     * 
-     * @return array
-     */
-    public static function getAllBrands()
-    {
-        // @codeCoverageIgnoreStart
-        // Unable to unit test as test client would require admin privs.
-        $resource = \tabs\api\client\ApiClient::getApi()->get('/api/view');
-        if ($resource->status == 200) {
-            return json_decode($resource->body, true);
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $resource,
-                'Unable to fetch brands'
-            );
-        }
-        // @codeCoverageIgnoreEnd
-    }
-
-    // ------------------ Private Functions --------------------- //
     
     /**
      * Create a source object from a given result object
@@ -558,11 +567,11 @@ class Utility extends \tabs\api\core\Base
      * 
      * @param object $node JSON object
      * 
-     * @return \tabs\api\utility\ResourceAttribute
+     * @return \tabs\api\core\ResourceAttribute
      */
     private static function _createResourceAttribute($node)
     {
-        $attr = new \tabs\api\utility\ResourceAttribute();
+        $attr = new \tabs\api\utility\ResourceAttribute($node->label, '');
         self::setObjectProperties($attr, $node);
         return $attr;
     }
