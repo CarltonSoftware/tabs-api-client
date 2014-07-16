@@ -435,10 +435,18 @@ class Property extends \tabs\api\core\Base
 
         // Add property attributes
         if (array_key_exists("attributes", $propertyData)) {
-            foreach ($propertyData->attributes as $attrKey => $attrVal) {
-                $property->setAttribute(
-                    new \tabs\api\core\Attribute($attrKey, $attrVal)
-                );
+            $apiInfo = \tabs\api\utility\Utility::getApiInformation();
+            foreach ($apiInfo->getAttributes() as $attr) {
+                if (property_exists($propertyData->attributes, $attr->getName())) {
+                    $name = $attr->getName();
+                    $attribute = new \tabs\api\core\Attribute(
+                        $name,
+                        $propertyData->attributes->$name
+                    );
+                    $attribute->setCode($attr->getCode());
+                    $attribute->setGroup($attr->getGroup());
+                    $property->setAttribute($attribute);
+                }
             }
         }
 
@@ -818,6 +826,12 @@ class Property extends \tabs\api\core\Base
     {
         if (isset($this->attributes[$attributeName])) {
             return $this->attributes[$attributeName];
+        } else if (substr($attributeName, 0, 4) == 'ATTR') {
+            foreach ($this->attributes as $attr) {
+                if ($attr->getCode() == $attributeName) {
+                    return $attr;
+                }
+            }
         }
 
         return false;
