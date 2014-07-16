@@ -593,7 +593,7 @@ class Booking extends \tabs\api\booking\Enquiry
      *
      * @param \tabs\api\booking\PartyDetail $partyMember API PartyMember Object
      *
-     * @return void
+     * @return \tabs\api\booking\Booking
      *
      * @throws Exception
      */
@@ -624,9 +624,21 @@ class Booking extends \tabs\api\booking\Enquiry
      */
     public function hasPetExtra($petExtraCode = 'PET')
     {
-        $petExtra = $this->getExtraDetail($petExtraCode);
-        if ($petExtra) {
-            return ($petExtra->getQuantity() > 0);
+        return $this->hasExtra($petExtraCode);
+    }
+
+    /**
+     * Check to see if the booking has an extra or not
+     *
+     * @param string $extraCode Brands extra code
+     *
+     * @return boolean
+     */
+    public function hasExtra($extraCode = 'PET')
+    {
+        $extra = $this->getExtraDetail($extraCode);
+        if ($extra) {
+            return ($extra->getQuantity() > 0);
         }
         return false;
     }
