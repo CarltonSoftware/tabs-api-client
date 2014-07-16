@@ -26,14 +26,29 @@ namespace tabs\api\core;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  * 
+ * @method string getCode()  Return attribute code
  * @method string getName()  Return attribute name
  * @method mixed  getValue() Return attribute value
+ * @method string getBrand() Return the attribute brand
+ * @method string getGroup() Return the attribute group
+ * @method string getType()  Return the attribute type
  * 
- * @method void setName($name)   Set attribute name
- * @method void setValue($value) Set value
+ * @method void setCode(string $code)   Set attribute code
+ * @method void setName(string $name)   Set attribute name
+ * @method void setValue(mixed $value)  Set value
+ * @method void setBrand(string $brand) Set the attribute brand
+ * @method void setGroup(string $group) Set the attribute group
+ * @method void setType(string $type)   Set the attribute type
  */
 class Attribute extends \tabs\api\core\Base
 {
+    /**
+     * Attribute code
+     * 
+     * @var string 
+     */
+    protected $code = '';
+    
     /**
      * Attribute name
      * 
@@ -47,6 +62,27 @@ class Attribute extends \tabs\api\core\Base
      * @var mixed
      */
     protected $value;
+    
+    /**
+     * Attribute Brandcode
+     * 
+     * @var string 
+     */
+    protected $brand = '';
+    
+    /**
+     * Attribute Group
+     * 
+     * @var string 
+     */
+    protected $group = '';
+    
+    /**
+     * Attribute Type
+     * 
+     * @var string 
+     */
+    protected $type = 'string';
     
     // ------------------ Public Functions --------------------- //
     
@@ -64,16 +100,6 @@ class Attribute extends \tabs\api\core\Base
         $this->setName($name);
         $this->setValue($value);
     }
-    
-    /**
-     * Returns the type of the attribute
-     * 
-     * @return string 
-     */
-    public function getType()
-    {
-        return gettype($this->value);
-    }
 
     /**
      * This should return a human readable version of the attribute
@@ -84,5 +110,27 @@ class Attribute extends \tabs\api\core\Base
     public function __toString()
     {
         return $this->getName() . ' - ' . $this->getValue();
+    }
+    
+    /**
+     * Return the name of the attribute
+     * 
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->getName();
+    }
+    
+    /**
+     * Set the name of the attribute
+     * 
+     * @param string $label Attribute name
+     * 
+     * @return void
+     */
+    public function setLabel($label)
+    {
+        return $this->setName($label);
     }
 }
