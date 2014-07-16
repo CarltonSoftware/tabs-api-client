@@ -30,20 +30,21 @@ namespace tabs\api\utility;
  * @method string getGroup()       Return the attribute group
  * @method void   setBrand($brand) Set the attribute brand
  * @method void   setGroup($group) Set the attribute group
+ * 
+ * @deprecated
  */
-class ResourceAttribute extends \tabs\api\utility\ResourceExtra
+class ResourceAttribute extends \tabs\api\core\Attribute
 {
     /**
-     * Attribute Brandcode
+     * Overloaded constructor
      * 
-     * @var string 
-     */
-    protected $brand = '';
-    
-    /**
-     * Attribute Group
+     * @param string $name  Name of attribute
+     * @param string $value Value of attribute
      * 
-     * @var string 
+     * @return void
      */
-    protected $group = '';
+    public function __construct($name = '', $value = '')
+    {
+        parent::__construct($name, $value);
+    }
 }
