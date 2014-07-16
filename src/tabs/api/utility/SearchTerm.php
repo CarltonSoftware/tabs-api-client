@@ -33,7 +33,7 @@ namespace tabs\api\utility;
  * @method void   setLabel($label) Set the attribute label
  * @method void   setType($type)   Set the attribute type
  */
-class SearchTerm extends \tabs\api\utility\ResourceAttribute
+class SearchTerm extends \tabs\api\core\Attribute
 {
     /**
      * Search Type
