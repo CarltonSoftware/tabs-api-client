@@ -167,9 +167,14 @@ class OwnerTest extends ApiClientClassTest
      */
     public function testCreateOwnerBooking()
     {
-        $property = $this->getFirstAvailablePropertyWithPricing();
+        $property = $this->getTabsApiClientProperty();
         if ($property) {
             $owner = $property->getOwner();
+            
+            // Set start time to next month
+            $this->startTime = strtotime('+1 month');
+            
+            // Perform owner booking
             $this->assertTrue(
                 $owner->setOwnerBooking(
                     $property->getPropertyRef(),

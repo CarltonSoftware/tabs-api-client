@@ -9,6 +9,13 @@ require_once $file;
 class ApiClientClassTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * Start time on enquiries etc
+     * 
+     * @var timestamp
+     */
+    public $startTime;
+    
+    /**
      * Sets up the tests
      *
      * @return void
@@ -52,6 +59,16 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+     * Return the api test property
+     * 
+     * @return \tabs\api\property\Property
+     */
+    public function getTabsApiClientProperty()
+    {
+        return \tabs\api\property\Property::getProperty('V541', 'ZZ');
+    }
+    
+    /**
      * Return the first available property
      * 
      * @return \tabs\api\property\Property
@@ -74,7 +91,13 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
      */
     public function getNextSaturday()
     {
-        return strtotime('next saturday');
+        if ($this->startTime) {
+            $this->startTime = strtotime('next saturday', $this->startTime);
+        } else {
+            $this->startTime = strtotime('next saturday');
+        }
+        
+        return $this->startTime;
     }
     
     /**
@@ -84,7 +107,11 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
      */
     public function getNextSaturdayPlusOneWeek()
     {
-        return strtotime('+1 week', $this->getNextSaturday());
+        if ($this->startTime) {
+            return strtotime('+1 week', $this->startTime);
+        } else {
+            return strtotime('+1 week', $this->getNextSaturday());
+        }
     }
     
     /**

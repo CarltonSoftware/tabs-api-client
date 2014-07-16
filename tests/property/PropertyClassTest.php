@@ -42,7 +42,7 @@ class PropertyClassTest extends ApiClientClassTest
         $this->assertEquals(7, $this->property->getAccommodates());
         $this->assertEquals('7', $this->property->getAccommodationDescription());
         $this->assertEquals(7, $this->property->getSleeps());
-        $this->assertFalse($this->property->hasPets());
+        $this->assertTrue($this->property->hasPets());
         $this->assertTrue(is_object($this->property->getBrand()));
         $this->assertTrue(is_object($this->property->getBrand('ZZ')));
         $this->assertFalse($this->property->isPromoted());
@@ -284,6 +284,20 @@ class PropertyClassTest extends ApiClientClassTest
     {
         $attributes = $this->property->getAttributes();
         $this->assertTrue(is_array($attributes));
+        
+        $firstAttribute = array_shift($attributes);
+        
+        $this->assertEquals(
+            $firstAttribute,
+            $this->property->getAttribute($firstAttribute->getName())
+        );
+        
+        $this->assertEquals(
+            $firstAttribute,
+            $this->property->getAttribute($firstAttribute->getCode())
+        );
+        
+        $this->assertFalse($this->property->getAttribute('XXX'));
     }
 
     /**

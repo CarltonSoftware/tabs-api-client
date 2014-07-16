@@ -117,6 +117,7 @@ class ResourceClassTest extends PHPUnit_Framework_TestCase
         $route = "http://carltonsoftware.apiary.io/";
         \tabs\api\client\ApiClient::factory($route);
         
+        \tabs\api\utility\Utility::resetCache();
         $apiRoute = \tabs\api\utility\Utility::getApiInformation();
         $this->assertEquals(19, count($apiRoute->getSearchFilters()));
     }

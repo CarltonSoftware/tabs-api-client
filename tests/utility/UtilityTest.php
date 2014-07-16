@@ -110,6 +110,9 @@ class UtilityTest extends ApiClientClassTest
 
         // Test
         $this->assertEquals(1, count($areas));
+        
+        // Reset Cache
+        \tabs\api\utility\Utility::resetCache();
 
         // Get Random
         $areas = \tabs\api\utility\Utility::getAreasAndLocations(0, true);
@@ -159,7 +162,7 @@ class UtilityTest extends ApiClientClassTest
      */
     public function testGetAreas()
     {
-        \tabs\api\utility\Utility::$areas = array();
+        \tabs\api\utility\Utility::resetCache();
         $areas = \tabs\api\utility\Utility::getAreas();
 
         // Test
@@ -179,7 +182,7 @@ class UtilityTest extends ApiClientClassTest
      */
     public function testGetLocations()
     {
-        \tabs\api\utility\Utility::$areas = array();
+        \tabs\api\utility\Utility::resetCache();
         $locations = \tabs\api\utility\Utility::getLocations();
 
         // Test

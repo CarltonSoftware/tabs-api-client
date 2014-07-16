@@ -11,6 +11,13 @@ require_once $file;
 class BookingTest extends ApiClientClassTest
 {
     /**
+     * Booking id
+     * 
+     * @var string
+     */
+    public $testBookingId = '7a28845cdbb08b8575ed0c4f58ac2f06';
+    
+    /**
      * Run on each test
      *
      * @return void
@@ -92,8 +99,8 @@ class BookingTest extends ApiClientClassTest
     public function testBookingAccessors()
     {
         $booking = new \tabs\api\booking\Booking();
-        $booking->setBookingId('7a28845cdbb08b8575ed0c4f58ac2f06');
-        $this->assertEquals('7a28845cdbb08b8575ed0c4f58ac2f06', $booking->getBookingId());
+        $booking->setBookingId($this->testBookingId);
+        $this->assertEquals($this->testBookingId, $booking->getBookingId());
         
         // Set booking number
         $booking->setWnumber('W12345');
@@ -159,7 +166,7 @@ class BookingTest extends ApiClientClassTest
     public function testAddUpdateDeleteBookingNote()
     {
         $booking = new \tabs\api\booking\Booking();
-        $booking->setBookingId('7a28845cdbb08b8575ed0c4f58ac2f06');
+        $booking->setBookingId($this->testBookingId);
         
         $this->assertFalse($booking->noteExists(0));
         
@@ -261,7 +268,7 @@ class BookingTest extends ApiClientClassTest
         $this->assertTrue(is_array($infant->toArray(false)));
         
         $booking = \tabs\api\booking\Booking::createBookingFromId(
-            '7a28845cdbb08b8575ed0c4f58ac2f06'
+            $this->testBookingId
         );
         
         $this->assertTrue($booking->clearPartyMembers());
@@ -312,6 +319,119 @@ class BookingTest extends ApiClientClassTest
     }
 
     /**
+     * Test invalid extra request
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return void
+     */
+    public function testInvalidAddExtra()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->addNewExtra('TOW', 1, 0);
+    }
+
+    /**
+     * Test invalid pet extra request
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return void
+     */
+    public function testInvalidAddPetExtra()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->addPetExtra(1);
+    }
+
+    /**
+     * Test invalid payment request
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return void
+     */
+    public function testInvalidAddPayment()
+    {
+        $booking = new \tabs\api\booking\Booking();
+        $booking->addNewPayment($this->_getPayment());
+    }
+    
+    /**
+     * Create a new booking and confirm
+     * 
+     * @return void
+     */
+    public function testCreateNewBooking()
+    {
+        $property = $this->getTabsApiClientProperty();
+        if ($property) {
+            $booking = \tabs\api\booking\Booking::create(
+                $property->getPropref(),
+                $property->getBrandCode(),
+                $this->getNextSaturday(),
+                $this->getNextSaturdayPlusOneWeek(),
+                1
+            );
+            
+            // Add customer
+            $booking->setCustomer(
+                $this->_getCustomer()
+            );
+            
+            // Check property is correct
+            $this->assertEquals(
+                $property->getPropref(),
+                $booking->getProperty()->getPropref()
+            );
+            
+            // Add party members
+            $booking->setPartyMember($this->_getPartyMember())
+                ->setPartyDetails();            
+            $this->assertEquals(count($booking->getPartyDetails()), 1);
+            
+            // As a test, lets remove the party details and add again
+            $booking->clearPartyMembers();
+            $this->assertEquals(count($booking->getPartyDetails()), 0);
+            
+            // Add party members
+            $booking->setPartyMember($this->_getPartyMember())
+                ->setPartyDetails();            
+            $this->assertEquals(count($booking->getPartyDetails()), 1);
+            
+            // Add/remove towel extra (of zero price)
+            $booking->addNewExtra('TOW', 1, 0);
+            
+            // This is a bit hacky but we are checking for the existence of an
+            // extra
+            $this->assertTrue($booking->hasExtra('TOW'));
+            
+            // Remove towel extra
+            $booking->removeExtra('TOW');
+            
+            // Check extra again
+            $this->assertFalse($booking->hasExtra('TOW'));
+            
+            // Add payment
+            $booking->addPayment(
+                $this->_getPayment($booking->getPayableAmount())
+            );
+            
+            $booking->assertEquals(
+                $booking->getPayableAmount(),
+                $booking->getAmountPaid()
+            );
+            
+            // Confirm booking
+            $this->assertTrue($booking->confirmBooking());
+            
+            // Check wnumber
+            $this->assertTrue(strlen($booking->getWNumber()) > 0);
+            $this->assertTrue(is_array($booking->toArray()));
+        }
+    }
+
+    /**
      * Return a customer object
      *
      * @return \tabs\api\core\Customer
@@ -339,14 +459,28 @@ class BookingTest extends ApiClientClassTest
     }
 
     /**
+     * Return a party detail object
+     *
+     * @return \tabs\api\booking\PartyDetail
+     */
+    private function _getPartyMember()
+    {
+        $joe = \tabs\api\booking\PartyDetail::createAdult('Mr', 'Bloggs', 32);
+        
+        return $joe;
+    }
+
+    /**
      * Return a new payment object
+     * 
+     * @param float $amount Payment amount
      *
      * @return \tabs\api\booking\Payment
      */
-    private function _getPayment()
+    private function _getPayment($amount = 123.45)
     {
         return \tabs\api\booking\Payment::createPaymentFromSagePayResponse(
-            123.45,
+            $amount,
             $this->_getSagePayResponse()
         );
     }
