@@ -48,6 +48,7 @@ namespace tabs\api\pricing;
  * @method void setPets(integer $pets)
  * @method void setPartySize(integer $partySize)
  * @method void setPetExtra(\tabs\api\pricing\Extra $petExtra)
+ * @method void setPetExtraCode(string $petExtraCode)
  * @method void setPropertyRef(string $propertyRef)
  */
 class Pricing extends \tabs\api\core\Base
