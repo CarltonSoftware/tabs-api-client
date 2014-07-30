@@ -445,6 +445,7 @@ class Property extends \tabs\api\core\Base
                     );
                     $attribute->setCode($attr->getCode());
                     $attribute->setGroup($attr->getGroup());
+                    $attribute->setType($attr->getType());
                     $property->setAttribute($attribute);
                 }
             }
