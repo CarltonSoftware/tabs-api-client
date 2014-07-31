@@ -225,6 +225,18 @@ class UtilityTest extends ApiClientClassTest
     }
 
     /**
+     * Test undefined method
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return void
+     */
+    public function testBadMethodName()
+    {
+        \tabs\api\utility\Utility::undefinedMethod();
+    }
+
+    /**
      * Test resource utility
      *
      * @return void

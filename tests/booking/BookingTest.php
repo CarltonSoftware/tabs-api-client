@@ -428,6 +428,7 @@ class BookingTest extends ApiClientClassTest
             // Check wnumber
             $this->assertTrue(strlen($booking->getWNumber()) > 0);
             $this->assertTrue(is_array($booking->toArray()));
+            $this->assertTrue(is_string($booking->toJson()));
         }
     }
 
