@@ -1255,15 +1255,16 @@ class Booking extends \tabs\api\booking\Enquiry
     private function _setBookingData()
     {
         // Request the booking data from the tabs api instance
-        $booking = \tabs\api\booking\booking::createFromId(
+        $booking = \tabs\api\booking\booking::createBookingFromId(
             $this->getBookingId()
         );
 
         // Loop through the accessors of the requested booking object
         if ($booking) {
-            foreach (get_class_vars(\tabs\api\pricing\Pricing) as $property) {
-                $setter = 'set' . ucfirst($property);
-                $getter = 'get' . ucfirst($property);
+            $reflection = new \ReflectionObject($booking->getPricing());
+            foreach ($reflection->getProperties(\ReflectionProperty::IS_PROTECTED) as $property) {
+                $setter = 'set' . ucfirst($property->name);
+                $getter = 'get' . ucfirst($property->name);
                 $this->$setter($booking->$getter());
             }
         }
