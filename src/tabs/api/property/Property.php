@@ -1352,31 +1352,29 @@ class Property extends \tabs\api\core\Base
         $availability = \tabs\api\client\ApiClient::getApi()->get(
             $this->getCalendarUrl()
         );
-        if ($availability) {
-            if ($availability->status == 200) {
-                // Loop through each day presented by the API
-                foreach (get_object_vars($availability->response)
-                        as $key => $availableDay
-                ) {
-                    $changeover = false;
-                    if (property_exists($availableDay, "changeoverDay")) {
-                        $changeover = $availableDay->changeoverDay;
-                    }
+        if ($availability && $availability->status == 200) {
+            // Loop through each day presented by the API
+            foreach (get_object_vars($availability->response)
+                    as $key => $availableDay
+            ) {
+                $changeover = false;
+                if (property_exists($availableDay, "changeoverDay")) {
+                    $changeover = $availableDay->changeoverDay;
+                }
 
-                    $available = false;
-                    if (property_exists($availableDay, "available")) {
-                        $available = $availableDay->available;
-                    }
+                $available = false;
+                if (property_exists($availableDay, "available")) {
+                    $available = $availableDay->available;
+                }
 
-                    if (property_exists($availableDay, "availabilityCode")) {
-                        // Set that days availability
-                        $this->setAvailableDay(
-                            $key,
-                            $availableDay->availabilityCode,
-                            $changeover,
-                            $available
-                        );
-                    }
+                if (property_exists($availableDay, "availabilityCode")) {
+                    // Set that days availability
+                    $this->setAvailableDay(
+                        $key,
+                        $availableDay->availabilityCode,
+                        $changeover,
+                        $available
+                    );
                 }
             }
         }
@@ -1402,15 +1400,14 @@ class Property extends \tabs\api\core\Base
             )
         );
 
-        if ($priceBandsObj) {
-            if ($priceBandsObj->status == 200) {
-                if (property_exists($priceBandsObj->response, $year)) {
-                    foreach ($priceBandsObj->response as $pboy) {
-                        foreach ($pboy as $pbo) {
-                            if (property_exists($pbo, 'priceBand')) {
-                                array_push($priceBands, $pbo);
-                            }
-                        }
+        if ($priceBandsObj 
+            && $priceBandsObj->status == 200 
+            && property_exists($priceBandsObj->response, $year)
+        ) {
+            foreach ($priceBandsObj->response as $pboy) {
+                foreach ($pboy as $pbo) {
+                    if (property_exists($pbo, 'priceBand')) {
+                        array_push($priceBands, $pbo);
                     }
                 }
             }
@@ -1443,36 +1440,34 @@ class Property extends \tabs\api\core\Base
             )
         );
 
-        if ($datePriceRangeObj) {
-            if ($datePriceRangeObj->status == 200) {
-                foreach ($datePriceRangeObj->response as $dpry) {
-                    foreach ($dpry as $dpr) {
-                        if (property_exists($dpr, 'fromDate')) {
-                            $dpr->fromDate = strtotime($dpr->fromDate);
-                        }
-                        if (property_exists($dpr, 'toDate')) {
-                            $dpr->toDate = strtotime($dpr->toDate);
-                        }
-
-                        // Using a closure, create a new anonymous function
-                        // which does some of the date formatting for the
-                        // client
-                        $dpr->getDateRangeString = function (
-                            $this,
-                            $dateFormat = 'd F Y'
-                        ) use ($dpr) {
-                            if ($dpr->dateRangeName == '') {
-                                return sprintf(
-                                    '%s to %s',
-                                    date($dateFormat, $dpr->fromDate),
-                                    date($dateFormat, $dpr->toDate)
-                                );
-                            } else {
-                                return $dpr->dateRangeName;
-                            }
-                        };
-                        array_push($datePriceRanges, $dpr);
+        if ($datePriceRangeObj && $datePriceRangeObj->status == 200) {
+            foreach ($datePriceRangeObj->response as $dpry) {
+                foreach ($dpry as $dpr) {
+                    if (property_exists($dpr, 'fromDate')) {
+                        $dpr->fromDate = strtotime($dpr->fromDate);
                     }
+                    if (property_exists($dpr, 'toDate')) {
+                        $dpr->toDate = strtotime($dpr->toDate);
+                    }
+
+                    // Using a closure, create a new anonymous function
+                    // which does some of the date formatting for the
+                    // client
+                    $dpr->getDateRangeString = function (
+                        $this,
+                        $dateFormat = 'd F Y'
+                    ) use ($dpr) {
+                        if ($dpr->dateRangeName == '') {
+                            return sprintf(
+                                '%s to %s',
+                                date($dateFormat, $dpr->fromDate),
+                                date($dateFormat, $dpr->toDate)
+                            );
+                        } else {
+                            return $dpr->dateRangeName;
+                        }
+                    };
+                    array_push($datePriceRanges, $dpr);
                 }
             }
         }

@@ -141,7 +141,7 @@ class SearchHelper
      * @param string  $searchId Search id, tp persist search order
      * @param boolean $findAll  Set to true if you want to find all properties
      *
-     * @return boolean True if search is Ok
+     * @return \tabs\api\property\PropertySearch
      */
     public function search($searchId = '', $findAll = false)
     {

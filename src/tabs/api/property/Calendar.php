@@ -71,6 +71,8 @@ class Calendar
      */
     protected $sevenRows = false;
 
+    // --------------------------------------------------------------------
+
     /**
      * Constructor
      * Loads the calendar language file and sets the default time reference
@@ -490,7 +492,7 @@ class Calendar
      * @access    public
      * @return array
      */
-    function defaultTemplate()
+    public function defaultTemplate()
     {
         $default = $this->_getDefaultTemplate();
         foreach ($default as $key => $val) {
