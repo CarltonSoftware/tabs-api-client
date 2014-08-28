@@ -66,7 +66,7 @@ class PropertyGroup extends \tabs\api\core\Base
     /**
      * Add a property to the property group
      * 
-     * @param \tabs\api\property\Property $property Property object
+     * @param \tabs\api\property\Property &$property Property object
      * 
      * @return \tabs\api\property\PropertyGroup
      */
@@ -104,6 +104,9 @@ class PropertyGroup extends \tabs\api\core\Base
     /**
      * Return the merged availability of all of the properties within this
      * property group
+     * 
+     * @param integer $month Timestamp of the target month
+     *                       e.g. mktime or time()
      * 
      * @return array
      */
