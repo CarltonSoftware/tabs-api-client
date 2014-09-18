@@ -110,8 +110,9 @@ class PropertyCollection extends \tabs\api\core\Pagination
     /**
      * Legacy function.  Provide a query string to set the filter parameters.
      * 
-     * @deprecated
      * @param string $filter Filter string
+     * 
+     * @deprecated
      * 
      * @return \tabs\api\property\PropertySearchNew
      */
