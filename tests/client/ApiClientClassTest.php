@@ -27,6 +27,7 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
             'apiclienttest',
             'f25997b366dcab50'
         );
+        tabs\api\utility\Utility::resetCache();
     }
     
     /**
