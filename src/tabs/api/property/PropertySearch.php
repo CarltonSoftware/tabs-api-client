@@ -25,17 +25,8 @@ namespace tabs\api\property;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
- *
- * @method array   getProperties() Returns an array of property objects or 
- * if 1, returns a singular property object
- * @method string  getFilter()     Returns the filter string used in that 
- * particular property search query
- * @method string  getSearchId()   Returns the searchId
- *
- * @method void setFilter(string $filter)
- * @method void setSearchId(string $searchId)
  */
-class PropertySearch extends \tabs\api\core\Pagination
+class PropertySearch extends PropertyCollection
 {
     /**
      * Max request page size
@@ -43,62 +34,6 @@ class PropertySearch extends \tabs\api\core\Pagination
      * @var integer
      */
     private static $_maxPageSize = 200;
-
-    /**
-     * Properties in current search
-     *
-     * @var array
-     */
-    protected $properties = array();
-
-    /**
-     * Count of properties in current search
-     *
-     * @var array
-     */
-    protected $count = 0;
-
-    /**
-     * Results label
-     *
-     * @var string
-     */
-    protected $resultsLabel = 'Propert';
-
-    /**
-     * Suffix used if there are multiple results
-     *
-     * @var string
-     */
-    protected $resultsLabelPluralSuffix = 'ies';
-
-    /**
-     * Suffix used if there is just one result
-     *
-     * @var string
-     */
-    protected $resultsLabelSuffix = 'y';
-
-    /**
-     * Ordering variable
-     *
-     * @var string
-     */
-    protected $orderBy = '';
-
-    /**
-     * Filtering variable
-     *
-     * @var string
-     */
-    protected $filter = '';
-
-    /**
-     * Search ID
-     *
-     * @var string
-     */
-    protected $searchId = '';
 
     // ------------------ Static Functions --------------------- //
 
@@ -423,11 +358,6 @@ class PropertySearch extends \tabs\api\core\Pagination
             $propertySearch->setOrder($propertyData->orderBy);
         }
 
-        // Add filter if set
-        if (property_exists($propertyData, 'filter')) {
-            $propertySearch->setFilter($propertyData->filter);
-        }
-
         return $propertySearch;
     }
 
@@ -504,45 +434,16 @@ class PropertySearch extends \tabs\api\core\Pagination
      * @param integer $pageSize     Number of results per page
      * @param string  $searchId     Persistent search id
      */
-    public function __construct($totalResults, $page, $pageSize, $searchId = '')
-    {
+    public function __construct(
+        $totalResults = 0,
+        $page = 1,
+        $pageSize = 10,
+        $searchId = ''
+    ) {
         $this->setTotal($totalResults);
         $this->setPage($page);
         $this->setPageSize($pageSize);
-        $this->searchId = $searchId;
-    }
-
-    /**
-     * Helper Function used to retreive the results label
-     *
-     * @param boolean $forceMultiple Boolean to force the multiple prefix/suffix
-     *                               Labels
-     *
-     * @return string
-     */
-    public function getLabel($forceMultiple = false)
-    {
-        if ($forceMultiple) {
-            return $this->resultsLabel . $this->resultsLabelPluralSuffix;
-        } else {
-            if ($this->getTotal() > 1) {
-                return $this->resultsLabel . $this->resultsLabelPluralSuffix;
-            } else if ($this->getTotal() == 1) {
-                return $this->resultsLabel . $this->resultsLabelSuffix;
-            } else {
-                return $this->resultsLabel . $this->resultsLabelPluralSuffix;
-            }
-        }
-    }
-
-    /**
-     * Get the current order
-     *
-     * @return string
-     */
-    public function getOrder()
-    {
-        return $this->orderBy;
+        $this->setSearchId($searchId);
     }
 
     /**
@@ -574,117 +475,16 @@ class PropertySearch extends \tabs\api\core\Pagination
 
         return rtrim($query, "&");
     }
-
-    /**
-     * Add a property to the property array
-     *
-     * @param \tabs\api\property\Property $property Property object
-     *
-     * @return void
-     */
-    public function setProperty(\tabs\api\property\Property $property)
-    {
-        $this->properties[$property->getId()] = $property;
-        $this->count++;
-    }
     
     /**
-     * Set the total (legacy function)
+     * Legacy function for returning a filter string
      * 
-     * @param integer $totalResults Total number of properties found
+     * @deprecated
      * 
-     * @return \tabs\api\property\PropertySearch
-     */
-    public function setTotalResults($totalResults)
-    {
-        return $this->setTotal($totalResults);
-    }
-
-    /**
-     * Sets the label variables
-     *
-     * @param string $resultsLabel             Default label without a suffix/
-     *                                         Prefix
-     * @param string $resultsLabelSuffix       Suffix for label
-     * @param string $resultsLabelPluralSuffix Plural suffix label
-     *
-     * @return void
-     */
-    public function setLabel(
-        $resultsLabel,
-        $resultsLabelSuffix,
-        $resultsLabelPluralSuffix
-    ) {
-        $this->resultsLabel = $resultsLabel;
-        $this->resultsLabelSuffix = $resultsLabelSuffix;
-        $this->resultsLabelPluralSuffix = $resultsLabelPluralSuffix;
-    }
-
-    /**
-     * Sets the order variable
-     *
-     * @param string $orderBy Order by string
-     *
-     * @return void
-     */
-    public function setOrder($orderBy)
-    {
-        if (is_string($orderBy)) {
-            $this->orderBy = trim($orderBy);
-        }
-    }
-
-    /**
-     * Return the range of pages in the search
-     *
      * @return string
      */
-    public function getPagination()
+    public function getFilter()
     {
-        return $this->getRange();
-    }
-
-    /**
-     * Returns some basic information about your property search
-     *
-     * @return string
-     */
-    public function getSearchInfo()
-    {
-        if ($this->getMaxPages() > 1) {
-            return sprintf(
-                "%d to %d of %d",
-                $this->getStart(),
-                $this->getEnd(),
-                $this->getTotal()
-            );
-        } else {
-            return "All";
-        }
-    }
-    
-    /**
-     * Get a count of all of the property attributes/properties for a particular
-     * filter
-     * 
-     * @return stdClass
-     */
-    public function getFacets()
-    {
-        $propertyFacet = \tabs\api\client\ApiClient::getApi()->get(
-            '/property/facet',
-            array(
-                'filter' => $this->getFilter()
-            )
-        );
-
-        if ($propertyFacet && $propertyFacet->status == 200) {
-            return $propertyFacet->response;
-        } else {
-            throw new \tabs\api\client\ApiException(
-                $propertyFacet,
-                'Could not fetch property facet'
-            );
-        }
+        return $this->getFiltersString();
     }
 }
