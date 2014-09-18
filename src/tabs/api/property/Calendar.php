@@ -34,6 +34,13 @@ class Calendar
      * @var timestamp
      */
     protected $localTime;
+    
+    /**
+     * Local month
+     *
+     * @var timestamp
+     */
+    protected $localMonth;
 
     /**
      * Start date string
@@ -102,6 +109,8 @@ class Calendar
         // Set and validate the supplied month/year
         if (!$targetMonth) {
             $targetMonth  = $this->localTime;
+        } else {
+            $this->localMonth = $targetMonth;
         }
 
         $year  = date("Y", $targetMonth);
@@ -515,7 +524,7 @@ class Calendar
     private function _getDefaultTemplate()
     {
         return array(
-            'table_open'                => '<table ' . $this->attributes . '>',
+            'table_open'                => '<table ' . $this->_getAttributes() . '>',
             'heading_row_start'         => '<tr>',
             'heading_title_cell'        => '<th colspan="{colspan}">{heading}</th>',
             'heading_row_end'           => '</tr>',
@@ -535,6 +544,30 @@ class Calendar
             'cal_row_end'               => '</tr>',
             'table_close'               => '</table>'
         );
+    }
+    
+    /**
+     * Return the attributes with a replacement values
+     * 
+     * @return string
+     */
+    private function _getAttributes()
+    {
+        $replaceMents = array(
+            'd-m-Y',
+            'Y-m',
+        );
+        
+        $attributes = $this->attributes;
+        foreach ($replaceMents as $replacement) {
+            $attributes = str_replace(
+                "{{$replacement}}",
+                date($replacement, $this->localMonth),
+                $attributes
+            );
+        }
+        
+        return $attributes;
     }
 
     // --------------------------------------------------------------------
