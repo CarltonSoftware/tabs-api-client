@@ -250,7 +250,11 @@ class PropertyCollection extends \tabs\api\core\Pagination
     {
         $paths = array();
         
+        // Find maxPages with the ceil of the total properties / the maximum
+        // pageSize
         $maxPages = ceil($this->getTotal() / $this->getMaxPageSize());
+        
+        // Use plus one as the first page will have already be requested
         for ($i = $this->getPage() + 1; $i <= $maxPages; $i++) {
             $paths[] = $this->getRequestPath($i, $this->getMaxPageSize());
         }
@@ -402,7 +406,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @return \tabs\api\property\PropertySearchNew
      */
-    public function setFields($fields)
+    public function setFields(array $fields)
     {
         return $this->setAdditionalParam('fields', implode(':', $fields));
     }

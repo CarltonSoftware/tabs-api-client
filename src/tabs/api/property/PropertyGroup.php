@@ -284,10 +284,10 @@ class PropertyGroup extends \tabs\api\core\Base
         foreach ($this->getProperties() as $property) {
             foreach ($property->availabilityToArray($month) as $day => $avail) {
                 if (isset($availability[$day])
-                    && $avail['available'] === false
+                    && $avail['available'] === true
                 ) {
-                    $availability[$day]['available'] = false;
-                } else if (!isset($availability[$day])) {
+                    $availability[$day]['available'] = true;
+                } else {
                     $availability[$day] = $avail;
                 }
             }
