@@ -27,9 +27,11 @@ namespace tabs\api\utility;
  * @link      http://www.carltonsoftware.co.uk
  * 
  * @method string getCode()        Return the Extra code
+ * @method string getBrand()       Return the Extra brandcode
  * @method string getLabel()       Return the Extra label
  * @method string getType()        Return the Extra type
  * @method void   setCode($code)   Set the Extra code
+ * @method void   setBrand($brand) Set the Extra brandcode
  * @method void   setLabel($label) Set the Extra label
  * @method void   setType($type)   Set the Extra type
  */
@@ -41,6 +43,13 @@ class ResourceExtra extends \tabs\api\core\Base
      * @var string 
      */
     protected $code = '';
+    
+    /**
+     * Extra brandcode
+     * 
+     * @var string 
+     */
+    protected $brand = '';
     
     /**
      * Label
