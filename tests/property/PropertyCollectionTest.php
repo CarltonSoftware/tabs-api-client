@@ -42,6 +42,25 @@ class PropertyCollectionTest extends ApiClientClassTest
         $propCol->setMaxPageSize(50);
         $this->assertEquals(50, $propCol->getMaxPageSize());
     }
+    
+    /**
+     * Test the property facet accessor
+     *
+     * @return void
+     */
+    public function testPropertyCollectionFacets()
+    {
+        $propCol = new tabs\api\property\PropertyCollection();
+        $facets = $propCol->getFacets();
+        
+        $this->assertTrue(is_object($facets));
+        $this->assertEquals(0, count((array) $facets->attributes));
+        
+        $facets = $propCol->getFacets(array('ATTR01', 'ATTR02'));
+        
+        $this->assertTrue(is_object($facets));
+        $this->assertEquals(4, count((array) $facets->attributes));
+    }
 
     /**
      * Test the property search end point
