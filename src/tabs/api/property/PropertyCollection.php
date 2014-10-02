@@ -519,12 +519,13 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @return stdClass
      */
-    public function getFacets()
+    public function getFacets($attributes = array())
     {
         $propertyFacet = \tabs\api\client\ApiClient::getApi()->get(
             '/property/facet',
             array(
-                'filter' => $this->getFiltersString()
+                'filter' => $this->getFiltersString(),
+                'facetAttributes' => implode(':', $attributes)
             )
         );
 
