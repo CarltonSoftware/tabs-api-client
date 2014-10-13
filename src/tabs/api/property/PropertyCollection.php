@@ -82,7 +82,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * @param string $key Param key
      * @param string $val Value
      * 
-     * @return \tabs\api\core\Pagination
+     * @return \tabs\api\core\PropertyCollection
      */
     public function setAdditionalParam($key, $val)
     {
@@ -96,7 +96,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @param string $key Param key
      * 
-     * @return \tabs\api\core\Pagination
+     * @return \tabs\api\core\PropertyCollection
      */
     public function removeAdditionalParam($key)
     {
@@ -114,7 +114,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @deprecated
      * 
-     * @return \tabs\api\property\PropertySearchNew
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setFilter($filter)
     {
@@ -159,11 +159,13 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @throws \tabs\api\client\ApiException
      * 
-     * @return \tabs\api\property\PropertySearchNew
+     * @return \tabs\api\property\PropertyCollection
      */
     public function findAll()
     {
-        return $this->setPageSize(9999)->search();
+        $this->setPageSize(9999);
+        
+        return $this->find();
     }
     
     /**
@@ -171,7 +173,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @throws \tabs\api\client\ApiException
      * 
-     * @return \tabs\api\property\PropertySearchNew
+     * @return \tabs\api\property\PropertyCollection
      */
     public function find()
     {
@@ -194,6 +196,9 @@ class PropertyCollection extends \tabs\api\core\Pagination
             $this->setSearchId($response->response->searchId);
             $this->setTotal($response->response->totalResults);
             
+            // Remove response object from memory
+            unset($response);
+            
             if ($this->getPageSize() > $this->getMaxPageSize()) {
                 // Find remaining pages from the search now that we have the
                 // total results
@@ -205,6 +210,9 @@ class PropertyCollection extends \tabs\api\core\Pagination
                         $this->_mapSearchData($resp->response);
                     }
                 }
+            
+                // Remove response object from memory
+                unset($responses);
             }
         } else {
             throw new \tabs\api\client\ApiException(
@@ -221,7 +229,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @param integer $amount Maximum page size allowed
      * 
-     * @return \tabs\api\property\PropertySearchNew
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setMaxPageSize($amount)
     {
@@ -356,7 +364,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      *
      * @param \tabs\api\property\Property &$property Property object
      * 
-     * @return \tabs\api\property\PropertySearch
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setProperty(\tabs\api\property\Property &$property)
     {
@@ -370,7 +378,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @param integer $totalResults Total number of properties found
      * 
-     * @return \tabs\api\property\PropertySearch
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setTotalResults($totalResults)
     {
@@ -385,7 +393,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * @param string $resultsLabelSuffix       Suffix for label
      * @param string $resultsLabelPluralSuffix Plural suffix label
      * 
-     * @return \tabs\api\property\PropertySearch
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setLabel(
         $resultsLabel,
@@ -404,7 +412,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @param array $fields Fields array
      * 
-     * @return \tabs\api\property\PropertySearchNew
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setFields(array $fields)
     {
@@ -433,7 +441,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @see http://goo.gl/5AdGYW
      * 
-     * @return \tabs\api\property\PropertySearchNew
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setSbFilter($filter)
     {
@@ -465,7 +473,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      *
      * @param string $orderBy Order by string
      * 
-     * @return \tabs\api\property\PropertySearch
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setOrder($orderBy)
     {
@@ -477,7 +485,7 @@ class PropertyCollection extends \tabs\api\core\Pagination
      *
      * @param integer $searchId Search Id number
      * 
-     * @return \tabs\api\property\PropertySearch
+     * @return \tabs\api\property\PropertyCollection
      */
     public function setSearchId($searchId)
     {
@@ -544,9 +552,9 @@ class PropertyCollection extends \tabs\api\core\Pagination
      * 
      * @param stdClass $searchData API Response data
      * 
-     * @return \tabs\api\property\PropertySearchNew
+     * @return \tabs\api\property\PropertyCollection
      */
-    private function _mapSearchData($searchData)
+    private function _mapSearchData(&$searchData)
     {
         foreach ($searchData->results as $prop) {
             $property = Property::factory($prop, false);
