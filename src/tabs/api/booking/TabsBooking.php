@@ -458,5 +458,16 @@ class TabsBooking extends \tabs\api\core\Base
             $this->getBrandCode()
         );
     }
-
+    
+    /**
+     * Return the duration of the booking in days
+     * 
+     * @return integer
+     */
+    public function getNumberOfNights()
+    {
+        $fromDate = new \DateTime(date('Y-m-d', $this->getFromDate()));
+        $toDate = new \DateTime(date('Y-m-d', $this->getToDate()));
+        return $fromDate->diff($toDate)->days;
+    }
 }

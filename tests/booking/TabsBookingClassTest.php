@@ -35,6 +35,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(299463, $booking->getBookingRef());
         $this->assertEquals("2013-07-27", date("Y-m-d", $booking->getFromDate()));
         $this->assertEquals("2013-08-03", date("Y-m-d", $booking->getToDate()));
+        $this->assertEquals(7, $booking->getNumberOfNights());
         $this->assertEquals("D", $booking->getStatus());
         $this->assertEquals("COTJ033", $booking->getCusref());
         $this->assertEquals("Cottenden", $booking->getSurname());
