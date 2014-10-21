@@ -68,6 +68,9 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $booking->getSecurityDepositAmount());
         $this->assertEquals(0, $booking->getSecurityDepositPaid());
         $this->assertEquals(510.00, $booking->getBalanceAmountWithSecurityDeposit());
+        
+        // Test owner booking status
+        $this->assertFalse($booking->isOwnerBooking());
     }
     
     /**

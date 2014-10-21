@@ -33,6 +33,26 @@ namespace tabs\api\core;
 abstract class Base
 {
     /**
+     * Create a new object
+     *
+     * @param array|stdClass|mixed $array Array/object representation of object
+     *
+     * @return Base
+     */
+    public static function _factory($array)
+    {
+        // If class is the same as object being `factory'ised`, just return it.
+        if (is_object($array) && get_class($array) == get_called_class()) {
+            return $array;
+        }
+            
+        $object = new static();
+        self::setObjectProperties($object, $array);
+
+        return $object;
+    }
+
+    /**
      * Helper function foor setting object properties
      * 
      * @param object $obj        Generic object passed by reference
@@ -44,11 +64,9 @@ abstract class Base
     public static function setObjectProperties(&$obj, $node, $exceptions = array())
     {
         foreach ($node as $key => $val) {
-            if (!in_array($key, $exceptions)) {
-                $func = 'set' . ucfirst($key);
-                if (property_exists($obj, $key)) {
-                    $obj->$func($val);
-                }
+            $func = 'set' . ucfirst($key);
+            if (!in_array($key, $exceptions) && property_exists($obj, $key)) {
+                $obj->$func($val);
             }
         }
     }

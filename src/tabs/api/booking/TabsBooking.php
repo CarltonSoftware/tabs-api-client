@@ -26,29 +26,30 @@ namespace tabs\api\booking;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  *
- * @method integer getAdults()
- * @method float   getBalanceAmount()
- * @method integer getBalanceDueDate()
- * @method float   getBookingFee()
- * @method string  getBookingRef()
- * @method string  getBrandCode()
- * @method integer getChildren()
- * @method float   getCommissionDueToOwner()
- * @method float   getCommissionOutstandingToOwner()
- * @method float   getCommissionPaidToOwner()
- * @method string  getCusref()
- * @method float   getDepositPrice()
- * @method integer getInfants()
- * @method integer getFromDate()
- * @method string  getPartyDetails()
- * @method string  getPropertyRef()
- * @method float   getSecurityDepositAmount()
- * @method float   getSecurityDepositPaid()
- * @method integer getSecurityDepositDueDate()
- * @method string  getStatus()
- * @method string  getSurname()
- * @method integer getToDate()
- * @method float   getTotalPrice()
+ * @method integer          getAdults()
+ * @method float            getBalanceAmount()
+ * @method integer          getBalanceDueDate()
+ * @method float            getBookingFee()
+ * @method string           getBookingRef()
+ * @method string           getBrandCode()
+ * @method integer          getChildren()
+ * @method float            getCommissionDueToOwner()
+ * @method float            getCommissionOutstandingToOwner()
+ * @method float            getCommissionPaidToOwner()
+ * @method string           getCusref()
+ * @method float            getDepositPrice()
+ * @method integer          getInfants()
+ * @method integer          getFromDate()
+ * @method OwnerBookingType getOwnerBookingType()
+ * @method string           getPartyDetails()
+ * @method string           getPropertyRef()
+ * @method float            getSecurityDepositAmount()
+ * @method float            getSecurityDepositPaid()
+ * @method integer          getSecurityDepositDueDate()
+ * @method string           getStatus()
+ * @method string           getSurname()
+ * @method integer          getToDate()
+ * @method float            getTotalPrice()
  *
  * @method void setAdults(integer $adults)
  * @method void setBalanceAmount(float $amount)
@@ -232,6 +233,13 @@ class TabsBooking extends \tabs\api\core\Base
      * @var float
      */
     protected $securityDepositPaid = 0;
+    
+    /**
+     * Owner booking type (if owner booking)
+     * 
+     * @var \tabs\api\booking\OwnerBookingType
+     */
+    protected $ownerBookingType;
 
     // ------------------ Static Functions --------------------- //
 
@@ -279,10 +287,41 @@ class TabsBooking extends \tabs\api\core\Base
             '',
             array('commission', 'balance', 'securityDeposit')
         );
+        
+        // Set owner booking type
+        if ($booking->isOwnerBooking()
+            && property_exists($node, 'ownerBookingType')
+        ) {
+            $booking->setOwnerBookingType($node->ownerBookingType);
+        }
         return $booking;
     }
 
     // ------------------ Public Functions --------------------- //
+    
+    /**
+     * Set the owner booking type
+     * 
+     * @param array|stdClass|OwnerBookingType $ownerBookingType Owner booking type
+     * 
+     * @return \tabs\api\booking\TabsBooking
+     */
+    public function setOwnerBookingType($ownerBookingType)
+    {
+        $this->ownerBookingType = OwnerBookingType::_factory($ownerBookingType);
+        
+        return $this;
+    }
+    
+    /**
+     * Return true if status is O (for owner booking).
+     * 
+     * @return boolean
+     */
+    public function isOwnerBooking()
+    {
+        return ($this->getStatus() == 'O');
+    }
 
     /**
      * Set booking fromdate
