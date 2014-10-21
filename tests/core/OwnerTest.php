@@ -118,8 +118,8 @@ class OwnerTest extends ApiClientClassTest
         
         // Check Email Address, fax, password and conf preferences
         $this->assertEquals("support@carltonsoftware.co.uk", $owner->getEmail());
-        $this->assertFalse($owner->isPostConfirmation());
-        $this->assertFalse($owner->isEmailConfirmation());
+        $this->assertTrue($owner->isPostConfirmation());
+        $this->assertTrue($owner->isEmailConfirmation());
         
         // CHeck bank details
         $this->assertEquals("S & S John", $owner->getBankAccountName());

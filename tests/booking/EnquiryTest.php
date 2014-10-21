@@ -30,7 +30,7 @@ class EnquiryTest extends ApiClientClassTest
      */
     public function testEnquiryFromStaticApi()
     {
-        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
+        \tabs\api\client\ApiClient::factory('http://private-7871e-carltonsoftware.apiary-mock.com/');
         \tabs\api\client\ApiClient::getApi()->setTestMode(true);
         $enq = $this->_getNewEnquiry();
         $this->assertEquals(6, count($enq->toArray()));        

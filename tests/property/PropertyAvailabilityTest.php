@@ -16,7 +16,7 @@ class PropertyAvailabilityTest extends PHPUnit_Framework_TestCase
      */
     public function testProperty()
     {
-        $route = 'http://carltonsoftware.apiary.io/';
+        $route = 'http://private-7871e-carltonsoftware.apiary-mock.com/';
         \tabs\api\client\ApiClient::factory($route);
         
         $property = \tabs\api\property\Property::getProperty("mousecott", "SS");

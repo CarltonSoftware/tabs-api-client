@@ -39,7 +39,8 @@ class PersonClassTest extends PHPUnit_Framework_TestCase
         $this->person->setMobilePhone('07999 123456');
         $this->person->setEmail('support@carltonsoftware.co.uk');
         $this->person->setEmailOptIn(true);
-        $this->person->setEmailConfirmations(true);
+        $this->person->setEmailConfirmation(true);
+        $this->person->setPostConfirmation(false);
         $this->person->setWhich('Google');
     }
     

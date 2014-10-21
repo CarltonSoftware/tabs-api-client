@@ -112,7 +112,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
      */
     private function _getBooking()
     {
-        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
+        \tabs\api\client\ApiClient::factory('http://private-7871e-carltonsoftware.apiary-mock.com/');
         \tabs\api\client\ApiClient::getApi()->setTestMode(true);
         return \tabs\api\booking\TabsBooking::getBooking(299463);
     }
