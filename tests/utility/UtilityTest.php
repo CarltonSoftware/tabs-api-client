@@ -110,7 +110,7 @@ class UtilityTest extends ApiClientClassTest
 
         // Test
         $this->assertEquals(1, count($areas));
-        
+
         // Reset Cache
         \tabs\api\utility\Utility::resetCache();
 
@@ -297,4 +297,45 @@ class UtilityTest extends ApiClientClassTest
     {
         $this->assertTrue(count(\tabs\api\utility\Utility::getAllLocations()) > 0);
     }
+
+    public function testGetRequestCount()
+    {
+        $requests = \tabs\api\utility\Utility::getRequestCount('mouse');
+        $currentYear = date('Y');
+
+        $this->assertObjectHasAttribute($currentYear, $requests);
+
+        $this->assertObjectHasAttribute("months", $requests->{$currentYear});
+        $this->assertObjectHasAttribute("total", $requests->{$currentYear});
+
+        $this->assertObjectHasAttribute("days", $requests->{$currentYear}->months->{1});
+        $this->assertObjectHasAttribute("total", $requests->{$currentYear}->months->{1});
+
+        $this->assertObjectHasAttribute("hours", $requests->{$currentYear}->months->{1}->days->{1});
+        $this->assertObjectHasAttribute("total", $requests->{$currentYear}->months->{1}->days->{1});
+
+        $this->assertObjectHasAttribute("total", $requests->{$currentYear}->months->{1}->days->{1}->hours->{'00'});
+    }
+
+
+    public function testPostRequestCount()
+    {
+        //Post the count off to the API, and check that true is returned
+        $this->assertTrue(\tabs\api\utility\Utility::postRequestCount('mouse', 2014, 11, 11, 11, 500));
+
+        //Request request count from API and check that the count was correctly applied
+        $requests = \tabs\api\utility\Utility::getRequestCount('mouse');
+        //$this->assertEquals(500, $requests->{2014}->months->{11}->days->{11}->hours->{11}->total);
+
+    }
+
+    /**
+     * @depends testPostRequestCount
+     */
+    public function testDeleteRequestCount()
+    {
+        //Delete the request count and check that true is returned
+        $this->assertTrue(\tabs\api\utility\Utility::deleteRequestCount('mouse', 2014, 11, 11, 11));
+    }
+
 }
