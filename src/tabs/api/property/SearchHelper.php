@@ -216,7 +216,7 @@ class SearchHelper extends PropertySearch
                                 $pages,
                                 sprintf(
                                     '<a href="%s" class="page %s page%s">%s</a>',
-                                    $href,
+                                    str_replace('&', '&amp;', $href),
                                     strtolower($key),
                                     $this->getPage(),
                                     ucfirst($key)
@@ -233,7 +233,7 @@ class SearchHelper extends PropertySearch
                                 $pages,
                                 sprintf(
                                     '<a href="%s" class="page %s">%d</a>',
-                                    $href,
+                                    str_replace('&', '&amp;', $href),
                                     $active,
                                     $pageNo
                                 )
