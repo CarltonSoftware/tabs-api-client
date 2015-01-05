@@ -26,11 +26,8 @@ namespace tabs\api\property;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  * 
- * @method string getAlt()
  * @method string getFilename()
  * @method double getHeight()
- * @method string getImagePath()
- * @method string getTitle()
  * @method double getWidth()
  * @method string getUrl()
  * 
