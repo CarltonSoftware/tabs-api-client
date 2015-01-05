@@ -41,6 +41,8 @@ namespace tabs\api\utility;
  * @method \tabs\api\utility\Resource getApiInformation()
  *      Return information about the api.  This includes extras, searchTerms
  *      and attributes.
+ * @method stdClass getRequestCount(string $apiKey)
+ *      Return the number of requests for a given apiKey
  */
 class Utility extends \tabs\api\core\Base
 {
@@ -590,11 +592,15 @@ class Utility extends \tabs\api\core\Base
         return $extra;
     }
 
+    /**
+     * Return request count for a given api key
+     * 
+     * @param string $apiKey Api Key
+     * 
+     * @return stdClass|null
+     */
     private static function _getRequestCount($apiKey)
     {
-        // Array of countries to be returned
-        $countries = array();
-
         // Get all countries
         $response = \tabs\api\client\ApiClient::getApi()->get(
             sprintf('/api/key/%s/count', $apiKey)
@@ -604,26 +610,45 @@ class Utility extends \tabs\api\core\Base
         ) {
             return $response->response;
         }
-
-        return null;
     }
 
-
-    private static function _postRequestCount($apiKey, $year, $month, $day, $hour, $count)
-    {
-        $url = sprintf(
-            '/api/key/%s/count/%s/%s/%s/%s',
-            $apiKey,
-            $year,
-            $month,
-            $day,
-            $hour
-        );
-
+    /**
+     * Update a request count
+     * 
+     * @param string $apiKey Api Key
+     * @param string $year   Year
+     * @param string $month  Month
+     * @param string $day    Day
+     * @param string $hour   Hour
+     * @param string $count  Amount of requests
+     * 
+     * @throws \tabs\api\client\ApiException
+     * 
+     * @return boolean
+     */
+    private static function _postRequestCount(
+        $apiKey,
+        $year,
+        $month,
+        $day,
+        $hour,
+        $count
+    ) {
         $requestCount = \tabs\api\client\ApiClient::getApi()->post(
-            $url,
+            sprintf(
+                '/api/key/%s/count/%s/%s/%s/%s',
+                $apiKey,
+                $year,
+                $month,
+                $day,
+                $hour
+            ),
             array(
-                'data' => json_encode(array('count' => $count))
+                'data' => json_encode(
+                    array(
+                        'count' => $count
+                    )
+                )
             )
         );
 
@@ -637,19 +662,36 @@ class Utility extends \tabs\api\core\Base
         }
     }
 
-
-    private static function _deleteRequestCount($apiKey, $year, $month, $day, $hour)
-    {
-        $url = sprintf(
-            '/api/key/%s/count/%s/%s/%s/%s',
-            $apiKey,
-            $year,
-            $month,
-            $day,
-            $hour
+    /**
+     * Delete a request count
+     * 
+     * @param string $apiKey Api Key
+     * @param string $year   Year
+     * @param string $month  Month
+     * @param string $day    Day
+     * @param string $hour   Hour
+     * 
+     * @throws \tabs\api\client\ApiException
+     * 
+     * @return boolean
+     */
+    private static function _deleteRequestCount(
+        $apiKey,
+        $year,
+        $month,
+        $day,
+        $hour
+    ) {
+        $requestCount = \tabs\api\client\ApiClient::getApi()->delete(
+            sprintf(
+                '/api/key/%s/count/%s/%s/%s/%s',
+                $apiKey,
+                $year,
+                $month,
+                $day,
+                $hour
+            )
         );
-
-        $requestCount = \tabs\api\client\ApiClient::getApi()->delete($url);
 
         if ($requestCount->status == 204) {
             return true;
@@ -660,5 +702,4 @@ class Utility extends \tabs\api\core\Base
             );
         }
     }
-
 }
