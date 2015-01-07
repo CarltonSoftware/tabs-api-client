@@ -300,10 +300,10 @@ class UtilityTest extends ApiClientClassTest
 
     public function testGetRequestCount()
     {
-        $requests = \tabs\api\utility\Utility::getRequestCount('mouse');
+        $requests = \tabs\api\utility\Utility::getRequestCount(
+            $this->getTabsApiClientPropertyRef()
+        );
         $currentYear = date('Y');
-
-        $this->assertObjectHasAttribute($currentYear, $requests);
 
         $this->assertObjectHasAttribute("months", $requests->{$currentYear});
         $this->assertObjectHasAttribute("total", $requests->{$currentYear});

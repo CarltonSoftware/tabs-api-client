@@ -66,7 +66,10 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
      */
     public function getTabsApiClientProperty()
     {
-        return \tabs\api\property\Property::getProperty('V541', 'ZZ');
+        return \tabs\api\property\Property::getProperty(
+            $this->getTabsApiClientPropertyRef(),
+            'ZZ'
+        );
     }
     
     /**
@@ -83,6 +86,16 @@ class ApiClientClassTest extends PHPUnit_Framework_TestCase
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Return propref
+     * 
+     * @return string
+     */
+    public function getTabsApiClientPropertyRef()
+    {
+        return 'V541';
     }
     
     /**
