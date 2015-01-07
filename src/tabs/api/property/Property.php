@@ -1576,7 +1576,44 @@ class Property extends \tabs\api\core\Base
 
         return $bookings;
     }
+    
+    /**
+     * Return a list of week price objects
+     * 
+     * @param integer $year Year to request
+     * 
+     * @return array
+     */
+    public function getPricingWeeks($year)
+    {
+        $weekPrices = array();
+        $weekPricePaths = array();
+        for ($i = 1; $i <= 12; $i++) {
+            $weekPricePaths[] = array(
+                'path' => sprintf(
+                    '/property/%s_%s/pricing/%s/%s',
+                    $this->getPropref(),
+                    $this->getBrandcode(),
+                    $year,
+                    $i
+                ),
+                'params' => array()
+            );
+        }
+        
+        $responses = \tabs\api\client\ApiClient::getApi()->mGet($weekPricePaths);
+        if (is_array($responses) && count($responses) > 0) {
+            foreach ($responses as $resp) {
+                if ($resp && $resp->status == 200) {
+                    foreach ($resp->response as $wpr) {
+                        $weekPrices[$i][] = $wpr;
+                    }
+                }
+            }
+        }
 
+        return $weekPrices;
+    }
 
     /**
      * Get the owner object
