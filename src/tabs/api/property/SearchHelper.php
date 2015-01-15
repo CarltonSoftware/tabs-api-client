@@ -129,7 +129,10 @@ class SearchHelper extends PropertySearch
      */
     public function search($searchId = '', $findAll = false)
     {
-        $this->setSearchId($searchId);
+        if ($searchId != '') {
+            $this->setSearchId($searchId);
+        }
+        
         if ($findAll) {
             return $this->findAll();
         } else {
