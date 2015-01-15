@@ -1606,7 +1606,7 @@ class Property extends \tabs\api\core\Base
             foreach ($responses as $resp) {
                 if ($resp && $resp->status == 200) {
                     foreach ($resp->response as $wpr) {
-                        $weekPrices[$i][] = $wpr;
+                        $weekPrices[] = $wpr;
                     }
                 }
             }
