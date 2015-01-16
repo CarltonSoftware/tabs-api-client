@@ -115,7 +115,7 @@ class Customer Extends \tabs\api\core\Person
         $customer = \tabs\api\core\Customer::factory('', '');
         self::flattenNode($customer, $node);
 
-        if (property_exists($node, 'address')) {
+        if (is_object($node) && property_exists($node, 'address')) {
             $address = $customer->getAddress();
             self::setObjectProperties(
                 $address, 
