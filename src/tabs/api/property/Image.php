@@ -34,7 +34,6 @@ namespace tabs\api\property;
  * @method void setAlt(string)
  * @method void setFilename(string)
  * @method void setHeight(double)
- * @method void setImagePath(string)
  * @method void setTitle(string)
  * @method void setWidth(double)
  * @method void setUrl(string)
@@ -281,6 +280,17 @@ class Image extends \tabs\api\core\Base
             "width" => $this->getWidth(),
             "height" => $this->getHeight()
         );
+    }
+    
+    /**
+     * Basic string function.  Will stop any errors when accidentally casting 
+     * image objects.
+     * 
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->createImageTag();
     }
 
     /**
