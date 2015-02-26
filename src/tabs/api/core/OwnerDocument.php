@@ -120,4 +120,5 @@ class OwnerDocument extends \tabs\api\core\Base
             'type' => $this->getType()
         );
     }
+
 }

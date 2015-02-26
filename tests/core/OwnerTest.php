@@ -187,6 +187,9 @@ class OwnerTest extends ApiClientClassTest
     }
 
 
+    /**
+     * Tests the getting of a list of documents attached to an owner
+     */
     public function testGetDocuments()
     {
         $property = $this->getTabsApiClientProperty();
@@ -204,8 +207,29 @@ class OwnerTest extends ApiClientClassTest
             $this->assertInstanceOf('\tabs\api\core\OwnerDocument', $document);
             $this->assertEquals('test.txt', $document->getFilename());
             $this->assertEquals('statement', $document->getType());
+
+            return $document->getId();
         }
     }
+
+
+    /**
+     * Tests the getting of a documents data
+     *
+     * @depends testGetDocuments
+     */
+    public function testGetDocumentData($documentId)
+    {
+        $property = $this->getTabsApiClientProperty();
+        if ($property) {
+            $owner = $property->getOwner();
+
+            $documentData = $owner->getDocumentData($documentId);
+
+            $this->assertEquals('File contents', $documentData);
+        }
+    }
+
 
     /**
      * Test updating an owner

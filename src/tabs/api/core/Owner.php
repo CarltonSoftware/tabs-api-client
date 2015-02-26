@@ -582,6 +582,18 @@ class Owner Extends \tabs\api\core\Person
         return $documents;
     }
 
+
+    public function getDocumentData($documentId)
+    {
+        $response = \tabs\api\client\ApiClient::getApi()->get(
+            sprintf("/owner/%s/document/%s/data", $this->getReference(), $documentId)
+        );
+
+        if ($response && $response->status == 200) {
+            return $response->body;
+        }
+    }
+
     /**
      * Return all of the owner details as an array
      *
