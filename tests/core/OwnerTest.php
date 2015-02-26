@@ -1,31 +1,31 @@
 <?php
 
-$file = dirname(__FILE__) 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . '..' 
-    . DIRECTORY_SEPARATOR . 'tests' 
-    . DIRECTORY_SEPARATOR . 'client' 
+$file = dirname(__FILE__)
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'tests'
+    . DIRECTORY_SEPARATOR . 'client'
     . DIRECTORY_SEPARATOR . 'ApiClientClassTest.php';
 require_once $file;
 
 class OwnerTest extends ApiClientClassTest
-{    
+{
     /**
      * Api Exception object by requesting an invalid owner
-     * 
+     *
      * @expectedException \tabs\api\client\ApiException
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function testInvalidOwner()
     {
         \tabs\api\core\Owner::create('XXX123');
     }
-    
+
     /**
      * Test creating a new owner
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function testNewOwner()
     {
@@ -33,16 +33,16 @@ class OwnerTest extends ApiClientClassTest
         $this->assertEquals('Mr', $owner->getTitle());
         $this->assertEquals('Wyett', $owner->getSurname());
     }
-    
+
     /**
      * Test owner pack requests
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function testOwnerPackRequest()
     {
         $owner = \tabs\api\core\Owner::factory("Mr", "Bloggs");
-        
+
         // Set customer details
         $owner->setFirstName("Joe");
         $owner->getAddress()->setAddr1("Carlton House");
@@ -56,53 +56,53 @@ class OwnerTest extends ApiClientClassTest
         $owner->setEmailOptIn(true);
         $owner->setSource("GOO");
         $owner->setEnquiryBrandCode("SL");
-        
+
         // Perform brochure request
         $this->assertTrue(
             $owner->requestOwnerPack(
                 "The Avenue, Wroxham, Norfolk",
-                "5 bedroom detached house, overlooks the river", 
+                "5 bedroom detached house, overlooks the river",
                 false
             )
         );
     }
-    
+
     /**
      * Test owner pack requests
-     * 
+     *
      * @expectedException \tabs\api\client\ApiException
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function testInvalidOwnerPackRequest()
     {
         $owner = \tabs\api\core\Owner::factory("Mr", "Bloggs");
-        
+
         // Perform brochure request
         $owner->requestOwnerPack(
             "The Avenue, Wroxham, Norfolk",
-            "5 bedroom detached house, overlooks the river", 
+            "5 bedroom detached house, overlooks the river",
             false
         );
     }
-    
+
     /**
      * Test owner objects
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function testCreateOwner()
     {
         $owner = $this->_getOwner();
-       
+
         $this->assertEquals("JOHNS1", $owner->getReference());
         $this->assertEquals("ZZ", $owner->getBrandCode());
         $this->assertEquals("ZZ", $owner->getAccountingBrandCode());
-        
+
         // Check Name
         $this->assertEquals("Mr & Mrs S Pearson", $owner->getFullName());
         $this->assertEquals("Mr & Mrs Pearson", $owner->getFullName(false));
-        
+
         // Check Address
         $this->assertEquals("The Old Post Office", $owner->getAddress()->getAddr1());
         $this->assertEquals("Charlton Kings", $owner->getAddress()->getAddr2());
@@ -110,17 +110,17 @@ class OwnerTest extends ApiClientClassTest
         $this->assertEquals("Renfrewshire", $owner->getAddress()->getCounty());
         $this->assertEquals("S11 9RA", $owner->getAddress()->getPostcode());
         $this->assertEquals("", $owner->getAddress()->getCountry());
-        
+
         // Check phone numbers
         $this->assertEquals("08450550714", $owner->getDaytimePhone());
         $this->assertEquals("08450550714", $owner->getEveningPhone());
         $this->assertEquals("08450550714", $owner->getMobilePhone());
-        
+
         // Check Email Address, fax, password and conf preferences
         $this->assertEquals("support@carltonsoftware.co.uk", $owner->getEmail());
         $this->assertTrue($owner->isPostConfirmation());
         $this->assertTrue($owner->isEmailConfirmation());
-        
+
         // CHeck bank details
         $this->assertEquals("S & S John", $owner->getBankAccountName());
         $this->assertEquals("", $owner->getBankAccountNumber());
@@ -138,42 +138,42 @@ class OwnerTest extends ApiClientClassTest
         $this->assertEquals("", $owner->getVatNumber());
         $this->assertFalse($owner->isVatRegistered());
     }
-    
+
     /**
      * Test owner password authentication
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function testOwnerPasswordAuthenticate()
     {
         $this->assertEquals(
-            "204", 
+            "204",
             \tabs\api\core\Owner::authenticate("JOHNS1", "34dd8f85")
         );
         $this->assertEquals(
-            "401", 
+            "401",
             \tabs\api\core\Owner::authenticate("JOHNS1", "XXXXX")
         );
         $this->assertEquals(
-            "404", 
+            "404",
             \tabs\api\core\Owner::authenticate("XXXXX", "XXXXX")
         );
     }
-    
+
     /**
      * Test owner booking requests
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function testCreateOwnerBooking()
     {
         $property = $this->getTabsApiClientProperty();
         if ($property) {
             $owner = $property->getOwner();
-            
+
             // Set start time to next month
             $this->startTime = strtotime('+1 month');
-            
+
             // Perform owner booking
             $this->assertTrue(
                 $owner->setOwnerBooking(
@@ -185,10 +185,31 @@ class OwnerTest extends ApiClientClassTest
             );
         }
     }
-    
+
+
+    public function testGetDocuments()
+    {
+        $property = $this->getTabsApiClientProperty();
+        if ($property) {
+            $owner = $property->getOwner();
+
+            $documents = $owner->getDocuments();
+
+            // Check that a result was returned
+            $this->assertEquals(1, sizeof($documents));
+
+            $document = $documents[0];
+
+            // Check that the returned fields are as expected
+            $this->assertInstanceOf('\tabs\api\core\OwnerDocument', $document);
+            $this->assertEquals('test.txt', $document->getFilename());
+            $this->assertEquals('statement', $document->getType());
+        }
+    }
+
     /**
      * Test updating an owner
-     * 
+     *
      * @return null
      */
     public function testUpdateOwner()
@@ -197,10 +218,10 @@ class OwnerTest extends ApiClientClassTest
         //    $this->_getOwner()->update()
         //);
     }
-    
+
     /**
      * Test updating an owners password
-     * 
+     *
      * @return null
      */
     public function testUpdateOwnerPassword()
@@ -209,10 +230,10 @@ class OwnerTest extends ApiClientClassTest
             $this->_getOwner()->updatePassword('34dd8f85')
         );
     }
-    
+
     /**
      * Get the owner from the test api
-     * 
+     *
      * @return \tabs\api\core\Owner
      */
     private function _getOwner()
