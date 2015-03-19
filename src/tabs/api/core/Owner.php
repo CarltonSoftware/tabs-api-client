@@ -574,7 +574,7 @@ class Owner Extends \tabs\api\core\Person
             && $response->response != ''
         ) {
             foreach ($response->response as $document) {
-                $documents[] = OwnerDocument::factory($document->id, $document->filename, $document->type);
+                $documents[] = OwnerDocument::factory($document->id, new \DateTime($document->date), $document->filename, $document->type, $document->mimetype);
             }
 
         }
