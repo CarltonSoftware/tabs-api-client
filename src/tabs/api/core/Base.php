@@ -4,7 +4,7 @@
  * Tabs Rest API Base object.
  *
  * PHP Version 5.3
- * 
+ *
  * @category  API_Client
  * @package   Tabs
  * @author    Alex Wyett <alex@wyett.co.uk>
@@ -17,11 +17,11 @@ namespace tabs\api\core;
 
 /**
  * Tabs Rest API Base object.
- * 
+ *
  * Provides setter/getter methods for all child classes.
  *
  * PHP Version 5.3
- * 
+ *
  * @category  API_Client
  * @package   Tabs
  * @author    Alex Wyett <alex@wyett.co.uk>
@@ -45,7 +45,7 @@ abstract class Base
         if (is_object($array) && get_class($array) == get_called_class()) {
             return $array;
         }
-            
+
         $object = new static();
         self::setObjectProperties($object, $array);
 
@@ -54,11 +54,11 @@ abstract class Base
 
     /**
      * Helper function foor setting object properties
-     * 
+     *
      * @param object $obj        Generic object passed by reference
      * @param object $node       Node object to iterate through
      * @param array  $exceptions Properties to ignore
-     * 
+     *
      * @return void
      */
     public static function setObjectProperties(&$obj, $node, $exceptions = array())
@@ -74,18 +74,18 @@ abstract class Base
     /**
      * Helper function, traverses a multi dimension node and calls
      * and objects accessors
-     * 
+     *
      * @param object $object         Object whos accessors are to be called
      * @param object $node           Node to be traversed
-     * @param string $nodePrefix     Any string required to prefix 
+     * @param string $nodePrefix     Any string required to prefix
      * the node key with
-     * @param array  $nodePrefixKeys An array of keys that require a 
-     * 
+     * @param array  $nodePrefixKeys An array of keys that require a
+     *
      * @return void
      */
     public static function flattenNode(
-        $object, 
-        $node, 
+        $object,
+        $node,
         $nodePrefix = '',
         $nodePrefixKeys = array()
     ) {
@@ -105,8 +105,8 @@ abstract class Base
                     $nodePrefix = '';
                 }
                 self::flattenNode(
-                    $object, 
-                    $val, 
+                    $object,
+                    $val,
                     $nodePrefix,
                     $nodePrefixKeys
                 );
@@ -115,13 +115,13 @@ abstract class Base
     }
 
     /**
-     * Function used to assign a variable a value if it exists in an array 
+     * Function used to assign a variable a value if it exists in an array
      * else, assign failed value
-     * 
+     *
      * @param array  $array            the array to validate
      * @param string $key              the key to check exisitence
      * @param string $failed_key_value the value to use if check has failed
-     * 
+     *
      * @return mixed
      */
     public static function assignArrayValue($array, $key, $failed_key_value)
@@ -132,14 +132,14 @@ abstract class Base
             return $failed_key_value;
         }
     }
-    
+
     /**
      * Generic getter/setter
-     * 
+     *
      * @param string $name Name of property
      * @param array  $args Function arguments
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function __call($name, $args = array())
     {
@@ -176,14 +176,14 @@ abstract class Base
             }
         }
     }
-    
+
     /**
      * Generic setter
-     * 
+     *
      * @param object $obj      Generic object to set properties
      * @param string $property Property of object to set
      * @param mixed  $value    Value of property
-     * 
+     *
      * @return void
      */
     protected function setObjectProperty($obj, $property, $value)
@@ -209,35 +209,35 @@ abstract class Base
             break;
         }
     }
-    
+
     /**
      * Generic float setter
-     * 
+     *
      * @param float  $float   Float val needed to set to variable
      * @param string $varName Variable name
-     * 
-     * @return void 
+     *
+     * @return void
      */
     protected function setFloatVal($float, $varName)
     {
         if (strpos($float, '.') < strpos($float, ',')) {
             $float = str_replace('.', '', $float);
-            $float = strtr($float, ',', '.');           
+            $float = strtr($float, ',', '.');
         } else {
-            $float = str_replace(',', '', $float);           
-        } 
+            $float = str_replace(',', '', $float);
+        }
         if (is_numeric(floatval($float))) {
             $this->$varName = floatval($float);
         }
     }
-    
+
     /**
      * Generic timestamp setter
-     * 
+     *
      * @param integer $timestamp TimeStamp val needed to set to variable
      * @param string  $varName   Variable name
-     * 
-     * @return void 
+     *
+     * @return void
      */
     protected function setTimeStamp($timestamp, $varName)
     {

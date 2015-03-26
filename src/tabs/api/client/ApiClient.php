@@ -99,11 +99,11 @@ class ApiClient
      * @var tabs\api\client\HMAC
      */
     public $hmacHelper;
-    
+
     /**
      * The raw response from the last curl request.  Added so it is possible to
      * track exact responses from the API while debugging.
-     * 
+     *
      * @var string
      */
     protected $lastResponse;
@@ -182,7 +182,7 @@ class ApiClient
     {
         $this->apiKey = $apiKey;
     }
-    
+
     /**
      * Sets the api url
      *
@@ -194,7 +194,7 @@ class ApiClient
     {
         $this->urlRoute = trim($urlRoute, "/");
     }
-    
+
     /**
      * Sets the last curl response
      *
@@ -383,10 +383,10 @@ class ApiClient
             $this->getHmacParams($params)
         );
     }
-    
+
     /**
      * Fetch the last curl response
-     * 
+     *
      * @return string
      */
     public function getLastResponse()
@@ -541,7 +541,7 @@ class ApiClient
 
         // Commit the curl request and return the response
         $this->setLastResponse(curl_exec($this->resource));
-        
+
         return $this->getLastResponse();
     }
 
@@ -817,12 +817,12 @@ class ApiClient
         // Get resource
         $this->resource = curl_init($urlPath);
     }
-    
+
     /**
      * Encode an array of parameters into a string
-     * 
+     *
      * @param array $params Parameters to encode
-     * 
+     *
      * @return string
      */
     private function _getHttpQuery($params)
