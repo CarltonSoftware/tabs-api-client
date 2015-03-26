@@ -594,9 +594,9 @@ class Utility extends \tabs\api\core\Base
 
     /**
      * Return request count for a given api key
-     * 
+     *
      * @param string $apiKey Api Key
-     * 
+     *
      * @return stdClass|null
      */
     private static function _getRequestCount($apiKey)
@@ -614,16 +614,16 @@ class Utility extends \tabs\api\core\Base
 
     /**
      * Update a request count
-     * 
+     *
      * @param string $apiKey Api Key
      * @param string $year   Year
      * @param string $month  Month
      * @param string $day    Day
      * @param string $hour   Hour
      * @param string $count  Amount of requests
-     * 
+     *
      * @throws \tabs\api\client\ApiException
-     * 
+     *
      * @return boolean
      */
     private static function _postRequestCount(
@@ -664,15 +664,15 @@ class Utility extends \tabs\api\core\Base
 
     /**
      * Delete a request count
-     * 
+     *
      * @param string $apiKey Api Key
      * @param string $year   Year
      * @param string $month  Month
      * @param string $day    Day
      * @param string $hour   Hour
-     * 
+     *
      * @throws \tabs\api\client\ApiException
-     * 
+     *
      * @return boolean
      */
     private static function _deleteRequestCount(
@@ -700,6 +700,17 @@ class Utility extends \tabs\api\core\Base
                 $requestCount,
                 'Error Deleting Request Count'
             );
+        }
+    }
+
+    private static function _getLastminuteOffers()
+    {
+        $response = \tabs\api\client\ApiClient::getApi()->get('/offer/lastminute');
+
+        if ($response->status == 200
+            && is_array($response->response)
+        ) {
+            return $response->response;
         }
     }
 }
