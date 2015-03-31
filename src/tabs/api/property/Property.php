@@ -1490,11 +1490,12 @@ class Property extends \tabs\api\core\Base
         if ($brandcode == '') {
             $brandcode = $this->getAccountingBrand();
         }
+        
+        $descriptions = array();
 
         if (isset($this->brands[$brandcode])) {
             $this->_loadAdditionalDescriptions($brandcode);
             $brand = $this->brands[$brandcode];
-            $descriptions = array();
 
             foreach ($brand->getDescriptions() as $dType => $desc) {
                 $descriptions[] = array(
