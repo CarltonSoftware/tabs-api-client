@@ -35,6 +35,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(299463, $booking->getBookingRef());
         $this->assertEquals("2013-07-27", date("Y-m-d", $booking->getFromDate()));
         $this->assertEquals("2013-08-03", date("Y-m-d", $booking->getToDate()));
+        $this->assertEquals(7, $booking->getNumberOfNights());
         $this->assertEquals("D", $booking->getStatus());
         $this->assertEquals("COTJ033", $booking->getCusref());
         $this->assertEquals("Cottenden", $booking->getSurname());
@@ -68,6 +69,9 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $booking->getSecurityDepositAmount());
         $this->assertEquals(0, $booking->getSecurityDepositPaid());
         $this->assertEquals(510.00, $booking->getBalanceAmountWithSecurityDeposit());
+        
+        // Test owner booking status
+        $this->assertFalse($booking->isOwnerBooking());
     }
     
     /**
@@ -109,7 +113,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
      */
     private function _getBooking()
     {
-        \tabs\api\client\ApiClient::factory('http://carltonsoftware.apiary.io/');
+        \tabs\api\client\ApiClient::factory('http://private-7871e-carltonsoftware.apiary-mock.com/');
         \tabs\api\client\ApiClient::getApi()->setTestMode(true);
         return \tabs\api\booking\TabsBooking::getBooking(299463);
     }

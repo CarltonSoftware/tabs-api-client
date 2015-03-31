@@ -114,7 +114,7 @@ class ResourceClassTest extends PHPUnit_Framework_TestCase
      */
     public function testSearchTerms()
     {
-        $route = "http://carltonsoftware.apiary.io/";
+        $route = "http://private-7871e-carltonsoftware.apiary-mock.com/";
         \tabs\api\client\ApiClient::factory($route);
         
         \tabs\api\utility\Utility::resetCache();

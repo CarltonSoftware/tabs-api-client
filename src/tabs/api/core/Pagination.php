@@ -109,7 +109,40 @@ class Pagination extends \tabs\api\core\Base
      */
     public function setFilters($filters)
     {
-        $this->filters = $filters;
+        foreach ($filters as $key => $val) {
+            $this->addFilter($key, $val);
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * Add a filter
+     * 
+     * @param string $key Param key
+     * @param string $val Value
+     * 
+     * @return \tabs\api\core\Pagination
+     */
+    public function addFilter($key, $val)
+    {
+        $this->filters[$key] = $this->interpretParam($val);
+        
+        return $this;
+    }
+    
+    /**
+     * Remove a filter
+     * 
+     * @param string $key Param key
+     * 
+     * @return \tabs\api\core\Pagination
+     */
+    public function removeFilter($key)
+    {
+        if (isset($this->filters[$key])) {
+            unset($this->filters[$key]);
+        }
         
         return $this;
     }
@@ -151,7 +184,12 @@ class Pagination extends \tabs\api\core\Base
      */
     public function getFilters()
     {
-        return $this->filters;
+        return array_filter(
+            $this->filters,
+            function ($ele) {
+                return ((string) $ele != '');
+            }
+        );
     }
     
     /**
@@ -165,6 +203,20 @@ class Pagination extends \tabs\api\core\Base
     }
     
     /**
+     * Return the parameters used for the request
+     * 
+     * @return array
+     */
+    public function getRequestParams()
+    {
+        return array(
+            'page' => $this->getPage(),
+            'pageSize' => $this->getPageSize(),
+            'filter' => urldecode($this->getFiltersString())
+        );
+    }
+    
+    /**
      * Get the filters string read for a request
      * 
      * @return string
@@ -172,11 +224,7 @@ class Pagination extends \tabs\api\core\Base
     public function getRequestQuery()
     {
         return http_build_query(
-            array(
-                'page' => $this->getPage(),
-                'pageSize' => $this->getPageSize(),
-                'filter' => urldecode($this->getFiltersString())
-            ),
+            $this->getRequestParams(),
             null,
             '&'
         );
@@ -233,5 +281,22 @@ class Pagination extends \tabs\api\core\Base
         } else {
             return array(1);
         }
+    }
+    
+    /**
+     * Function used to convert certain types of variables (like boolean)
+     * into strings
+     * 
+     * @param mixed $param Param to convert
+     * 
+     * @return string
+     */
+    public function interpretParam($param)
+    {
+        if (is_bool($param)) {
+            $param = ($param === true) ? 'true' : 'false';
+        }
+        
+        return $param;
     }
 }

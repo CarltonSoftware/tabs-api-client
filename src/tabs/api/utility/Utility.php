@@ -4,7 +4,7 @@
  * Tabs Rest API Property Factory
  *
  * PHP Version 5.3
- * 
+ *
  * @category  API_Client
  * @package   Tabs
  * @author    Alex Wyett <alex@wyett.co.uk>
@@ -26,10 +26,10 @@ namespace tabs\api\utility;
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
- * 
+ *
  * @method array getCountries()
  *      Return an array of country objects
- * @method \tabs\api\core\Country getCountry(string $countryCode) 
+ * @method \tabs\api\core\Country getCountry(string $countryCode)
  *      Return an individual country object
  * @method array getAreasAndLocations(integer $limit, boolean $random = false)
  *      Return an array of area objects
@@ -41,6 +41,8 @@ namespace tabs\api\utility;
  * @method \tabs\api\utility\Resource getApiInformation()
  *      Return information about the api.  This includes extras, searchTerms
  *      and attributes.
+ * @method stdClass getRequestCount(string $apiKey)
+ *      Return the number of requests for a given apiKey
  */
 class Utility extends \tabs\api\core\Base
 {
@@ -52,13 +54,13 @@ class Utility extends \tabs\api\core\Base
     static $cache = array();
 
     // ------------------ Public Functions --------------------- //
-    
+
     /**
      * Static method to overload the current static methods
-     * 
+     *
      * @param string $name      Method name
      * @param array  $arguments Method params
-     * 
+     *
      * @return mixed
      */
     public static function __callStatic($name, $arguments)
@@ -79,26 +81,26 @@ class Utility extends \tabs\api\core\Base
                 }
             }
         }
-        
+
         throw new \tabs\api\client\ApiException(
             null,
             'Utility method does not exist'
         );
     }
-    
+
     /**
      * Reset the cache of the class
-     * 
+     *
      * @return void
      */
     public static function resetCache()
     {
         self::$cache = array();
     }
-    
+
     /**
      * Return a simple array of countries
-     * 
+     *
      * @return array
      */
     public static function getCountriesBasic()
@@ -109,10 +111,10 @@ class Utility extends \tabs\api\core\Base
         }
         return $countriesSimple;
     }
-    
+
     /**
      * Return a simple array of areas
-     * 
+     *
      * @return \tabs\api\core\Area|Array
      */
     public static function getAreas()
@@ -123,10 +125,10 @@ class Utility extends \tabs\api\core\Base
         }
         return $areas;
     }
-    
+
     /**
      * Return a simple array of locations
-     * 
+     *
      * @return \tabs\api\core\Location|Array
      */
     public static function getLocations()
@@ -178,10 +180,10 @@ class Utility extends \tabs\api\core\Base
         }
         return false;
     }
-    
+
     /**
      * Return a simple array of sourcecodes
-     * 
+     *
      * @return array
      */
     public static function getSourceCodesBasic()
@@ -192,13 +194,13 @@ class Utility extends \tabs\api\core\Base
         }
         return $sourcesSimple;
     }
-    
+
     /**
      * Returns an array of source code objects
-     * 
+     *
      * @param string $sourceCode Tabs SourceCode
-     * 
-     * @return \tabs\api\core\Source | boolean 
+     *
+     * @return \tabs\api\core\Source | boolean
      */
     public static function getSourceCode($sourceCode)
     {
@@ -207,19 +209,19 @@ class Utility extends \tabs\api\core\Base
                 return $source;
             }
         }
-        
+
         // Return false if error or not found
         return false;
     }
-    
+
     /**
      * Unsubscribes an email from the tabs mailing list
-     * 
+     *
      * @param string $emailAddress   Email address to unsubscribe
      * @param string $newsletterType Newsletter to unsubscribe from
-     * 
+     *
      * @throws ApiException
-     * 
+     *
      * @return boolean
      */
     public static function unsubscribe($emailAddress, $newsletterType = 'default')
@@ -232,21 +234,21 @@ class Utility extends \tabs\api\core\Base
                 $emailAddress
             )
         );
-        
+
         if ($unsubscribe->status == 204) {
             return true;
         } else {
             throw new \tabs\api\client\ApiException(
-                $unsubscribe, 
+                $unsubscribe,
                 'Error Unsubscribing Customer'
             );
         }
     }
-    
+
     /**
      * Retrieve the number of properties in the api
-     * 
-     * @return integer 
+     *
+     * @return integer
      */
     public static function getNumberOfProperties()
     {
@@ -257,10 +259,10 @@ class Utility extends \tabs\api\core\Base
         }
         return $propCount;
     }
-    
+
     /**
      * Return an array of api brands.  This function requires admin privileges.
-     * 
+     *
      * @return array
      */
     public static function getAllBrands()
@@ -295,14 +297,14 @@ class Utility extends \tabs\api\core\Base
         $countriesResponse = \tabs\api\client\ApiClient::getApi()->get(
             '/utility/country'
         );
-        if ($countriesResponse->status == 200 
+        if ($countriesResponse->status == 200
             && is_object($countriesResponse->response)
         ) {
             foreach ($countriesResponse->response as $ctry) {
                 $country = new \tabs\api\core\Country(
-                    $ctry->alpha2, 
-                    $ctry->country, 
-                    $ctry->alpha3, 
+                    $ctry->alpha2,
+                    $ctry->country,
+                    $ctry->alpha3,
                     $ctry->numcode
                 );
                 array_push($countries, $country);
@@ -330,22 +332,22 @@ class Utility extends \tabs\api\core\Base
         if ($ctry->status == 200 && is_object($ctry->response)) {
             $ctry = $ctry->response;
             return new \tabs\api\core\Country(
-                $ctry->alpha2, 
-                $ctry->country, 
+                $ctry->alpha2,
+                $ctry->country,
                 $ctry->alpha3,
                 $ctry->numcode
             );
         } else {
             throw new \tabs\api\client\ApiException(
-                $ctry, 
+                $ctry,
                 'Error fetching country'
             );
         }
     }
-    
+
     /**
      * Gets all areas and locations
-     * 
+     *
      * @param integer $limit  The maximum number of areas required to return
      * @param boolean $random Randomise results first?
      *
@@ -360,7 +362,7 @@ class Utility extends \tabs\api\core\Base
         $areasResponse = \tabs\api\client\ApiClient::getApi()->get(
             '/utility/area'
         );
-        
+
         if ($areasResponse->status == 200) {
             foreach ($areasResponse->response as $a) {
                 $area = new \tabs\api\core\Area($a->code, $a->name);
@@ -371,7 +373,7 @@ class Utility extends \tabs\api\core\Base
                     if (count($a->locations) > 0) {
                         foreach ($a->locations as $loc) {
                             $location = new \tabs\api\core\Location(
-                                $loc->code, 
+                                $loc->code,
                                 $loc->name
                             );
                             $location->setDescription($loc->description);
@@ -406,10 +408,10 @@ class Utility extends \tabs\api\core\Base
 
         return $areas;
     }
-    
+
     /**
      * Return a simple array of locations
-     * 
+     *
      * @return \tabs\api\core\Location|Array
      */
     private static function _getAllLocations()
@@ -432,11 +434,11 @@ class Utility extends \tabs\api\core\Base
         }
         return $locations;
     }
-    
+
     /**
      * Returns an array of source code objects
-     * 
-     * @return \tabs\api\core\Source|Array 
+     *
+     * @return \tabs\api\core\Source|Array
      */
     private static function _getSourceCodes()
     {
@@ -448,18 +450,18 @@ class Utility extends \tabs\api\core\Base
         if ($sourceResponse->status == 200) {
             foreach ($sourceResponse->response as $source) {
                 array_push(
-                    $sourceCodes, 
+                    $sourceCodes,
                     self::_createSourceObject($source)
                 );
             }
         }
         return $sourceCodes;
     }
-    
+
     /**
      * Request and return the API resource information
-     * 
-     * @return \tabs\api\utility\Resource 
+     *
+     * @return \tabs\api\utility\Resource
      */
     private static function _getApiInformation()
     {
@@ -470,7 +472,7 @@ class Utility extends \tabs\api\core\Base
             && $resources->response != ''
         ) {
             parent::setObjectProperties(
-                $resource, 
+                $resource,
                 $resources->response,
                 array(
                     'brands',
@@ -478,14 +480,14 @@ class Utility extends \tabs\api\core\Base
                     'searchTerms'
                 )
             );
-            
+
             foreach ($resources->response as $key => $val) {
                 // Add brands to resource
                 if ($key == 'brands' && is_object($val)) {
-                    foreach (get_object_vars($val) as $brandCode 
+                    foreach (get_object_vars($val) as $brandCode
                             => $brandInfo) {
                         $brand = self::_createResourceBrand(
-                            $brandCode, 
+                            $brandCode,
                             $brandInfo
                         );
                         if ($brand) {
@@ -532,13 +534,13 @@ class Utility extends \tabs\api\core\Base
         }
         return $resource;
     }
-    
+
     /**
      * Create a source object from a given result object
-     * 
+     *
      * @param object $source Source code response object
-     * 
-     * @return \tabs\api\core\Source 
+     *
+     * @return \tabs\api\core\Source
      */
     private static function _createSourceObject($source)
     {
@@ -546,14 +548,14 @@ class Utility extends \tabs\api\core\Base
         self::setObjectProperties($sourceObj, $source);
         return $sourceObj;
     }
-    
+
     /**
      * Create a ResourceBrand object from a node
-     * 
+     *
      * @param string $brandCode Brand code
      * @param object $node      JSON object
-     * 
-     * @return \tabs\api\utility\ResourceBrand 
+     *
+     * @return \tabs\api\utility\ResourceBrand
      */
     private static function _createResourceBrand($brandCode, $node)
     {
@@ -561,12 +563,12 @@ class Utility extends \tabs\api\core\Base
         self::setObjectProperties($brand, $node);
         return $brand;
     }
-    
+
     /**
      * Create a ResourceBrand object from a node
-     * 
+     *
      * @param object $node JSON object
-     * 
+     *
      * @return \tabs\api\core\ResourceAttribute
      */
     private static function _createResourceAttribute($node)
@@ -575,12 +577,12 @@ class Utility extends \tabs\api\core\Base
         self::setObjectProperties($attr, $node);
         return $attr;
     }
-    
+
     /**
      * Create a ResourceBrand object from a node
-     * 
+     *
      * @param object $node JSON object
-     * 
+     *
      * @return \tabs\api\utility\ResourceExtra
      */
     private static function _createResourceExtra($node)
@@ -588,5 +590,127 @@ class Utility extends \tabs\api\core\Base
         $extra = new \tabs\api\utility\ResourceExtra();
         self::setObjectProperties($extra, $node);
         return $extra;
+    }
+
+    /**
+     * Return request count for a given api key
+     *
+     * @param string $apiKey Api Key
+     *
+     * @return stdClass|null
+     */
+    private static function _getRequestCount($apiKey)
+    {
+        // Get all countries
+        $response = \tabs\api\client\ApiClient::getApi()->get(
+            sprintf('/api/key/%s/count', $apiKey)
+        );
+        if ($response->status == 200
+            && is_object($response->response)
+        ) {
+            return $response->response;
+        }
+    }
+
+    /**
+     * Update a request count
+     *
+     * @param string $apiKey Api Key
+     * @param string $year   Year
+     * @param string $month  Month
+     * @param string $day    Day
+     * @param string $hour   Hour
+     * @param string $count  Amount of requests
+     *
+     * @throws \tabs\api\client\ApiException
+     *
+     * @return boolean
+     */
+    private static function _postRequestCount(
+        $apiKey,
+        $year,
+        $month,
+        $day,
+        $hour,
+        $count
+    ) {
+        $requestCount = \tabs\api\client\ApiClient::getApi()->post(
+            sprintf(
+                '/api/key/%s/count/%s/%s/%s/%s',
+                $apiKey,
+                $year,
+                $month,
+                $day,
+                $hour
+            ),
+            array(
+                'data' => json_encode(
+                    array(
+                        'count' => $count
+                    )
+                )
+            )
+        );
+
+        if ($requestCount->status == 201) {
+            return true;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $requestCount,
+                'Error Posting Request Count'
+            );
+        }
+    }
+
+    /**
+     * Delete a request count
+     *
+     * @param string $apiKey Api Key
+     * @param string $year   Year
+     * @param string $month  Month
+     * @param string $day    Day
+     * @param string $hour   Hour
+     *
+     * @throws \tabs\api\client\ApiException
+     *
+     * @return boolean
+     */
+    private static function _deleteRequestCount(
+        $apiKey,
+        $year,
+        $month,
+        $day,
+        $hour
+    ) {
+        $requestCount = \tabs\api\client\ApiClient::getApi()->delete(
+            sprintf(
+                '/api/key/%s/count/%s/%s/%s/%s',
+                $apiKey,
+                $year,
+                $month,
+                $day,
+                $hour
+            )
+        );
+
+        if ($requestCount->status == 204) {
+            return true;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $requestCount,
+                'Error Deleting Request Count'
+            );
+        }
+    }
+
+    private static function _getLastminuteOffers()
+    {
+        $response = \tabs\api\client\ApiClient::getApi()->get('/offer/lastminute');
+
+        if ($response->status == 200
+            && is_array($response->response)
+        ) {
+            return $response->response;
+        }
     }
 }

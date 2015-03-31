@@ -35,4 +35,30 @@ class BookingAdminTest extends ApiClientClassTest
         $this->assertEquals(array(), $bookings->getFilters());
         $this->assertEquals(10, count($bookings->getBookings()));
     }
+    
+    /**
+     * Test the valid booking filters array
+     * 
+     * @return void
+     */
+    public function testBookingFilters()
+    {
+        $filters = \tabs\api\booking\BookingAdmin::getBookingFilters();
+        
+        $this->assertTrue(in_array('fromdate', $filters));
+    }
+
+    /**
+     * Test the valid booking filters array
+     *
+     * @expectedException \tabs\api\client\ApiException
+     *
+     * @return null
+     */
+    public function testInvalidBookingFilters()
+    {
+        $this->markTestIncomplete();
+        \tabs\api\client\ApiClient::getApi()->setUrlRoute('http://bad.url/');
+        $filters = \tabs\api\booking\BookingAdmin::getBookingFilters();
+    }
 }

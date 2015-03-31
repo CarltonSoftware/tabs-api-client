@@ -26,15 +26,8 @@ namespace tabs\api\property;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  */
-class SearchHelper
+class SearchHelper extends PropertySearch
 {
-    /**
-     * PropertySearch object
-     *
-     * @var \tabs\api\property\PropertySearch
-     */
-    protected $search;
-
     /**
      * Base url of search page
      *
@@ -50,20 +43,6 @@ class SearchHelper
     protected $secondsInADay = 86400;
 
     /**
-     * Initial search params
-     *
-     * @var array
-     */
-    protected $initialParams = array();
-
-    /**
-     * Search params
-     *
-     * @var array
-     */
-    protected $searchParams = array();
-
-    /**
      * Key/Val pair array of filter key substitutes.
      *
      * @var array
@@ -75,7 +54,12 @@ class SearchHelper
      *
      * @var array
      */
-    protected $reservedKeys = array('page', 'pageSize', 'orderBy', 'searchId');
+    protected $reservedKeys = array(
+        'page',
+        'pageSize',
+        'orderBy',
+        'searchId'
+    );
 
     /**
      * Fields you wish to return
@@ -141,40 +125,19 @@ class SearchHelper
      * @param string  $searchId Search id, tp persist search order
      * @param boolean $findAll  Set to true if you want to find all properties
      *
-     * @return boolean True if search is Ok
+     * @return \tabs\api\property\PropertySearch
      */
     public function search($searchId = '', $findAll = false)
     {
-        // Extract filter, page, pageSize and orderBy variables
-        extract(
-            $this->_searchFilter()
-        );
-
-        if ($findAll) {
-            $this->setSearch(
-                \tabs\api\property\PropertySearch::fetchAll(
-                    $filter,
-                    $orderBy,
-                    $searchId,
-                    $this->getFields(),
-                    $this->getSbFilter()
-                )
-            );
-        } else {
-            $this->setSearch(
-                \tabs\api\property\PropertySearch::factory(
-                    $filter,
-                    $page,
-                    $pageSize,
-                    $orderBy,
-                    $searchId,
-                    $this->getFields(),
-                    $this->getSbFilter()
-                )
-            );
+        if ($searchId != '') {
+            $this->setSearchId($searchId);
         }
-
-        return $this->getSearch();
+        
+        if ($findAll) {
+            return $this->findAll();
+        } else {
+            return $this->find();
+        }
     }
 
     /**
@@ -182,11 +145,13 @@ class SearchHelper
      *
      * @param string $prefix Specified search prefix
      *
-     * @return void
+     * @return \tabs\api\property\SearchHelper
      */
     public function setSearchPrefix($prefix)
     {
         $this->searchPrefix = $prefix;
+        
+        return $this;
     }
 
     /**
@@ -239,7 +204,7 @@ class SearchHelper
         $pagination = '';
         $hrefs = $this->getPaginationHrefs($numPages);
         if (count($hrefs) > 0) {
-            if ($this->getSearch()->getMaxPages() > 1) {
+            if ($this->getMaxPages() > 1) {
                 $pages = array();
 
                 foreach ($hrefs as $key => $href) {
@@ -256,7 +221,7 @@ class SearchHelper
                                     '<a href="%s" class="page %s page%s">%s</a>',
                                     $href,
                                     strtolower($key),
-                                    $this->getSearch()->getPage(),
+                                    $this->getPage(),
                                     ucfirst($key)
                                 )
                             );
@@ -264,7 +229,7 @@ class SearchHelper
                         default:
                             $pageNo = str_replace('page', '', $key);
                             $active = '';
-                            if ($this->getSearch()->getPage() == $pageNo) {
+                            if ($this->getPage() == $pageNo) {
                                 $active = 'active';
                             }
                             array_push(
@@ -306,22 +271,21 @@ class SearchHelper
     public function getPaginationHrefs($numPages = 0)
     {
         $pagination = array();
-        if ($this->getBaseUrl() && $this->getSearch()->getMaxPages() > 1) {
+        if ($this->getBaseUrl() && $this->getMaxPages() > 1) {
 
             $rangeStart = 1;
-            $rangeEnd = $this->getSearch()->getMaxPages();
+            $rangeEnd = $this->getMaxPages();
 
             // If $numPages is set and is less than the maximum number of pages
             // in the search, then start to slice up the range of pages
             if ($numPages > 0
-                && $this->getSearch()->getMaxPages() > $numPages
+                && $this->getMaxPages() > $numPages
             ) {
                 // Find middle of numPages
                 $rangePad = floor($numPages / 2);
 
                 // Find middle of page range
-                //$pageMiddle = floor($this->getSearch()->getMaxPages() / 2);
-                $pageMiddle = $this->getSearch()->getPage();
+                $pageMiddle = $this->getPage();
 
                 // Set start and end.
                 $rangeStart = $pageMiddle - $rangePad;
@@ -334,9 +298,9 @@ class SearchHelper
                 }
 
                 // If the end of the range is out of bounds, reset also
-                if ($rangeEnd >= $this->getSearch()->getMaxPages()) {
+                if ($rangeEnd >= $this->getMaxPages()) {
                     $numPages -= 1;
-                    $rangeEnd = $this->getSearch()->getMaxPages();
+                    $rangeEnd = $this->getMaxPages();
                     $rangeStart = $rangeEnd - $numPages;
                 }
             }
@@ -350,7 +314,7 @@ class SearchHelper
                 );
             }
 
-            if ($this->getSearch()->getPage() > 1) {
+            if ($this->getPage() > 1) {
                 $pagination = $this->_arrayUnshiftAssoc(
                     $pagination,
                     'previous',
@@ -372,7 +336,7 @@ class SearchHelper
                 );
             }
 
-            if ($this->getSearch()->getPage() != $this->getSearch()->getMaxPages()) {
+            if ($this->getPage() != $this->getMaxPages()) {
                 $pagination['next'] = sprintf(
                     '%s?%s',
                     $this->getBaseUrl(),
@@ -382,14 +346,14 @@ class SearchHelper
                 $pagination['last'] = sprintf(
                     '%s?%s',
                     $this->getBaseUrl(),
-                    $this->getQuery($this->getSearch()->getMaxPages())
+                    $this->getQuery($this->getMaxPages())
                 );
             }
 
             // Set the show all flag
             // Set the pageSize to be the total amount
             $oldSize = $this->getPageSize();
-            $this->getSearch()->setPageSize(9999);
+            $this->setPageSize(9999);
             $pagination['all'] = sprintf(
                 '%s?%s',
                 $this->getBaseUrl(),
@@ -397,7 +361,7 @@ class SearchHelper
             );
 
             // Reset pagesize
-            $this->getSearch()->setPageSize($oldSize);
+            $this->setPageSize($oldSize);
         }
         return $pagination;
     }
@@ -405,11 +369,11 @@ class SearchHelper
     /**
      * Get the property search object
      *
-     * @return \tabs\api\property\PropertySearch
+     * @return \tabs\api\property\SearchHelper
      */
     public function getSearch()
     {
-        return $this->search;
+        return $this;
     }
 
     /**
@@ -417,12 +381,14 @@ class SearchHelper
      *
      * @param \tabs\api\property\PropertySearch $search
      * API PropertySearch object
+     * 
+     * @deprecated
      *
      * @return void
      */
     public function setSearch($search)
     {
-        $this->search = $search;
+        
     }
 
     /**
@@ -437,23 +403,21 @@ class SearchHelper
         $query = '';
         $prefix = $this->getSearchPrefix();
 
-        if ($this->search) {
-            $query .= $prefix . "page={$pageNum}&";
+        $query .= $prefix . "page={$pageNum}&";
 
-            $pageSize = $this->getPageSize();
-            if ($pageSize > 10) {
-                $query .= $prefix . "pageSize={$pageSize}&";
-            }
+        $pageSize = $this->getPageSize();
+        if ($pageSize > 10) {
+            $query .= $prefix . "pageSize={$pageSize}&";
+        }
 
-            $order = $this->getOrderBy();
-            if (strlen($order) > 0) {
-                $query .= $prefix . "orderBy={$order}&";
-            }
+        $order = $this->getOrderBy();
+        if (strlen($order) > 0) {
+            $query .= $prefix . "orderBy={$order}&";
+        }
 
-            $filter = $this->getSearchParams(true);
-            if (strlen($filter) > 0) {
-                $query .= "{$filter}&";
-            }
+        $filter = $this->getSearchParams(true);
+        if (strlen($filter) > 0) {
+            $query .= "{$filter}&";
         }
 
         return rtrim($query, "&");
@@ -469,7 +433,7 @@ class SearchHelper
      */
     public function getSearchParams($httpQuery = false)
     {
-        return $this->_httpQuery($this->searchParams, $httpQuery);
+        return $this->_httpQuery($this->getFilters(), $httpQuery);
     }
 
     /**
@@ -491,32 +455,15 @@ class SearchHelper
     }
 
     /**
-     * Get the page number
-     *
-     * @return integer
-     */
-    public function getPage()
-    {
-        if ($this->getSearch()) {
-            return $this->getSearch()->getPage();
-        }
-        return 1;
-    }
-
-    /**
      * Get next page integer
      *
      * @return integer
      */
     public function getNextPage()
     {
-        $page = $this->getPage();
-        $nextPage = $page;
-        if ($this->getSearch()) {
-            $nextPage++;
-            if ($nextPage > $this->getSearch()->getMaxPages()) {
-                $nextPage = 1;
-            }
+        $nextPage = $this->getPage() + 1;
+        if ($nextPage > $this->getMaxPages()) {
+            $nextPage = 1;
         }
 
         return $nextPage;
@@ -540,12 +487,9 @@ class SearchHelper
     public function getPrevPage()
     {
         $page = $this->getPage();
-        $prevPage = $page;
-        if ($this->getSearch()) {
-            $prevPage--;
-            if ($prevPage < 1) {
-                $prevPage = $this->getSearch()->getMaxPages();
-            }
+        $prevPage = $page - 1;
+        if ($prevPage < 1) {
+            $prevPage = $this->getMaxPages();
         }
 
         return $prevPage;
@@ -562,56 +506,26 @@ class SearchHelper
     }
 
     /**
-     * Get the page size
-     *
-     * @return integer
-     */
-    public function getPageSize()
-    {
-        if ($this->getSearch()) {
-            return $this->getSearch()->getPageSize();
-        }
-        return 10;
-    }
-
-    /**
-     * Get the total properties found
-     *
-     * @return integer
-     */
-    public function getTotal()
-    {
-        if ($this->getSearch()) {
-            return $this->getSearch()->getTotal();
-        }
-        return 0;
-    }
-
-    /**
-     * Get the search info label
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getSearchInfo()
     {
-        if ($this->getSearch()) {
-            return $this->getSearch()->getSearchInfo();
+        if ($this->getTotal() > 0) {
+            return parent::getSearchInfo();
         }
         return '';
     }
 
     /**
-     * Get the search label
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function getLabel()
+    public function getLabel($forceMultiple = false)
     {
-        if ($this->getSearch()) {
+        if ($this->getTotal() > 0) {
             if (strtolower($this->getSearchInfo()) == 'all') {
-                return $this->getSearch()->getLabel(true);
+                return parent::getLabel(true);
             } else {
-                return $this->getSearch()->getLabel();
+                return parent::getLabel($forceMultiple);
             }
         }
         return '';
@@ -624,40 +538,37 @@ class SearchHelper
      */
     public function getOrderBy()
     {
-        if ($this->getSearch()) {
-            return $this->getSearch()->getOrder();
-        }
-        return '';
+        return $this->getOrder();
     }
 
     /**
-     * Return the search id
-     *
-     * @return string
-     */
-    public function getSearchId()
-    {
-        // Return property searches search id if set
-        if ($this->getSearch()) {
-            return $this->getSearch()->getSearchId();
-        }
-        return '';
-    }
-
-    /**
-     * Set the initial filter parameters
+     * Set the initial filter parameters.  This function also resets the 
+     * filters for the search object.
      *
      * @return \tabs\api\property\SearchHelper
      */
     public function setInitialParams()
     {
         $args = func_get_args();
-        $this->initialParams = array();
+        $params = array();
         foreach ($args as $param) {
-            $this->initialParams = array_merge(
-                $this->initialParams,
+            $params = array_merge(
+                $params,
                 $this->_getSearchParam($param)
             );
+        }
+        
+        // Clear filters and additional params
+        $this->filters = array();
+        $this->additionalParams = array();
+        
+        foreach ($params as $term => $value) {
+            if (in_array($term, $this->getReservedKeys())) {
+                $method = 'set' . ucfirst($term);
+                $this->$method($value);
+            } else {
+                $this->addFilter($term, $value);
+            }
         }
         
         return $this;
@@ -672,65 +583,7 @@ class SearchHelper
      */
     public function getInitialParams($httpQuery = false)
     {
-        return $this->_httpQuery($this->initialParams, $httpQuery);
-    }
-
-    /**
-     * Shortcut function to get the properties from the search object
-     *
-     * @return \tabs\api\property\Property|Array Properties
-     */
-    public function getProperties()
-    {
-        if ($this->getSearch()) {
-            return $this->getSearch()->getProperties();
-        }
-
-        return array();
-    }
-
-    /**
-     * Set fields to return from api
-     *
-     * @param array $fields Array of fields you wish to return
-     *
-     * @return void
-     */
-    public function setFields(array $fields)
-    {
-        $this->fields = $fields;
-    }
-
-    /**
-     * Return the fields required from the api
-     *
-     * @return array
-     */
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
-    /**
-     * Set short break filter
-     *
-     * @param string $sbFilter Short break filter
-     *
-     * @return void
-     */
-    public function setSbFilter($sbFilter)
-    {
-        $this->sbFilter = $sbFilter;
-    }
-
-    /**
-     * Return the short break filter
-     *
-     * @return string
-     */
-    public function getSbFilter()
-    {
-        return $this->sbFilter;
+        return $this->_httpQuery($this->getFilters(), $httpQuery);
     }
 
     // --------------------- Map Clustering Functions ---------------------- //
@@ -903,45 +756,6 @@ class SearchHelper
         }
         return $this->_getBounds($points);
     }
-    
-    /**public function getZoom($clusters)
-    {
-        $markerBounds = $this->getBoundsOfCluster($clusters);
-        $zoom = 21;
-        $found = false;
-        while ($found == false) {
-            $mapBounds = $this->getMapBounds($markerBounds->getCenter(), $zoom);
-            $found = $mapBounds->containsBounds($markerBounds);
-            $zoom--;
-        }
-        return $zoom + 1;
-    }
-    
-    public function getMapBounds($center, $zoom = 21, $width = 500, $height = 500)
-    {
-        $delta_x = round($width / 2);
-        $delta_y = round($height / 2);
-        
-        $lat = $center->getLat();
-        $long = $center->getLong();
-        
-        $north = \tabs\api\core\Mercator::adjustLatByPixels(
-            $lat, $delta_y * -1, $zoom);
-        $south = \tabs\api\core\Mercator::adjustLatByPixels(
-            $lat, $delta_y, $zoom);
-        $west = \tabs\api\core\Mercator::adjustLonByPixels(
-            $long, $delta_x * -1, $zoom);
-        $east = \tabs\api\core\Mercator::adjustLonByPixels(
-            $long, $delta_x, $zoom);
-        
-        return new \tabs\api\core\Bounds(
-            array(
-                new \tabs\api\core\Coordinates($north, $west),
-                new \tabs\api\core\Coordinates($south, $east)
-            )
-        );
-    }*/
-
 
     // --------------------- Private Functions -------------------------- //
     
@@ -1061,7 +875,8 @@ class SearchHelper
             'page' => $page,
             'pageSize' => $pageSize,
             'orderBy' => $orderBy,
-            'filter' => $filter
+            'filter' => $filter,
+            'filters' => $searchFilterVars
         );
     }
 
@@ -1098,41 +913,3 @@ class SearchHelper
         }
     }
 }
-
-
-
-/**class Mercator
-{
-    public static $offset = 268435456;
-    public static $radius = 85445659.44705395; // $offset / pi();
-    
-    static function LonToX($lon) {
-        return round(self::$offset + self::$radius * $lon * pi() / 180);        
-    }
-
-    static function LatToY($lat) {
-        return round(
-            self::$offset 
-            - self::$radius 
-            * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180)))
-             / 2
-        );
-    }
-
-    static function XToLon($x) {
-        return ((round($x) - self::$offset) / self::$radius) * 180/ pi(); 
-    }
-
-    static function YToLat($y) {
-        return (pi() / 2 - 2 * atan(exp((round($y) 
-        - self::$offset) / self::$radius))) * 180 / pi(); 
-    }
-
-    static function adjustLonByPixels($lon, $delta, $zoom) {
-        return self::XToLon(self::LonToX($lon) + ($delta << (21 - $zoom)));
-    }
-
-    static function adjustLatByPixels($lat, $delta, $zoom) {
-        return self::YToLat(self::LatToY($lat) + ($delta << (21 - $zoom)));
-    }
-}*/

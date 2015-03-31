@@ -147,7 +147,7 @@ class Resource extends \tabs\api\core\Base
     public function addExtra(
         \tabs\api\utility\ResourceExtra $extra
     ) {
-        $this->extras[$extra->getCode()] = $extra;
+        $this->extras[$extra->getCode() . '_' .  $extra->getBrand()] = $extra;
     }
     
     /**

@@ -26,18 +26,14 @@ namespace tabs\api\property;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  * 
- * @method string getAlt()
  * @method string getFilename()
  * @method double getHeight()
- * @method string getImagePath()
- * @method string getTitle()
  * @method double getWidth()
  * @method string getUrl()
  * 
  * @method void setAlt(string)
  * @method void setFilename(string)
  * @method void setHeight(double)
- * @method void setImagePath(string)
  * @method void setTitle(string)
  * @method void setWidth(double)
  * @method void setUrl(string)
@@ -284,6 +280,17 @@ class Image extends \tabs\api\core\Base
             "width" => $this->getWidth(),
             "height" => $this->getHeight()
         );
+    }
+    
+    /**
+     * Basic string function.  Will stop any errors when accidentally casting 
+     * image objects.
+     * 
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->createImageTag();
     }
 
     /**

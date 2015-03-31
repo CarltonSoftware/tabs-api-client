@@ -45,7 +45,8 @@ namespace tabs\api\core;
  * @method void setDaytimePhone(string $daytimePhone)
  * @method void setEmail(string $email)
  * @method void setEmailOptIn(boolean $choice)
- * @method void setEmailConfirmations(boolean $choice)
+ * @method void setEmailConfirmation(boolean $choice)
+ * @method void setPostConfirmation(boolean $choice)
  * @method void setEveningPhone(string $eveningPhone)
  * @method void setFax(string $fax)
  * @method void setFirstName(string $firstname)
@@ -168,14 +169,14 @@ class Person extends \tabs\api\core\Base
      * 
      * @var boolean
      */
-    protected $postConfirmations = false;
+    protected $postConfirmation = false;
     
     /**
      * Email confirmation preference
      * 
      * @var boolean
      */
-    protected $emailConfirmations = false;
+    protected $emailConfirmation = false;
     
     // ------------------ Static Functions --------------------- //
     
@@ -205,9 +206,10 @@ class Person extends \tabs\api\core\Base
      * 
      * @return \tabs\api\core\Person
      */
-    public function setAddress(\tabs\api\core\Address $address)
+    public function setAddress($address)
     {
-        $this->address = $address;
+        $this->address = Address::_factory($address);
+        
         return $this;
     }
     
@@ -228,7 +230,7 @@ class Person extends \tabs\api\core\Base
      */
     public function isPostConfirmation()
     {
-        return $this->postConfirmations;
+        return $this->postConfirmation;
     }
 
     /**
@@ -238,7 +240,7 @@ class Person extends \tabs\api\core\Base
      */
     public function isEmailConfirmation()
     {
-        return $this->emailConfirmations;
+        return $this->emailConfirmation;
     }
     
     /**

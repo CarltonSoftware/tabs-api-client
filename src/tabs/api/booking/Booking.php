@@ -31,7 +31,7 @@ namespace tabs\api\booking;
  * @method integer                              getChildren()
  * @method integer                              getInfants()
  * @method \tabs\api\core\Customer              getCustomer()
- * @method \tabs\api\boking\PartyDetail|Array   getPartyDetails()
+ * @method \tabs\api\booking\PartyDetail[]      getPartyDetails()
  * @method stdClass|Array                       getNotes()
  * @method \tabs\api\boking\Payment|Array       getPayments()
  * @method timestamp                            getCreated()

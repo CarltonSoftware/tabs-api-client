@@ -79,11 +79,13 @@ class BookingAdmin extends \tabs\api\core\Pagination
         if ($bookingsReq && $bookingsReq->status == 200) {
             $filters = array();
             
-            foreach ($bookingsReq->response as $filter) {
-                array_push(
-                    $filters,
-                    $filter
-                );
+            if (is_array($bookingsReq->response)) {
+                foreach ($bookingsReq->response as $filter) {
+                    array_push(
+                        $filters,
+                        $filter
+                    );
+                }
             }
         
             return $filters;

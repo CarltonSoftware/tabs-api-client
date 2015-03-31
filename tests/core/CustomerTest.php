@@ -87,7 +87,7 @@ class CustomerTest extends ApiClientClassTest
             "support@carltonsoftware.co.uk", 
             $customer->getEmail()
         );
-        $this->assertFalse(
+        $this->assertTrue(
             $customer->isPostConfirmation()
         );
         $this->assertFalse(

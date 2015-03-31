@@ -16,7 +16,7 @@ class PaymentTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $route = "http://carltonsoftware.apiary.io/";
+        $route = "http://private-7871e-carltonsoftware.apiary-mock.com/";
         \tabs\api\client\ApiClient::factory($route);
     }
     
