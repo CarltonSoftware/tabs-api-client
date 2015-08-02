@@ -386,6 +386,7 @@ class Utility extends \tabs\api\core\Base
                                         $loc->coordinates->latitude
                                     )
                                 );
+                                $location->setRadius($loc->coordinates->radius);
                             }
                             $area->setLocation($location);
                         }
