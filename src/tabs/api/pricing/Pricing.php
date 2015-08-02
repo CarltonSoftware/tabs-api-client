@@ -143,6 +143,13 @@ class Pricing extends \tabs\api\core\Base
      * @var array
      */
     protected $extras = array();
+
+    /**
+     * Special offer discount
+     *
+     * @var float
+     */
+    protected $saving = 0;
     
     
     // ------------------ Static Functions --------------------- //
