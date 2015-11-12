@@ -33,6 +33,9 @@ namespace tabs\api\booking;
  * @method string           getBookingRef()
  * @method string           getBrandCode()
  * @method integer          getChildren()
+ * @method integer          getPets()
+ * @method integer          getRepeatPropertyBooker()
+ * @method integer          getRepeatOwnerBooker()
  * @method float            getCommissionDueToOwner()
  * @method float            getCommissionOutstandingToOwner()
  * @method float            getCommissionPaidToOwner()
@@ -70,6 +73,10 @@ namespace tabs\api\booking;
  * @method void setStatus(string $status)
  * @method void setSurname(string $surname)
  * @method void setTotalPrice(float $totalPrice)
+ * @method void setPets(float $pets)
+ * @method void setRepeatPropertyBooker(float $repeat)
+ * @method void setRepeatOwnerBooker(float $repeat)
+ * @method void setRepeatPropertyBookerDate(string $date)
  */
 class TabsBooking extends \tabs\api\core\Base
 {
@@ -158,6 +165,13 @@ class TabsBooking extends \tabs\api\core\Base
     protected $infants = 0;
 
     /**
+     * Number of pets
+     *
+     * @var string
+     */
+    protected $pets = 0;
+
+    /**
      * Commision due to owner
      *
      * @var float
@@ -240,6 +254,27 @@ class TabsBooking extends \tabs\api\core\Base
      * @var \tabs\api\booking\OwnerBookingType
      */
     protected $ownerBookingType;
+    
+    /**
+     * Number of times the customer has booked the property before.
+     * 
+     * @var integer
+     */
+    protected $repeatPropertyBooker = 0;
+    
+    /**
+     * Number of times the customer has booked with the owner before.
+     * 
+     * @var integer
+     */
+    protected $repeatOwnerBooker = 0;
+    
+    /**
+     * Date the last time the property was last booked by this customer
+     * 
+     * @var integer
+     */
+    protected $repeatPropertyBookerDate = null;
 
     // ------------------ Static Functions --------------------- //
 
@@ -469,5 +504,19 @@ class TabsBooking extends \tabs\api\core\Base
         $fromDate = new \DateTime(date('Y-m-d', $this->getFromDate()));
         $toDate = new \DateTime(date('Y-m-d', $this->getToDate()));
         return $fromDate->diff($toDate)->days;
+    }
+    
+    /**
+     * Return the date the last time the customer did a repeat booking
+     * 
+     * @return \DateTime|null
+     */
+    public function getRepeatPropertyBookerDate()
+    {
+        if ($this->repeatPropertyBookerDate) {
+            return new \DateTime($this->repeatPropertyBookerDate);
+        } else {
+            return;
+        }
     }
 }

@@ -162,17 +162,22 @@ class OwnerTest extends ApiClientClassTest
 
     /**
      * Test owner booking requests
+     * 
+     * @
      *
      * @return null
      */
     public function testCreateOwnerBooking()
     {
         $property = $this->getTabsApiClientProperty();
-        if ($property) {
-            $owner = $property->getOwner();
 
-            // Set start time to next month
-            $this->startTime = strtotime('+1 month');
+        // Set start time to next month
+        $this->startTime = strtotime('+1 month');
+        
+        if ($property 
+            && $property->checkAvailable($this->getNextSaturday(), $this->getNextSaturdayPlusOneWeek())
+        ) {
+            $owner = $property->getOwner();
 
             // Perform owner booking
             $this->assertTrue(
@@ -183,12 +188,16 @@ class OwnerTest extends ApiClientClassTest
                     'Test booking created by the tabs-api-client.'
                 )
             );
+        } else {
+            $this->markTestSkipped( 'Property not available' );
         }
     }
 
 
     /**
      * Tests the getting of a list of documents attached to an owner
+     * 
+     * @return integer
      */
     public function testGetDocuments()
     {
@@ -197,18 +206,20 @@ class OwnerTest extends ApiClientClassTest
             $owner = $property->getOwner();
 
             $documents = $owner->getDocuments();
+            
+            if (count($documents) > 0) {
+                // Check that a result was returned
+                $this->assertEquals(1, sizeof($documents));
 
-            // Check that a result was returned
-            $this->assertEquals(1, sizeof($documents));
+                $document = $documents[0];
 
-            $document = $documents[0];
+                // Check that the returned fields are as expected
+                $this->assertInstanceOf('\tabs\api\core\OwnerDocument', $document);
+                $this->assertEquals('test.txt', $document->getFilename());
+                $this->assertEquals('statement', $document->getType());
 
-            // Check that the returned fields are as expected
-            $this->assertInstanceOf('\tabs\api\core\OwnerDocument', $document);
-            $this->assertEquals('test.txt', $document->getFilename());
-            $this->assertEquals('statement', $document->getType());
-
-            return $document->getId();
+                return $document->getId();
+            }
         }
     }
 
@@ -221,7 +232,7 @@ class OwnerTest extends ApiClientClassTest
     public function testGetDocumentData($documentId)
     {
         $property = $this->getTabsApiClientProperty();
-        if ($property) {
+        if ($property && $documentId) {
             $owner = $property->getOwner();
 
             $documentData = $owner->getDocumentData($documentId);

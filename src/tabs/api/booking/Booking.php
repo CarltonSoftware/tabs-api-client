@@ -107,7 +107,7 @@ class Booking extends \tabs\api\booking\Enquiry
     /**
      * Any payments that have been added onto the booking
      *
-     * @var array
+     * @var \tabs\api\client\booking\Payment[]
      */
     protected $payments = array();
 
@@ -545,7 +545,9 @@ class Booking extends \tabs\api\booking\Enquiry
         $amountPaid = 0;
         if ($this->payments) {
             foreach ($this->payments as $payment) {
-                $amountPaid = $amountPaid + $payment->getAmount();
+                if ($payment->getStatus() == 'OK') {
+                    $amountPaid = $amountPaid + $payment->getAmount();
+                }
             }
         }
         return $amountPaid;

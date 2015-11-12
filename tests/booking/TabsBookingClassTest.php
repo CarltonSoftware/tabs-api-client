@@ -49,6 +49,7 @@ class TabsBookingClassTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $booking->getAdults());
         $this->assertEquals(0, $booking->getChildren());
         $this->assertEquals(0, $booking->getInfants());
+        $this->assertEquals(0, $booking->getPets());
         
         // Commission
         $this->assertEquals(563.26, $booking->getCommissionDueToOwner());
