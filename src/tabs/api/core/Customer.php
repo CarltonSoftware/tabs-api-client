@@ -359,8 +359,8 @@ class Customer Extends \tabs\api\core\Person
         unset($customerData['source']);
         
         $customerData['fax'] = $this->getFax();
-        $customerData['postConfirmations'] = $this->isPostConfirmation();
-        $customerData['emailConfirmations'] = $this->isEmailConfirmation();
+        $customerData['postConfirmation'] = $this->isPostConfirmation();
+        $customerData['emailConfirmation'] = $this->isEmailConfirmation();
         $customerData['noEmail'] = $this->isNoEmail();
         $customerData['onEmailList'] = $this->isOnEmailList();
         
