@@ -106,6 +106,13 @@ class SagepayServer
      * @var array
      */
     public $ccCards = array('VISA', 'MC');
+    
+    /**
+     * Set the surcharge type.  Can be either percentage or fixed.
+     * 
+     * @var string
+     */
+    public $surchargeType = 'percentage';
 
     
     /**
@@ -210,7 +217,7 @@ class SagepayServer
                 $xml->startElement('paymentType');
                 $xml->text(strtoupper($card));
                 $xml->endElement();
-                $xml->startElement('percentage');
+                $xml->startElement($this->surchargeType);
                 $xml->text(number_format($this->getCcCharge(), 2));
                 $xml->endElement();
                 $xml->endElement();
