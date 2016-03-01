@@ -41,6 +41,7 @@ namespace tabs\api\booking;
  * @method float            getCommissionPaidToOwner()
  * @method string           getCusref()
  * @method float            getDepositPrice()
+ * @method integer          getDepositDueDate()
  * @method integer          getInfants()
  * @method integer          getFromDate()
  * @method OwnerBookingType getOwnerBookingType()
@@ -207,6 +208,13 @@ class TabsBooking extends \tabs\api\core\Base
     protected $depositPrice = 0;
 
     /**
+     * Deposit Due Date
+     *
+     * @var timestamp
+     */
+    protected $depositDueDate;
+
+    /**
      * Booking Fee
      *
      * @var float
@@ -320,7 +328,7 @@ class TabsBooking extends \tabs\api\core\Base
             $booking,
             $node,
             '',
-            array('commission', 'balance', 'securityDeposit')
+            array('commission', 'balance', 'securityDeposit', 'deposit')
         );
         
         // Set owner booking type
@@ -401,6 +409,21 @@ class TabsBooking extends \tabs\api\core\Base
             $balanceDueDate = strtotime($balanceDueDate);
         }
         $this->balanceDueDate = $balanceDueDate;
+    }
+
+    /**
+     * Set Deposit due date
+     *
+     * @param timestamp $depositDueDate Deposit due date
+     *
+     * @return void
+     */
+    public function setDepositDueDate($depositDueDate)
+    {
+        if (stristr($depositDueDate, "-")) {
+            $depositDueDate = strtotime($depositDueDate);
+        }
+        $this->depositDueDate = $depositDueDate;
     }
 
     /**
