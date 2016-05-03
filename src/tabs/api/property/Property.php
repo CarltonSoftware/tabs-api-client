@@ -480,6 +480,7 @@ class Property extends \tabs\api\core\Base
                                 $brandData->$key->bookingBrand
                             );
                         }
+                        
                         if (isset($brandData->$key->ranges)) {
                             $ranges = $brandData->$key->ranges;
                             foreach ($ranges as $rangeYear => $range) {
@@ -487,7 +488,8 @@ class Property extends \tabs\api\core\Base
                                     $brand->setPriceRange(
                                         $rangeYear,
                                         $range->high,
-                                        $range->low
+                                        $range->low,
+                                        $range->allowBookingOnWeb
                                     );
                                 }
                             }
@@ -789,7 +791,11 @@ class Property extends \tabs\api\core\Base
             return $this->brands[$brandcode]->getPriceRange($year);
         }
 
-        return (object) array("high" => 0, "low" => 0);
+        return (object) array(
+            "high" => 0,
+            "low" => 0,
+            "allowBookingOnWeb" => false
+        );
     }
 
     /**

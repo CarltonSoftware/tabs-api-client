@@ -99,21 +99,30 @@ class PropertyBrand extends \tabs\api\core\Base
             return $this->priceRanges[$year];
         }
 
-        return (object) array("high" => 0, "low" => 0);
+        return (object) array(
+            "high" => 0,
+            "low" => 0,
+            "allowBookingOnWeb" => false
+        );
     }
 
     /**
      * Set a property price range
      *
-     * @param string  $year Year of price range
-     * @param integer $high High price range
-     * @param integer $low  Low price range
+     * @param string  $year  Year of price range
+     * @param integer $high  High price range
+     * @param integer $low   Low price range
+     * @param boolean $allow Allow booking on web
      *
      * @return void
      */
-    public function setPriceRange($year, $high, $low)
+    public function setPriceRange($year, $high, $low, $allow = false)
     {
-        $this->priceRanges[$year] = (object) array("high" => $high, "low" => $low);
+        $this->priceRanges[$year] = (object) array(
+            "high" => $high,
+            "low" => $low,
+            "allowBookingOnWeb" => $allow
+        );
     }
 
 
