@@ -466,7 +466,8 @@ class Pricing extends \tabs\api\core\Base
             'extraTotal' => $this->getExtrasTotal(),
             'securityDeposit' => $this->getSecurityDeposit(),
             'totalPrice' => $this->getTotalPrice(),
-            'depositAmount' => $this->getDepositAmount()
+            'depositAmount' => $this->getDepositAmount(),
+            'saving' => $this->getSaving()
         );
     }     
 }
