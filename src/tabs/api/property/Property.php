@@ -480,7 +480,7 @@ class Property extends \tabs\api\core\Base
                                 $brandData->$key->bookingBrand
                             );
                         }
-                        
+
                         if (isset($brandData->$key->ranges)) {
                             $ranges = $brandData->$key->ranges;
                             foreach ($ranges as $rangeYear => $range) {
@@ -1406,8 +1406,8 @@ class Property extends \tabs\api\core\Base
             )
         );
 
-        if ($priceBandsObj 
-            && $priceBandsObj->status == 200 
+        if ($priceBandsObj
+            && $priceBandsObj->status == 200
             && property_exists($priceBandsObj->response, $year)
         ) {
             foreach ($priceBandsObj->response as $pboy) {
@@ -1459,8 +1459,9 @@ class Property extends \tabs\api\core\Base
                     // Using a closure, create a new anonymous function
                     // which does some of the date formatting for the
                     // client
+                    $instance = $this;
                     $dpr->getDateRangeString = function (
-                        $this,
+                        $instance,
                         $dateFormat = 'd F Y'
                     ) use ($dpr) {
                         if ($dpr->dateRangeName == '') {
@@ -1496,7 +1497,7 @@ class Property extends \tabs\api\core\Base
         if ($brandcode == '') {
             $brandcode = $this->getAccountingBrand();
         }
-        
+
         $descriptions = array();
 
         if (isset($this->brands[$brandcode])) {
@@ -1583,12 +1584,12 @@ class Property extends \tabs\api\core\Base
 
         return $bookings;
     }
-    
+
     /**
      * Return a list of week price objects
-     * 
+     *
      * @param integer $year Year to request
-     * 
+     *
      * @return array
      */
     public function getPricingWeeks($year)
@@ -1607,7 +1608,7 @@ class Property extends \tabs\api\core\Base
                 'params' => array()
             );
         }
-        
+
         $responses = \tabs\api\client\ApiClient::getApi()->mGet($weekPricePaths);
         if (is_array($responses) && count($responses) > 0) {
             foreach ($responses as $resp) {
