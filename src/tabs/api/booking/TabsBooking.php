@@ -229,6 +229,13 @@ class TabsBooking extends \tabs\api\core\Base
     protected $balanceDueDate;
 
     /**
+     * Booked date
+     *
+     * @var timestamp
+     */
+    protected $bookedDate;
+
+    /**
      * Balance Due Amount
      *
      * @var float
@@ -424,6 +431,21 @@ class TabsBooking extends \tabs\api\core\Base
             $depositDueDate = strtotime($depositDueDate);
         }
         $this->depositDueDate = $depositDueDate;
+    }
+
+    /**
+     * Set Booked date
+     *
+     * @param timestamp $bookedDate Booked date
+     *
+     * @return void
+     */
+    public function setBookedDate($bookedDate)
+    {
+        if (stristr($bookedDate, "-")) {
+            $bookedDate = strtotime($bookedDate);
+        }
+        $this->bookedDate = $bookedDate;
     }
 
     /**
