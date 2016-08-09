@@ -459,7 +459,7 @@ class Booking extends \tabs\api\booking\Enquiry
         if ($conf && $conf->status == 201) {
             $notes = explode('/', $conf->location);
             $noteId = array_pop($notes);
-            $this->notes[$noteId] = (object) array(
+            $this->notes[$noteId] = array(
                 'message' => $message,
                 'visible' => (($visible) ? 'public' : 'private')
             );
