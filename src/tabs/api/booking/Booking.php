@@ -124,17 +124,17 @@ class Booking extends \tabs\api\booking\Enquiry
      * @var integer
      */
     private $_secondsInAWeek = 604800;
-    
+
     /**
      * Created date timestamp
-     * 
+     *
      * @var timestamp
      */
     protected $created;
-    
+
     /**
      * User agent string
-     * 
+     *
      * @var string
      */
     protected $useragent = '';
@@ -178,7 +178,7 @@ class Booking extends \tabs\api\booking\Enquiry
             'infants' => $infants,
             'pets' => $pets,
         );
-        
+
         // Add User Agent
         $userAgent = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT');
         if ($userAgent) {
@@ -218,7 +218,7 @@ class Booking extends \tabs\api\booking\Enquiry
         $bookingCheck = \tabs\api\client\ApiClient::getApi()->get(
             "/booking/{$bookingId}"
         );
-            
+
         if ($bookingCheck && $bookingCheck->status == 200) {
             return self::factory($bookingCheck->response, false);
         } else {
@@ -302,8 +302,8 @@ class Booking extends \tabs\api\booking\Enquiry
                         $payment = new \tabs\api\booking\Payment();
                         $payment->setObjectProperties($payment, $paymentObj);
                     }
-                    
-                    
+
+
                     if ($payment) {
                         $booking->addPayment($payment);
                     }
@@ -360,27 +360,27 @@ class Booking extends \tabs\api\booking\Enquiry
 
     /**
      * Save a new instance of the booking
-     * 
+     *
      * @return \tabs\api\booking\Booking
      */
     public function save()
     {
         $booking = self::create(
             $this->getPropertyRef(),
-            $this->getBrandcode(),
+            $this->getBrandCode(),
             $this->getFromDate(),
             $this->getToDate(),
             $this->getAdults(),
             $this->getChildren(),
             $this->getInfants()
         );
-        
+
         // Set fields which are returned by the api
         $this->setBookingId($booking->getBookingId());
-        
+
         return $this->_setBookingData();
     }
-    
+
     /**
      * Function used to check if a customer has been set or not
      *
@@ -586,7 +586,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 );
             }
         }
-        
+
         return $this;
     }
 
@@ -602,7 +602,7 @@ class Booking extends \tabs\api\booking\Enquiry
     public function setPartyMember(\tabs\api\booking\PartyDetail $partyMember)
     {
         array_push($this->partyDetails, $partyMember);
-        
+
         return $this;
     }
 
@@ -726,7 +726,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 return $this->_setBookingData();
             }
         }
-        
+
         return false;
     }
 
@@ -763,7 +763,7 @@ class Booking extends \tabs\api\booking\Enquiry
         $extraResponse = \tabs\api\client\ApiClient::getApi()->options(
             "/booking/{$this->getBookingId()}/extra"
         );
-            
+
         return $this->_getExtrasFromResponse($extraResponse);
     }
 
@@ -778,7 +778,7 @@ class Booking extends \tabs\api\booking\Enquiry
         $extraResponse = \tabs\api\client\ApiClient::getApi()->options(
             "/booking/{$this->getBookingId()}/optionalextra"
         );
-            
+
         return $this->_getExtrasFromResponse($extraResponse);
     }
 
@@ -1202,28 +1202,28 @@ class Booking extends \tabs\api\booking\Enquiry
             );
         }
     }
-    
+
     /**
      * Set the created date
-     * 
+     *
      * @param timestamp $created Created date
-     * 
+     *
      * @return \tabs\api\booking\Booking
      */
     public function setCreated($created)
     {
         $this->setTimeStamp($created, 'created');
-        
+
         return $this;
     }
-    
+
     // ------------------ Private Functions --------------------- //
-    
+
     /**
      * Create an array of extras from a given json response
-     * 
+     *
      * @param stdClass $extraResponse Json Response
-     * 
+     *
      * @return array
      */
     private function _getExtrasFromResponse($extraResponse)
@@ -1242,7 +1242,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 }
             }
         }
-        
+
         return $extras;
     }
 
@@ -1270,7 +1270,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 $this->$setter($booking->$getter());
             }
         }
-        
+
         return $this;
     }
 }
