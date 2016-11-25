@@ -437,7 +437,9 @@ class Property extends \tabs\api\core\Base
         if (array_key_exists("attributes", $propertyData)) {
             $apiInfo = \tabs\api\utility\Utility::getApiInformation();
             foreach ($apiInfo->getAttributes() as $attr) {
-                if (property_exists($propertyData->attributes, $attr->getName())) {
+                if (is_object($propertyData->attributes) 
+                    && property_exists($propertyData->attributes, $attr->getName())
+                ) {
                     $name = $attr->getName();
                     $attribute = new \tabs\api\core\Attribute(
                         $name,
