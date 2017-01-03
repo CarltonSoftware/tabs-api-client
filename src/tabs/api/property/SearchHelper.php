@@ -343,11 +343,13 @@ class SearchHelper extends PropertySearch
                     $this->getNextPageQuery()
                 );
 
-                $pagination['last'] = sprintf(
-                    '%s?%s',
-                    $this->getBaseUrl(),
-                    $this->getQuery($this->getMaxPages())
-                );
+                if ($this->getMaxPages() != $rangeEnd) {
+                    $pagination['last'] = sprintf(
+                        '%s?%s',
+                        $this->getBaseUrl(),
+                        $this->getQuery($this->getMaxPages())
+                    );
+                }
             }
 
             // Set the show all flag
