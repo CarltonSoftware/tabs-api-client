@@ -644,4 +644,32 @@ class Owner Extends \tabs\api\core\Person
             'properties' => $properties
         );
     }
+    
+    /**
+     * Return an array of TabsBooking objects.
+     * 
+     * @return array
+     */
+    public function getBookings()
+    {
+        // Call brochure request end point
+        $conf = \tabs\api\client\ApiClient::getApi()->get(
+            '/owner/' . $this->getCusref() . '/bookings'
+        );
+        
+        // Test api response
+        if ($conf && $conf->status == 200) {
+            $bookings = array();
+            foreach ($conf->response as $object) {
+                $bookings[] = \tabs\api\booking\TabsBooking::createFromNode($object);
+            }
+            
+            return $bookings;
+        } else {
+            throw new \tabs\api\client\ApiException(
+                $conf, 
+                'Unable to fetch owner bookings'
+            );
+        }
+    }
 }
