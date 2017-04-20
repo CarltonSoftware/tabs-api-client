@@ -1348,7 +1348,16 @@ class Property extends \tabs\api\core\Base
     {
         return $this->shortlist;
     }
-
+    
+    /**
+     * Return the bookings array
+     * 
+     * @return \tabs\api\booking\TabsBooking[]
+     */
+    public function getStoredBookings()
+    {
+        return $this->bookings;
+    }
 
     /**
      * Get the property availability
