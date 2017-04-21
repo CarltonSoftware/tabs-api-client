@@ -207,11 +207,12 @@ class Owner Extends \tabs\api\core\Person
     /**
      * Creates an owner object from a given owner code
      *
-     * @param string $reference Tabs owner reference
+     * @param string  $reference  Tabs owner reference
+     * @param boolean $properties Get property data
      *
      * @return \tabs\api\core\Owner
      */
-    public static function create($reference)
+    public static function create($reference, $properties = true)
     {
         // Get the booking object
         $ownerRequest = \tabs\api\client\ApiClient::getApi()->get(
@@ -221,7 +222,7 @@ class Owner Extends \tabs\api\core\Person
             && $ownerRequest->status == 200
             && $ownerRequest->response != ''
         ) {
-            return self::_createOwner($ownerRequest->response);
+            return self::_createOwner($ownerRequest->response, $properties);
         } else {
             throw new \tabs\api\client\ApiException(
                 $ownerRequest,
@@ -234,11 +235,12 @@ class Owner Extends \tabs\api\core\Person
     /**
      * Create an owner object from an API response
      *
-     * @param object $response API Response
+     * @param object  $response   API Response
+     * @param boolean $properties Get property data
      *
      * @return \tabs\api\core\Owner
      */
-    private static function _createOwner($response)
+    private static function _createOwner($response, $properties = true)
     {
         $owner = self::factory('', '');
         self::flattenNode($owner, $response);
@@ -286,7 +288,7 @@ class Owner Extends \tabs\api\core\Person
         }
 
         // Add properties
-        if (property_exists($response, "properties")) {
+        if ($properties && property_exists($response, "properties")) {
             if (!is_null($response->properties)) {
                 foreach ($response->properties as $prop) {
                     if (property_exists($prop, "reference")
@@ -671,5 +673,13 @@ class Owner Extends \tabs\api\core\Person
                 'Unable to fetch owner bookings'
             );
         }
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getCusref()
+    {
+        return $this->getReference();
     }
 }
