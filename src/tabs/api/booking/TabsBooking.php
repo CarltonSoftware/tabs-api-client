@@ -290,6 +290,13 @@ class TabsBooking extends \tabs\api\core\Base
      * @var integer
      */
     protected $repeatPropertyBookerDate = null;
+    
+    /**
+     * Booking extras
+     * 
+     * @var array
+     */
+    protected $extras = array();
 
     // ------------------ Static Functions --------------------- //
 
@@ -331,6 +338,18 @@ class TabsBooking extends \tabs\api\core\Base
     public static function createFromNode($node)
     {
         $booking = new \tabs\api\booking\TabsBooking();
+        
+        // Temp
+        if (property_exists($node, 'price') && property_exists($node->price, 'extras')) {
+            foreach ($node->price->extras as $code => $extra) {
+                $booking->addExtra(
+                    $code,
+                    $extra
+                );
+            }
+            unset($node->price->extras);
+        }
+        
         parent::flattenNode(
             $booking,
             $node,
@@ -563,5 +582,20 @@ class TabsBooking extends \tabs\api\core\Base
         } else {
             return;
         }
+    }
+    
+    /**
+     * Add an extra
+     * 
+     * @param string    $extraCode Extracode
+     * @param \stdClass $data      Data
+     * 
+     * @return \tabs\api\booking\TabsBooking
+     */
+    public function addExtra($extraCode, $data)
+    {
+        $this->extras[] = \tabs\api\pricing\Extra::factory($extraCode, $data);
+        
+        return $this;
     }
 }
