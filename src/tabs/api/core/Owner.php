@@ -212,8 +212,12 @@ class Owner Extends \tabs\api\core\Person
      *
      * @return \tabs\api\core\Owner
      */
-    public static function create($reference, $properties = true)
-    {
+    public static function create(
+        $reference,
+        $properties = true,
+        $propertyavailability = true,
+        $propertybookings = true
+    ) {
         // Get the booking object
         $ownerRequest = \tabs\api\client\ApiClient::getApi()->get(
             "/owner/{$reference}"
@@ -222,7 +226,12 @@ class Owner Extends \tabs\api\core\Person
             && $ownerRequest->status == 200
             && $ownerRequest->response != ''
         ) {
-            return self::_createOwner($ownerRequest->response, $properties);
+            return self::_createOwner(
+                $ownerRequest->response,
+                $properties,
+                $propertyavailability,
+                $propertybookings
+            );
         } else {
             throw new \tabs\api\client\ApiException(
                 $ownerRequest,
@@ -240,8 +249,12 @@ class Owner Extends \tabs\api\core\Person
      *
      * @return \tabs\api\core\Owner
      */
-    private static function _createOwner($response, $properties = true)
-    {
+    private static function _createOwner(
+        $response,
+        $properties = true,
+        $propertyavailability = true,
+        $propertybookings = true
+    ) {
         $owner = self::factory('', '');
         self::flattenNode($owner, $response);
 
@@ -298,8 +311,8 @@ class Owner Extends \tabs\api\core\Person
                         $property = \tabs\api\property\Property::getProperty(
                             $prop->reference,
                             $prop->brandCode,
-                            true,
-                            true
+                            $propertyavailability,
+                            $propertybookings
                         );
 
                         if ($property) {
