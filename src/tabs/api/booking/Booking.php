@@ -1068,13 +1068,6 @@ class Booking extends \tabs\api\booking\Enquiry
         // chosen.
         $amount = $this->getPayableAmount($useFull);
 
-        // Change payment type to be credit card charge
-        if ($Status == 'OK' && $Surcharge > 0) {
-            $paymentType .= '-ccc';
-            $this->addNewExtra('CCC', 1, $Surcharge);
-            $amount = $amount + $Surcharge;
-        }
-
         // Create new payment object
         $payment = new \tabs\api\booking\Payment();
         $payment->setType($paymentType);
@@ -1096,9 +1089,24 @@ class Booking extends \tabs\api\booking\Enquiry
         $payment->setCavv($CAVV);
         $payment->setGiftAid($GiftAid);
 
-        // Add new payment to booking
-        $this->addNewPayment($payment);
+        // Change payment type to be credit card charge
+        if ($Status == 'OK') {
+            if ($Surcharge > 0) {
+                $paymentType .= '-ccc';
+                if ($this->addNewExtra('CCC', 1, $Surcharge)) {
+                    $amount = $amount + $Surcharge;
+                    $payment->setAmount($amount);
+                    $payment->setType($paymentType);
 
+                    // Add new payment to booking
+                    $this->addNewPayment($payment);
+                }
+            } else {
+                // Add new payment to booking
+                $this->addNewPayment($payment);
+            }
+        }
+        
         return $payment;
     }
 
