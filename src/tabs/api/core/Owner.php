@@ -494,6 +494,10 @@ class Owner Extends \tabs\api\core\Person
 
         // Test api response
         if ($conf && $conf->status == 204) {
+            if (isset($conf->location)) {
+                // Return ID of created booking
+                return array_pop(explode('/', $conf->location));
+            }
             return true;
         } else {
             throw new \tabs\api\client\ApiException(
