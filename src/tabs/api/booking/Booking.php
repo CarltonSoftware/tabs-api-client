@@ -676,7 +676,7 @@ class Booking extends \tabs\api\booking\Enquiry
             if ($extra) {
 
                 // Update the current object
-                $this->_setBookingData();
+                //$this->_setBookingData();
 
                 return ($this->getPricing()->addExtra($extra));
             }
@@ -723,7 +723,7 @@ class Booking extends \tabs\api\booking\Enquiry
             if ($extra && $extra->status == 204) {
 
                 // Update the current object
-                return $this->_setBookingData();
+                return $this;
             }
         }
         
@@ -902,7 +902,7 @@ class Booking extends \tabs\api\booking\Enquiry
             $this->addPayment($payment);
 
             // Update the current object
-            return $this->_setBookingData();
+            return $this;
         } else {
             throw new \tabs\api\client\ApiException(
                 $conf,
