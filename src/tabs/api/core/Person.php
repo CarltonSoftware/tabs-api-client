@@ -27,6 +27,7 @@ namespace tabs\api\core;
  * @link      http://www.carltonsoftware.co.uk
  * 
  * @method \tabs\api\core\Address getAddress()
+ * @method string                 getId()
  * @method string                 getAge()
  * @method string                 getDaytimePhone()
  * @method string                 getEmail()
@@ -41,6 +42,7 @@ namespace tabs\api\core;
  * @method \tabs\api\core\Source  getSource()
  * @method string                 getWhich()
  * 
+ * @method void setId(string $id)
  * @method void setAge(string $age)
  * @method void setDaytimePhone(string $daytimePhone)
  * @method void setEmail(string $email)
@@ -59,6 +61,13 @@ namespace tabs\api\core;
  */
 class Person extends \tabs\api\core\Base
 {
+    /**
+     * Id
+     * 
+     * @var string
+     */
+    protected $id = '';
+    
     /**
      * Reference
      * 
