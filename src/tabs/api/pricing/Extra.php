@@ -26,12 +26,14 @@ namespace tabs\api\pricing;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  * 
- * @method string getCode()        Return the extra code
- * @method string getDescription() Return the extra description
- * @method string getType()        Return the type of extra
- * @method string getQuantity()    Return the quantity of extras
- * @method string getPrice()       Return the price of extra
- * @method string getMaxLimit()    Returns the maxLimit of the extra
+ * @method string  getCode()              Return the extra code
+ * @method string  getDescription()       Return the extra description
+ * @method string  getType()              Return the type of extra
+ * @method string  getQuantity()          Return the quantity of extras
+ * @method string  getPrice()             Return the price of extra
+ * @method string  getMaxLimit()          Returns the maxLimit of the extra
+ * @method boolean getVisibletocustomer() Return the customer visibility bool
+ * @method boolean getVisibletoowner()    Return the owner visibility bool
  * 
  * @method void setCode(string $code)               Set the ExtraCode
  * @method void setDescription(string $description) Set the Extra Description
@@ -39,6 +41,8 @@ namespace tabs\api\pricing;
  * @method void setQuantity(integer $quantity)      Set the Extra quantity
  * @method void setPrice(float $price)              Set the Extra Price
  * @method void setMaxLimit(integer $maxLimit)      Set the Extra MaxLimit
+ * @method void setVisibletocustomer(boolean $var)  Set the Customer visibility
+ * @method void setVisibletoowner(boolean $var)     Set the Owner visibility
  */
 class Extra extends \tabs\api\core\Base
 {
@@ -77,6 +81,20 @@ class Extra extends \tabs\api\core\Base
      */
     protected $price = 0;
     
+    /**
+     * Customer visibility boolean
+     * 
+     * @var boolean
+     */
+    protected $visibletocustomer = true;
+    
+    /**
+     * Owner visibility boolean
+     * 
+     * @var boolean
+     */
+    protected $visibletoowner = true;
+
     /**
      * Maxiumum amount of extras allowed
      * 
@@ -120,6 +138,14 @@ class Extra extends \tabs\api\core\Base
             // the OPTIONS optionalextras request has a maxlimit property
             if (property_exists($node, 'maxLimit')) {
                 $extra->setMaxLimit($node->maxLimit);
+            }
+            
+            if (property_exists($node, 'visibletocustomer')) {
+                $extra->setVisibletocustomer($node->visibletocustomer);
+            }
+            
+            if (property_exists($node, 'visibletoowner')) {
+                $extra->setVisibletoowner($node->visibletoowner);
             }
             
             return $extra;
