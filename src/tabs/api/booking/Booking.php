@@ -367,7 +367,7 @@ class Booking extends \tabs\api\booking\Enquiry
     {
         $booking = self::create(
             $this->getPropertyRef(),
-            $this->getBrandcode(),
+            $this->getBrandCode(),
             $this->getFromDate(),
             $this->getToDate(),
             $this->getAdults(),
