@@ -142,8 +142,7 @@ class Booking extends \tabs\api\booking\Enquiry
     // ------------------ Static Functions --------------------- //
 
     /**
-     * Get property function, returns a basic property object from the
-     * tabs API.
+     * Create a new booking
      *
      * @param string    $propRef   The property reference
      * @param string    $brandCode Brandcode of the booking
@@ -205,8 +204,7 @@ class Booking extends \tabs\api\booking\Enquiry
     }
 
     /**
-     * Get property function, returns a basic property object from the
-     * tabs API.
+     * Get a booking from the API
      *
      * @param string $bookingId The booking reference
      *
@@ -381,6 +379,29 @@ class Booking extends \tabs\api\booking\Enquiry
         return $this->_setBookingData();
     }
     
+    /**
+     * Update an existing booking. Tabs 2 only
+     *
+     * @return \tabs\api\booking\Booking
+     */
+    public function update() {
+        $bookingJson = array(
+            'adults' => $this->getAdults(),
+            'children' => $this->getChildren(),
+            'infants' => $this->getInfants()
+        );
+
+        $bookingData = \tabs\api\client\ApiClient::getApi()->put(
+            "/booking/{$this->getBookingId()}",
+            array(
+                'data' => json_encode($bookingJson)
+            )
+        );
+
+        return $this;
+    }
+
+
     /**
      * Function used to check if a customer has been set or not
      *
