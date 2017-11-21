@@ -1818,5 +1818,14 @@ class Property extends \tabs\api\core\Base
             return false;
         }
     }
-
+    
+    /**
+     * Check if the property has availability
+     * 
+     * @return boolean
+     */
+    public function hasAvailability()
+    {
+        return count($this->availability) > 0;
+    }
 }
