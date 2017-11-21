@@ -658,8 +658,8 @@ class Owner Extends \tabs\api\core\Person
                 'vatNumber' => $this->getVatNumber(),
                 'vatRegistered' => $this->isVatRegistered()
             ),
-            'postConfirmations' => $this->isPostConfirmation(),
-            'emailConfirmations' => $this->isEmailConfirmation(),
+            'postConfirmation' => $this->isPostConfirmation(),
+            'emailConfirmation' => $this->isEmailConfirmation(),
             'properties' => $properties
         );
     }
