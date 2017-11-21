@@ -757,6 +757,12 @@ class Property extends \tabs\api\core\Base
      */
     private function _loadAdditionalDescriptions($brandcode)
     {
+        if (property_exists($this, 'loadedDescriptions') 
+            && $this->loadedDescriptions === true
+        ) {
+            return;
+        }
+        
         $descriptionsObj = \tabs\api\client\ApiClient::getApi()->get(
             sprintf(
                 '/property/%s_%s/description',
@@ -765,6 +771,7 @@ class Property extends \tabs\api\core\Base
             )
         );
 
+        $this->loadedDescriptions = true;
         if ($descriptionsObj && $descriptionsObj->status == 200) {
             foreach ($descriptionsObj->response as $description) {
                 $this->brands[$brandcode]->setDescription(
