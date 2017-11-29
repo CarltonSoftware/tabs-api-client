@@ -789,6 +789,21 @@ class Booking extends \tabs\api\booking\Enquiry
     }
 
     /**
+     * Retrieves all available extras from the booking
+     *
+     * @return array
+     */
+    public function getOptionsAvailableExtras()
+    {
+        // Create extra object
+        $extraResponse = \tabs\api\client\ApiClient::getApi()->options(
+            "/booking/{$this->getBookingId()}/extra"
+        );
+            
+        return $this->_getExtrasFromResponse($extraResponse);
+    }
+
+    /**
      * Retrieves all available optional extras from the booking
      *
      * @return array
