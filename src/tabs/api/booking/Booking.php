@@ -781,7 +781,7 @@ class Booking extends \tabs\api\booking\Enquiry
     public function getAvailableExtras()
     {
         // Create extra object
-        $extraResponse = \tabs\api\client\ApiClient::getApi()->options(
+        $extraResponse = \tabs\api\client\ApiClient::getApi()->get(
             "/booking/{$this->getBookingId()}/extra"
         );
             
