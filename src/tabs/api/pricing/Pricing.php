@@ -29,6 +29,7 @@ namespace tabs\api\pricing;
  * @method float                          getOutstandingBalance()
  * @method float                          getDepositAmount()
  * @method float                          getSecurityDeposit()
+ * @method array                          getSecurityDeposits()
  * @method float                          getBasicPrice()
  * @method string                         getPetExtraCode()
  * @method integer                        getPartySize()
@@ -50,6 +51,7 @@ namespace tabs\api\pricing;
  * @method void setPetExtra(\tabs\api\pricing\Extra $petExtra)
  * @method void setPetExtraCode(string $petExtraCode)
  * @method void setPropertyRef(string $propertyRef)
+ * @method void setSecurityDeposits(array $sds)
  */
 class Pricing extends \tabs\api\core\Base
 {
@@ -151,7 +153,13 @@ class Pricing extends \tabs\api\core\Base
      */
     protected $saving = 0;
     
-    
+    /**
+     * Security deposits
+     * 
+     * @var array
+     */
+    protected $securityDeposits = array();
+
     // ------------------ Static Functions --------------------- //
 
     /**
