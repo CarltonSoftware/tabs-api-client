@@ -1552,8 +1552,13 @@ class Property extends \tabs\api\core\Base
 
         if ($commentsObj && $commentsObj->status == 200) {
             foreach ($commentsObj->response as $comment) {
+                if ($comment->date) {
+                    $date = new \DateTime($comment->date);
+                } else {
+                    $date = null;
+                }
                 $comments[] = new \tabs\api\property\CustomerComment(
-                    new \DateTime($comment->date),
+                    $date,
                     $comment->name,
                     $comment->comment
                 );
