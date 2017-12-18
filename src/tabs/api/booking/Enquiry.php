@@ -37,6 +37,13 @@ class Enquiry extends \tabs\api\core\Base
      * @var \tabs\api\pricing\Pricing
      */
     protected $pricing;
+    
+    /**
+     * Override shortbreak checks for enquiry purposes.
+     * 
+     * @var boolean
+     */
+    public static $bypass = false;
 
     // ------------------ Static Functions --------------------- //
 
@@ -75,6 +82,10 @@ class Enquiry extends \tabs\api\core\Base
             'partySize' => ($adults + $children),
             'pets' => $pets,
         );
+        
+        if (self::$bypass === true) {
+            $enquiryJson['bypasschecks'] = true;
+        }
 
         // Create booking object
         $enquiryData = \tabs\api\client\ApiClient::getApi()->post(
