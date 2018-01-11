@@ -36,6 +36,7 @@ namespace tabs\api\booking;
  * @method \tabs\api\boking\Payment|Array       getPayments()
  * @method timestamp                            getCreated()
  * @method string                               getUseragent()
+ * @method timestamp                            getConfirmedDate()
  *
  * @method void setBookingId(string $bookingId)
  * @method void setAdults(integer $adults)
@@ -45,6 +46,7 @@ namespace tabs\api\booking;
  * @method void setNotes(array $notes)
  * @method void setConfirmation(boolean $confirmation)
  * @method void setUseragent(string $useragent)
+ * @method void setConfirmedDate(string $date)
  */
 class Booking extends \tabs\api\booking\Enquiry
 {
@@ -138,6 +140,13 @@ class Booking extends \tabs\api\booking\Enquiry
      * @var string
      */
     protected $useragent = '';
+    
+    /**
+     * Confirmed Date
+     * 
+     * @var timestamp
+     */
+    protected $confirmedDate;
 
     // ------------------ Static Functions --------------------- //
 
@@ -347,6 +356,11 @@ class Booking extends \tabs\api\booking\Enquiry
             }
             if (property_exists($bookingData->confirmation, "wnumber")) {
                 $booking->setWnumber($bookingData->confirmation->wnumber);
+            }
+            if (property_exists($bookingData->confirmation, "confirmedDate")) {
+                $booking->setConfirmedDate(
+                    strtotime($bookingData->confirmation->confirmedDate)
+                );
             }
         }
 
