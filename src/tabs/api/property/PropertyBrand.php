@@ -26,12 +26,16 @@ namespace tabs\api\property;
  * @version   Release: 1
  * @link      http://www.carltonsoftware.co.uk
  *
- * @method string getBrandcode()
+ * @method string                    getBrandcode()
  * @method \tabs\api\pricing\Pricing getSearchPrice()
+ * @method timestamp                 getAllowBookingOnWebUntil()
+ * @method timestamp                 getShowPricingOnWebUntil()
  *
  * @method void setBookingBrand(string $brandCode)
  * @method void setBrandcode(string $brandCode)
  * @method void setSearchPrice(\tabs\api\booking\Pricing $pricing)
+ * @method void setAllowBookingOnWebUntil(timestamp $date)
+ * @method void setShowPricingOnWebUntil(timestamp $date)
  */
 class PropertyBrand extends \tabs\api\core\Base
 {
@@ -62,6 +66,20 @@ class PropertyBrand extends \tabs\api\core\Base
      * @var \tabs\api\pricing\Pricing
      */
     protected $searchPrice = null;
+
+    /**
+     * Allow booking on web until date. Tabs 2 only
+     *
+     * @var timestamp
+     */
+    protected $allowBookingOnWebUntil = null;
+
+    /**
+     * Show pricing on web until date. Tabs 2 only
+     *
+     * @var timestamp
+     */
+    protected $showPricingOnWebUntil = null;
 
     /**
      * Property Descriptions

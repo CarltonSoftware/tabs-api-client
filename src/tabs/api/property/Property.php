@@ -483,6 +483,17 @@ class Property extends \tabs\api\core\Base
                             );
                         }
 
+                        if (isset($brandData->$key->allowbookingonwebuntil)) {
+                            $brand->setAllowBookingOnWebUntil(
+                                strtotime($brandData->$key->allowbookingonwebuntil)
+                            );
+                        }
+                        if (isset($brandData->$key->showpricingonwebuntil)) {
+                            $brand->setShowPricingOnWebUntil(
+                                strtotime($brandData->$key->showpricingonwebuntil)
+                            );
+                        }
+
                         if (isset($brandData->$key->ranges)) {
                             $ranges = $brandData->$key->ranges;
                             foreach ($ranges as $rangeYear => $range) {
