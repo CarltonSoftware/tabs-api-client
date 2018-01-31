@@ -672,12 +672,6 @@ class ApiClient
      */
     private function _post($urlPath, $params)
     {
-        // Find the curl path to use
-        $this->_getResource($urlPath);
-
-        // use POST
-        curl_setopt($this->resource, CURLOPT_POST, 1);
-
         // Pop data param into pure json as mock server cannot handle parameter
         // arguments
         if ($this->testMode) {
@@ -685,6 +679,18 @@ class ApiClient
                 $params = $params['data'];
             }
         }
+
+        // Add the API key as a query string part
+        if ($params['APIKEY']) {
+            $urlPath .= "?APIKEY=" . $params['APIKEY'];
+            unset($params['APIKEY']);
+        }
+
+        // Find the curl path to use
+        $this->_getResource($urlPath);
+
+        // use POST
+        curl_setopt($this->resource, CURLOPT_POST, 1);
 
         // Set the post fields.  Requires the function
         // http_build_query to encode the parameters
