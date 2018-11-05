@@ -120,7 +120,8 @@ class PropertyBrand extends \tabs\api\core\Base
         return (object) array(
             "high" => 0,
             "low" => 0,
-            "allowBookingOnWeb" => false
+            "allowBookingOnWeb" => false,
+            "showPricesOnWeb" => false
         );
     }
 
@@ -131,15 +132,17 @@ class PropertyBrand extends \tabs\api\core\Base
      * @param integer $high  High price range
      * @param integer $low   Low price range
      * @param boolean $allow Allow booking on web
+     * @param boolean $show  Show prices on web (tabs 2 only)
      *
      * @return void
      */
-    public function setPriceRange($year, $high, $low, $allow = false)
+    public function setPriceRange($year, $high, $low, $allow = false, $show = false)
     {
         $this->priceRanges[$year] = (object) array(
             "high" => $high,
             "low" => $low,
-            "allowBookingOnWeb" => $allow
+            "allowBookingOnWeb" => $allow,
+            "showPricesOnWeb" => $show
         );
     }
 

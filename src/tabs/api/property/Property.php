@@ -502,7 +502,8 @@ class Property extends \tabs\api\core\Base
                                         $rangeYear,
                                         $range->high,
                                         $range->low,
-                                        $range->allowBookingOnWeb
+                                        $range->allowBookingOnWeb,
+                                        isset($range->showPricesOnWeb) ? $range->showPricesOnWeb : null
                                     );
                                 }
                             }
