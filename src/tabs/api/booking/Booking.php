@@ -394,7 +394,7 @@ class Booking extends \tabs\api\booking\Enquiry
     }
     
     /**
-     * Update an existing booking. Tabs 2 only
+     * Update an existing booking party size. Tabs 2 only
      *
      * @return \tabs\api\booking\Booking
      */
@@ -404,13 +404,18 @@ class Booking extends \tabs\api\booking\Enquiry
             'children' => $this->getChildren(),
             'infants' => $this->getInfants()
         );
-
-        $bookingData = \tabs\api\client\ApiClient::getApi()->put(
+        $response = \tabs\api\client\ApiClient::getApi()->put(
             "/booking/{$this->getBookingId()}",
             array(
                 'data' => json_encode($bookingJson)
             )
         );
+        if ($response->status !== 200) {
+            throw new \tabs\api\client\ApiException(
+                $response,
+                'Could not update booking'
+            );
+        }
 
         return $this;
     }
