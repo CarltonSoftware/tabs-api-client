@@ -410,7 +410,7 @@ class Booking extends \tabs\api\booking\Enquiry
                 'data' => json_encode($bookingJson)
             )
         );
-        if ($response->status !== 200) {
+        if ($response->status !== 204) {
             throw new \tabs\api\client\ApiException(
                 $response,
                 'Could not update booking'
